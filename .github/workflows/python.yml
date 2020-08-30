@@ -1,0 +1,32 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+env:
+  POETRY_VIRTUALENVS_CREATE: false
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    - name: Run test
+      run: |
+        pip install poetry
+        poetry install
+        pytest
+
+    # CD part
+    # - name: Push dags to GCS
+    #   not implemented yet

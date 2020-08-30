@@ -1,4 +1,5 @@
 # PyConTW ETL
+![Python CI](https://github.com/pycontw/PyCon-ETL/workflows/Python%20CI/badge.svg)
 
 A ETL pipeline built on GCP cloud composer
 

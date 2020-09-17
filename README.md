@@ -5,32 +5,42 @@ Using Airflow to implement our ETL pipelines
 
 ## Prerequisites
 
-1. [Get Docker](https://docs.docker.com/get-docker/)
-2. [Install Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
-3. [Get npm](https://www.npmjs.com/get-npm)
+1. [Install Python 3.7](https://www.python.org/downloads/release/python-379/)
+2. [Get Docker](https://docs.docker.com/get-docker/)
+3. [Install Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
+4. [Get npm](https://www.npmjs.com/get-npm)
 
 ## Install
 
-`docker pull puckel/docker-airflow:1.10.9`
+1. `docker pull puckel/docker-airflow:1.10.9`
+2. Python dependencies:
+    1. `virtualenv venv; . venv/bin/activate`
+    2. `pip install poetry`
+    3. `poetry install`
+3. Npm dependencies, for linter, formatter and commit linter (optional):
+    1. `brew install npm`
+    2. `npm ci`
 
-## Before you commit
+## Commit?
 
 1. `git add <files>`
 2. `npm run check`: Apply all the linter and formatter
 3. `npm run commit`
 
-## Run in local env
+## Run
+### Local environment
 
 1. Start the Airflow server: `docker run  --rm -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver`
 2. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
 3. Give [Toy-Examples](#Toy-Examples) a try
 
-## CI/CD
+## Deployment
+### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details
 
-## Toy Examples
+## Tutorials
 
 BigQuery Example:
 

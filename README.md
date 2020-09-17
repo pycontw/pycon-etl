@@ -1,17 +1,17 @@
 # PyConTW ETL
 ![Python CI](https://github.com/pycontw/PyCon-ETL/workflows/Python%20CI/badge.svg)
 
-A ETL pipeline built on GCP cloud composer
+Using Airflow to implement our ETL pipelines
+
+## Prerequisites
+
+1. [Get Docker](https://docs.docker.com/get-docker/)
+2. [Install Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
+3. [Get npm](https://www.npmjs.com/get-npm)
 
 ## Install
 
-1. Python dependencies:
-    1. `virtualenv venv; . venv/bin/activate`
-    2. `pip install poetry`
-    3. `poetry install`
-2. Npm dependencies, for linter, formatter and commit linter (optional):
-    1. `brew install npm`
-    2. `npm ci`
+`docker pull puckel/docker-airflow:1.10.9`
 
 ## Before you commit
 
@@ -21,10 +21,8 @@ A ETL pipeline built on GCP cloud composer
 
 ## Run in local env
 
-Not implemented yet.
+`docker run  --rm -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver`
 
-## Deploy
+## CI/CD
 
-Put your dags in dags folder and upload to GCP storage
-
-<https://console.cloud.google.com/storage/browser/asia-east2-pycon-data-team-ba6275e0-bucket/dags?project=pycontw-225217>
+Please check [.github/workflows](.github/workflows) for details

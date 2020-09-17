@@ -11,7 +11,7 @@ class BaseCrawler(ABC):
 
     @classmethod
     @abstractclassmethod
-    def crawl(cls):
+    def crawl(cls, **conf):
         pass
 
 
@@ -21,6 +21,6 @@ class CakeResumeCrawler(BaseCrawler):
     """
 
     @classmethod
-    def crawl(cls):
+    def crawl(cls, **conf):
         print("i'm a CakeResume crawler!")
         return "i'm a CakeResume crawler!"

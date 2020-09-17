@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
-from dags.opening_crawler.udfs.crawlers import CakeResumeCrawler
+from opening_crawler.udfs.crawlers import CakeResumeCrawler
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
@@ -26,7 +26,7 @@ dag = DAG(
 with dag:
     CRAWLER = PythonOperator(
         task_id="CRAWLER",
-        python_callable=CakeResumeCrawler.crawl(),
+        python_callable=CakeResumeCrawler.crawl,
         provide_context=True,
         op_kwargs={},
     )

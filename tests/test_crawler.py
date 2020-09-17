@@ -1,7 +1,7 @@
 """
 test crawler
 """
-from dags.opening_crawler.udfs.crawlers import CakeResumeCrawler
+from dags.ods.opening_crawler.udfs.crawlers import CakeResumeCrawler
 
 
 def test_demo() -> None:

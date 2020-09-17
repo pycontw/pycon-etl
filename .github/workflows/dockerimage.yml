@@ -35,7 +35,7 @@ jobs:
     - name: Run test
       run: |
         docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver
-
+        sleep 10
         docker exec airflow bash -c "airflow test OPENING_CRAWLER_V1 CRAWLER 2020-01-01"
 
     - name: Push Cache to docker registry

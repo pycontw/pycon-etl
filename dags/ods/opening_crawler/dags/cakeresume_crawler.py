@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
-from opening_crawler.udfs.crawlers import CakeResumeCrawler
+from ods.opening_crawler.udfs.crawlers import CakeResumeCrawler
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",

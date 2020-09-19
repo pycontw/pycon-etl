@@ -27,7 +27,7 @@ jobs:
     - name: Build the Docker image
       if: always()
       run: |
-        docker build -t ${RC_NAME}:${GITHUB_SHA}  --build-arg username=${{ secrets.USERNAME }} --build-arg credential=${{ secrets.CREDENTIAL }} --cache-from ${RC_NAME}:cache .
+        docker build -t ${RC_NAME}:${GITHUB_SHA} --cache-from ${RC_NAME}:cache .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:latest

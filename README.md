@@ -30,7 +30,7 @@ Using Airflow to implement our ETL pipelines
 ## Run
 ### Local environment
 
-1. Start the Airflow server: `docker run  --rm -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver`
+1. Start the Airflow server: `docker run  --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver`
 2. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
 3. Give [Toy-Examples](#Toy-Examples) a try

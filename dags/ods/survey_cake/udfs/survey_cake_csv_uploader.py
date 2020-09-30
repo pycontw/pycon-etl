@@ -1,5 +1,6 @@
 import os
 import csv
+from pathlib import Path
 
 from google.cloud import bigquery
 
@@ -10,16 +11,18 @@ class SurveyCakeCSVUploader:
         self.year = None
         # Construct a BigQuery client object.
         self.project = "pycontw-225217"
-        if not os.getenv("AIRFLOW_TEST_MODE"):
+        if not bool(os.getenv("AIRFLOW_TEST_MODE")):
             self.client = bigquery.Client(project=self.project)
 
-        self.facttable_filepath = f"facttable_{self.filename}"
-        self.dimension_table_filepath = f"dimension_{self.filename}"
+        self.facttable_filepath = str(Path(self.filename).parent / "facttable.csv")
+        self.dimension_table_filepath = str(
+            Path(self.filename).parent / "dimension.csv"
+        )
 
     def run_dag(self, **context):
         self.year = context["execution_date"].year
         self.transform()
-        if not os.getenv("AIRFLOW_TEST_MODE"):
+        if not bool(os.getenv("AIRFLOW_TEST_MODE")):
             self.upload()
 
     def transform(self):
@@ -56,11 +59,11 @@ class SurveyCakeCSVUploader:
     def upload(self):
         self._upload_2_bigquery(
             self.facttable_filepath,
-            f"{self.project}.ods.ods_questionnaire_ip_datetime_test",
+            f"{self.project}.ods.ods_questionnaire_ip_datetime",
         )
         self._upload_2_bigquery(
             self.dimension_table_filepath,
-            f"{self.project}.dim.dim_questionnaire_questionId_year_test",
+            f"{self.project}.dim.dim_questionnaire_questionId_year",
         )
 
     def _upload_2_bigquery(self, file_path, table_id):

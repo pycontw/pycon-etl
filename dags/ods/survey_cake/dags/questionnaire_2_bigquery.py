@@ -1,6 +1,7 @@
 """
 A crawler which would crawl the openings
 """
+import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -23,7 +24,12 @@ dag = DAG(
     max_active_runs=1,
     catchup=False,
 )
-SURVEY_CAKE_CSV_UPLOADER = SurveyCakeCSVUploader(filename="data_questionnaire.csv")
+FILENAME = (
+    "fixtures/data_questionnaire.csv"
+    if bool(os.getenv("AIRFLOW_TEST_MODE"))
+    else "data_questionnaire.csv"
+)
+SURVEY_CAKE_CSV_UPLOADER = SurveyCakeCSVUploader(filename=FILENAME)
 with dag:
     UPLOADER = PythonOperator(
         task_id="UPLOADER",

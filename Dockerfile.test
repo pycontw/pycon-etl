@@ -1,2 +1,2 @@
 FROM davidtnfsh/pycon_etl:cache
-COPY airflow.test.cfg /usr/local/airflow/airflow.cfg
+ENV AIRFLOW_TEST_MODE=True

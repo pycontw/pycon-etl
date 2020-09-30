@@ -1,3 +1,4 @@
+import os
 import csv
 
 from google.cloud import bigquery
@@ -16,12 +17,9 @@ class SurveyCakeCSVUploader:
 
     def run_dag(self, **context):
         self.year = context["execution_date"].year
-        print(self.year)
-        print(self.year)
-        print(self.year)
-        print(self.year)
         self.transform()
-        self.upload()
+        if not os.getenv("AIRFLOW_TEST_MODE"):
+            self.upload()
 
     def transform(self):
         def _export_facttable(header_of_fact_table):

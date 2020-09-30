@@ -1,0 +1,2 @@
+FROM davidtnfsh/pycon_etl:cache
+COPY airflow.test.cfg /usr/local/airflow/airflow.cfg

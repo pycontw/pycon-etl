@@ -29,14 +29,16 @@ jobs:
       run: |
         docker build -t ${RC_NAME}:${GITHUB_SHA} --cache-from ${RC_NAME}:cache .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
+        docker build -t ${RC_NAME}:test --cache-from ${RC_NAME}:cache -f Dockerfile.test .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:latest
 
     - name: Run test
       run: |
-        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags puckel/docker-airflow:1.10.9 webserver
+        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags ${RC_NAME}:test webserver
         sleep 10
         docker exec airflow bash -c "airflow test OPENING_CRAWLER_V1 CRAWLER 2020-01-01"
+        docker exec airflow bash -c "airflow test QUESTIONNAIRE_2_BIGQUERY UPLOADER 2020-09-29"
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master

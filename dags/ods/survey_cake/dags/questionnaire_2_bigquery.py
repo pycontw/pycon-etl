@@ -17,7 +17,7 @@ DEFAULT_ARGS = {
     "on_failure_callback": lambda x: "Need to send notification to Telegrame",
 }
 dag = DAG(
-    "SURVEY_CAKE_CSV_UPLOADER_V1",
+    "QUESTIONNAIRE_2_BIGQUERY",
     default_args=DEFAULT_ARGS,
     schedule_interval=None,
     max_active_runs=1,

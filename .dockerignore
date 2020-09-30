@@ -6,3 +6,4 @@ bower_components
 venv
 node_modules
 .git
+service-account.json

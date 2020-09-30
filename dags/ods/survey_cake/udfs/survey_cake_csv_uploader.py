@@ -10,7 +10,8 @@ class SurveyCakeCSVUploader:
         self.year = None
         # Construct a BigQuery client object.
         self.project = "pycontw-225217"
-        self.client = bigquery.Client(project=self.project)
+        if not os.getenv("AIRFLOW_TEST_MODE"):
+            self.client = bigquery.Client(project=self.project)
 
         self.facttable_filepath = f"facttable_{self.filename}"
         self.dimension_table_filepath = f"dimension_{self.filename}"

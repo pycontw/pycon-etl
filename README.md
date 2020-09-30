@@ -1,5 +1,6 @@
 # PyConTW ETL
 ![Python CI](https://github.com/pycontw/PyCon-ETL/workflows/Python%20CI/badge.svg)
+![Docker Image CI](https://github.com/pycontw/PyCon-ETL/workflows/Docker%20Image%20CI/badge.svg)
 
 Using Airflow to implement our ETL pipelines
 

@@ -3,6 +3,11 @@
 
 Using Airflow to implement our ETL pipelines
 
+## Dags
+
+1. ods/opening_crawler: Crawlers written by @Rain. Those openings can be used for recuitment board, which was implemented by @tai271828 and @stacy.
+2. ods/survey_cake: A manually triggered uploader which would upload questionnaire to bigquery. The uploader should be invoked after we recieved the surveycake questionnaire.
+
 ## Prerequisites
 
 1. [Install Python 3.7](https://www.python.org/downloads/release/python-379/)
@@ -21,7 +26,7 @@ Using Airflow to implement our ETL pipelines
     1. `brew install npm`
     2. `npm ci`
 
-## Commit?
+## Commit
 
 1. `git add <files>`
 2. `npm run check`: Apply all the linter and formatter

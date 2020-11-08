@@ -3,6 +3,7 @@ A crawler which would crawl the openings
 """
 import os
 from typing import Dict
+from pathlib import Path
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -42,16 +43,17 @@ with dag:
             },
         }
     for filename, metadata in FILENAMES.items():
+        FILENAME_STEM = Path(filename).stem
         SURVEY_CAKE_CSV_UPLOADER = SurveyCakeCSVUploader(filename=filename)
         TRANSFORM = PythonOperator(
-            task_id=f"TRANSFORM_{filename}",
+            task_id=f"TRANSFORM_{FILENAME_STEM}",
             python_callable=SURVEY_CAKE_CSV_UPLOADER.transform,
             provide_context=True,
         )
 
         if not bool(os.getenv("AIRFLOW_TEST_MODE")):
             UPLOAD_FACTTABLE = PythonOperator(
-                task_id=f"UPLOAD_FACTTABLE_{filename}",
+                task_id=f"UPLOAD_FACTTABLE_{FILENAME_STEM}",
                 python_callable=SURVEY_CAKE_CSV_UPLOADER.upload,
                 op_kwargs={
                     "facttable_or_dimension_table": "fact",
@@ -62,7 +64,7 @@ with dag:
                 },
             )
             UPLOAD_DIMENSION_TABLE = PythonOperator(
-                task_id=f"UPLOAD_DIMENSION_TABLE_{filename}",
+                task_id=f"UPLOAD_DIMENSION_TABLE_{FILENAME_STEM}",
                 python_callable=SURVEY_CAKE_CSV_UPLOADER.upload,
                 op_kwargs={
                     "facttable_or_dimension_table": "dim",

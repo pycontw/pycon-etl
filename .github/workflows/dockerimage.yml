@@ -38,7 +38,7 @@ jobs:
         docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/fixtures:/usr/local/airflow/fixtures ${RC_NAME}:test webserver
         sleep 10
         docker exec airflow bash -c "airflow test OPENING_CRAWLER_V1 CRAWLER 2020-01-01"
-        docker exec airflow bash -c "airflow test QUESTIONNAIRE_2_BIGQUERY UPLOADER 2020-09-29"
+        docker exec airflow bash -c "airflow test QUESTIONNAIRE_2_BIGQUERY TRANSFORM_data_questionnaire 2020-09-29"
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master

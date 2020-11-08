@@ -4,28 +4,32 @@ from pathlib import Path
 
 from google.cloud import bigquery
 
+from config import BIGQUERY_PROJECT
+
 
 class SurveyCakeCSVUploader:
     def __init__(self, filename):
-        self.filename = filename
+        self.filename = Path(filename)
         self.year = None
-        # Construct a BigQuery client object.
-        self.project = "pycontw-225217"
         if not bool(os.getenv("AIRFLOW_TEST_MODE")):
-            self.client = bigquery.Client(project=self.project)
+            self.client = bigquery.Client(project=BIGQUERY_PROJECT)
 
-        self.facttable_filepath = str(Path(self.filename).parent / "facttable.csv")
-        self.dimension_table_filepath = str(
-            Path(self.filename).parent / "dimension.csv"
+        self.facttable_filepath = (
+            self.filename.parent / f"{self.filename.stem}_facttable.csv"
+        )
+        self.dimension_table_filepath = (
+            self.filename.parent / f"{self.filename.stem}_dimension.csv"
         )
 
-    def run_dag(self, **context):
-        self.year = context["execution_date"].year
-        self.transform()
-        if not bool(os.getenv("AIRFLOW_TEST_MODE")):
-            self.upload()
+    @property
+    def bigquery_project(self):
+        return BIGQUERY_PROJECT
 
-    def transform(self):
+    def transform(self, **context):
+        self.year = context["execution_date"].year
+        self._transform()
+
+    def _transform(self):
         def _export_facttable(header_of_fact_table):
             with open(self.facttable_filepath, "w") as target:
                 writer = csv.writer(target)
@@ -40,7 +44,9 @@ class SurveyCakeCSVUploader:
                 for question_id, question in question_id_dienstion_table.items():
                     writer.writerow((question_id, question, self.year))
 
-        with open(self.filename, "r", encoding="utf-8-sig") as csvfile:
+        with open(
+            Path("/usr/local/airflow/dags") / self.filename, "r", encoding="utf-8-sig"
+        ) as csvfile:
             rows = csv.reader(csvfile)
             # skip header
             header = next(iter(rows))
@@ -56,21 +62,36 @@ class SurveyCakeCSVUploader:
         _export_facttable(header_of_fact_table)
         _export_dimension_table(question_id_dienstion_table)
 
-    def upload(self):
-        self._upload_2_bigquery(
-            self.facttable_filepath,
-            f"{self.project}.ods.ods_questionnaire_ip_datetime",
-        )
-        self._upload_2_bigquery(
-            self.dimension_table_filepath,
-            f"{self.project}.dim.dim_questionnaire_questionId_year",
-        )
+    def upload(
+        self,
+        facttable_or_dimension_table,
+        data_layer,
+        data_domain,
+        primary_key,
+        time_dimension,
+    ):
+        if facttable_or_dimension_table == "fact":
+            print(self.facttable_filepath)
+            print(self.facttable_filepath)
+            print(self.facttable_filepath)
+            print(self.facttable_filepath)
+            self._upload_2_bigquery(
+                self.facttable_filepath,
+                f"{self.bigquery_project}.{data_layer}.{data_layer}_{data_domain}_{primary_key}_{time_dimension}",
+            )
+        elif facttable_or_dimension_table == "dim":
+            self._upload_2_bigquery(
+                self.dimension_table_filepath,
+                f"{self.bigquery_project}.{data_layer}.{data_layer}_{data_domain}_{primary_key}_{time_dimension}",
+            )
 
     def _upload_2_bigquery(self, file_path, table_id):
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.CSV,
             skip_leading_rows=1,
             autodetect=True,
+            allow_quoted_newlines=True,
+            write_disposition="WRITE_TRUNCATE",
         )
         with open(file_path, "rb") as source_file:
             job = self.client.load_table_from_file(
@@ -116,8 +137,3 @@ class SurveyCakeCSVUploader:
             for question_id, answer in row_dict.items():
                 result.append((primary_key, question_id, answer))
         return result
-
-
-if __name__ == "__main__":
-    survey_cake_csv_uploader = SurveyCakeCSVUploader(filename="data_questionnaire.csv")
-    survey_cake_csv_uploader.run_dag()

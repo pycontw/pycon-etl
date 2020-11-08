@@ -1,4 +1,5 @@
 # project stuff
+*.csv
 service-account.json
 PyConTW2019/
 PyConTW2020-CCIP-DB-dump/

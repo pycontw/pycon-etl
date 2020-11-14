@@ -9,6 +9,7 @@ python = "^3.7"
 requests = "^2.23.0"
 apache-airflow = "^1.10.12"
 google-cloud-bigquery = "^1.27.2"
+searchconsole = {git = "https://github.com/joshcarty/google-searchconsole"}
 
 [tool.poetry.dev-dependencies]
 safety = "^1.8.7"

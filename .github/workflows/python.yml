@@ -9,9 +9,7 @@ env:
   POETRY_VIRTUALENVS_CREATE: false
 
 jobs:
-
   build:
-
     runs-on: ubuntu-16.04
 
     steps:
@@ -21,11 +19,20 @@ jobs:
       with:
         python-version: 3.7
 
-    - name: Run test
+    - name: Install dependencies
       run: |
         pip install poetry
         poetry install
-        pytest
+
+    - name: Run linters
+      run: make lint
+
+    - name: Run test
+      run: make test
+
+    - name: Coverage
+      run: make coverage
+
 
     # CD part
     # - name: Push dags to GCS

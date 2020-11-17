@@ -2,13 +2,12 @@
 A crawler which would crawl the openings
 """
 import os
-from typing import Dict
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-
 from ods.survey_cake.udfs.survey_cake_csv_uploader import SurveyCakeCSVUploader
 
 DEFAULT_ARGS = {

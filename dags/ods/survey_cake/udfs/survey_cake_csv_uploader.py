@@ -1,10 +1,9 @@
-import os
 import csv
+import os
 from pathlib import Path
 
-from google.cloud import bigquery
-
 from config import BIGQUERY_PROJECT
+from google.cloud import bigquery
 
 
 class SurveyCakeCSVUploader:

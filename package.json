@@ -19,7 +19,7 @@
       "pytest --cov=dags --cov-fail-under=10 --cov-report=term-missing"
     ],
     "**/*.py": [
-      "isort -rc -y -ac -ls",
+      "isort -rc -ac -ls",
       "black",
       "flake8 --config .flake8",
       "mypy --ignore-missing-imports",

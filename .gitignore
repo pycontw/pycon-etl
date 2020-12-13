@@ -1,4 +1,5 @@
 # project stuff
+client_secret_google_search_console*
 *.csv
 !dags/fixtures/*.csv
 service-account.json

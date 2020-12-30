@@ -39,8 +39,10 @@ Using Airflow to implement our ETL pipelines
 1. Build docker image: `docker build -t davidtnfsh/pycon_etl:cache --cache-from davidtnfsh/pycon_etl:cache .`
 2. Start the Airflow server: `docker run  --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json davidtnfsh/pycon_etl:cache webserver`
     * service-account.json: Please contact @david30907d using email, telegram or discord.
+        * no worries about the error due to missing service-account.json if you don't want to access bigquery service.
 3. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
+    * similar to service-account.json, if you don't need to access GCP, feel free to skip this step when developing.
 4. Give [Toy-Examples](#Toy-Examples) a try
 
 ## Deployment

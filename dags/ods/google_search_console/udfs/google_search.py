@@ -2,7 +2,6 @@ import heapq
 
 import requests
 import searchconsole
-
 from config import DISCORD_WEBHOOK
 
 TOPK = 5

@@ -37,10 +37,10 @@ class GoogleSearchConsoleReporter(object):
     def _send_report(self, report_msg):
         self._maitain_topk_heap(report_msg)
         msg_heap_dict = {
-            f"透過 google 搜尋點進 PyConTW 官網的所有關鍵字，ctr 最高的前{TOPK}名關鍵字": self.top_k_ctr,
+            f"透過 google 搜尋點進 PyConTW 官網的所有關鍵字中，ctr 最高的前{TOPK}名關鍵字": self.top_k_ctr,
             f"透過 google 搜尋點進 PyConTW 官網的所有關鍵字中，官網排名位置越靠前的前{TOPK}名": self.top_k_position,
-            f"clicks 最高的前{TOPK}名關鍵字": self.top_k_clicks,
-            f"impressions 最高的前{TOPK}名關鍵字": self.top_k_impressions,
+            f"透過 google 搜尋點進 PyConTW 官網的所有關鍵字中，clicks 數最高的前{TOPK}名關鍵字": self.top_k_clicks,
+            f"透過 google 搜尋點進 PyConTW 官網的所有關鍵字中，impressions 數最高的前{TOPK}名關鍵字": self.top_k_impressions,
         }
 
         for msg, heap in msg_heap_dict.items():

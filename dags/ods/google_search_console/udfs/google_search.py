@@ -1,8 +1,8 @@
+import os
 import heapq
 
 import requests
 import searchconsole
-from config import DISCORD_WEBHOOK
 
 TOPK = 5
 
@@ -73,7 +73,7 @@ class GoogleSearchConsoleReporter(object):
         topk_heap = get_topk_from_heap(heap)
         formatted_heap_content = format_heap_content(topk_heap)
         requests.post(
-            DISCORD_WEBHOOK,
+            os.getenv("DISCORD_WEBHOOK"),
             json={
                 "username": "Data Team 雙週報",
                 "content": f"{msg}：\n {formatted_heap_content}\n----------------------\n",
@@ -83,7 +83,7 @@ class GoogleSearchConsoleReporter(object):
     @staticmethod
     def _send_team_msg():
         requests.post(
-            DISCORD_WEBHOOK,
+            os.getenv("DISCORD_WEBHOOK"),
             json={
                 "username": "Data Team 雙週報",
                 "content": "有任何問題，歡迎敲 data team 任何一位成員~",

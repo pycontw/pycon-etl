@@ -36,14 +36,28 @@ Using Airflow to implement our ETL pipelines
 ## Run
 ### Local environment
 
-1. Build docker image: `docker build -t davidtnfsh/pycon_etl:cache --cache-from davidtnfsh/pycon_etl:cache .`
-2. Start the Airflow server: `docker run  --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json davidtnfsh/pycon_etl:cache webserver`
+> Would need to setup Snowflake Connection manually, find @davidtnfsh if you don't have those secrets
+
+> **⚠ WARNING: About .env**  
+> Please don't use the .env for local development, or it might screw up the production tables.
+
+1. Build docker image:
+    1. First, build a prod image (for prod): `docker build -t pycon_etl:prod --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile .`
+    2. Build dev/test image (for dev/test): `docker build -t pycon_etl:test --cache-from pycon_etl:prod -f Dockerfile.test .`
+2. Fill in some secrets:
+    1. `cp .env.template .env.staging`
+    2. Follow the instruction in `.env.staging` and fill in your secrets
+3. Start the Airflow server:
+    * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env pycon_etl:test webserver`
+    * prod: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env pycon_etl:prod webserver`
     * service-account.json: Please contact @david30907d using email, telegram or discord.
-3. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
+4. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-4. Give [Toy-Examples](#Toy-Examples) a try
+5. Give [Toy-Examples](#Toy-Examples) a try
 
 ## Deployment
+
+1. 
 ### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details

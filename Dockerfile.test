@@ -1,2 +1,2 @@
-FROM pycon_etl:prod
+FROM davidtnfsh/pycon_etl:prod
 ENV AIRFLOW_TEST_MODE=True

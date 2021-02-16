@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 from pathlib import Path
 
 from google.cloud import bigquery

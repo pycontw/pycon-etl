@@ -1,5 +1,5 @@
-import os
 import heapq
+import os
 
 import requests
 import searchconsole

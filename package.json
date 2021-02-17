@@ -27,7 +27,7 @@
       "git add"
     ],
     "**/Dockerfile*": [
-      "hadolint"
+      "hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 --ignore DL3002"
     ]
   },
   "repository": {
@@ -51,11 +51,12 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^8.3.4"
+    "@commitlint/config-conventional": "^8.3.4",
+    "cz-emoji": "^1.3.1"
   },
   "config": {
     "commitizen": {
-      "path": "node_modules/cz-conventional-changelog"
+      "path": "cz-emoji"
     }
   }
 }

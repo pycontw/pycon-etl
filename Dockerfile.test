@@ -1,3 +1,4 @@
 FROM davidtnfsh/pycon_etl:prod
 ENV AIRFLOW_TEST_MODE=True
 USER root
+COPY airflow.test.cfg airflow.cfg

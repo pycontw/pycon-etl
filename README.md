@@ -50,14 +50,17 @@ Using Airflow to implement our ETL pipelines
 3. Start the Airflow server:
     * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env davidtnfsh/pycon_etl:test webserver`
     * prod: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env davidtnfsh/pycon_etl:prod webserver`
-    * service-account.json: Please contact @david30907d using email, telegram or discord.
-4. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
+#### BigQuery (Optional)
+1. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-5. Give [Toy-Examples](#Toy-Examples) a try
+    * service-account.json: Please contact @david30907d using email, telegram or discord.
+2. Give [Toy-Examples](#Toy-Examples) a try
 
 ## Deployment
 
 1. Manually deploy to Google compute instance
+2. Fill out `airflow.cfg` with Google OAuth ID and credential (Ref: [setting-up-google-authentication](https://airflow.apache.org/docs/apache-airflow/1.10.1/security.html#setting-up-google-authentication))
+
 ### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details

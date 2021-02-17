@@ -2,7 +2,6 @@ import csv
 import os
 from pathlib import Path
 
-from config import BIGQUERY_PROJECT
 from google.cloud import bigquery
 
 
@@ -11,7 +10,7 @@ class SurveyCakeCSVUploader:
         self.filename = Path(filename)
         self.year = None
         if not bool(os.getenv("AIRFLOW_TEST_MODE")):
-            self.client = bigquery.Client(project=BIGQUERY_PROJECT)
+            self.client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
         self.facttable_filepath = (
             self.filename.parent / f"{self.filename.stem}_facttable.csv"
@@ -22,7 +21,7 @@ class SurveyCakeCSVUploader:
 
     @property
     def bigquery_project(self):
-        return BIGQUERY_PROJECT
+        return os.getenv("BIGQUERY_PROJECT")
 
     def transform(self, **context):
         self.year = context["execution_date"].year

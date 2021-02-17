@@ -57,7 +57,7 @@ Using Airflow to implement our ETL pipelines
 
 ## Deployment
 
-1. 
+1. Manually deploy to Google compute instance
 ### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details

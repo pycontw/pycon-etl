@@ -42,18 +42,21 @@ Using Airflow to implement our ETL pipelines
 > Please don't use the .env for local development, or it might screw up the production tables.
 
 1. Build docker image:
-    1. First, build a prod image (for prod): `docker build -t davidtnfsh/pycon_etl:prod --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile .`
-    2. Build dev/test image (for dev/test): `docker build -t davidtnfsh/pycon_etl:test --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile.test .`
+    * Build a production image (for production): `docker build -t davidtnfsh/pycon_etl:prod --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile .`
+      If you want to build dev/test image, you also need to build this docker image first because dev/test image is on top of this production image. See below.
+    * Build dev/test image (for dev/test): `docker build -t davidtnfsh/pycon_etl:test --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile.test .`
 2. Fill in some secrets:
-    1. `cp .env.template .env.staging`
-    2. Follow the instruction in `.env.staging` and fill in your secrets
+    1. `cp .env.template .env.staging` for dev/test. `cp .env.template .env.production` instead if you are going to start a production instance.
+    2. Follow the instruction in `.env.<staging|production>` and fill in your secrets.
+       If you are just running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
 3. Start the Airflow server:
-    * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env davidtnfsh/pycon_etl:test webserver`
-    * prod: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env davidtnfsh/pycon_etl:prod webserver`
+    * production: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * Note the difference are just the env file name and the image cache.
 #### BigQuery (Optional)
 1. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
-    * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `/Users/<xxx>/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-    * service-account.json: Please contact @david30907d using email, telegram or discord.
+    * After invoking `gcloud auth application-default login`, you'll get a credentials.json resides in `$HOME/.config/gcloud/application_default_credentials.json`. Invoke `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
+    * service-account.json: Please contact @david30907d using email, telegram or discord. No worry about this json if you are just running the sandbox staging instance for development.
 2. Give [Toy-Examples](#Toy-Examples) a try
 
 ## Deployment

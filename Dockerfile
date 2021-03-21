@@ -15,7 +15,6 @@ RUN apt-get update \
 
 COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
-
 RUN python -m poetry install --no-interaction --no-ansi --no-dev \
     # Cleaning poetry installation's cache for production:
     && rm -rf "$POETRY_CACHE_DIR" \
@@ -24,3 +23,4 @@ RUN pip install pycontw-report-generator
 
 USER airflow
 COPY dags /usr/local/airflow/dags
+COPY airflow.cfg airflow.cfg

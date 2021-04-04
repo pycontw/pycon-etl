@@ -5,11 +5,13 @@ description = ""
 authors = ["davidtnfsh <davidtnfsh@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.7.1"
 requests = "^2.23.0"
 apache-airflow = {extras = ["google_auth"], version = "^1.10.13"}
 searchconsole = "^0.0.4"
 google-cloud-bigquery = "<2.8.0"
+pandas = "^1.2.3"
+pyarrow = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

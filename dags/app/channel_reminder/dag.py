@@ -33,7 +33,7 @@ with dag:
 1. Data Team 這一季最重要的目標是讓大家多 social 以及多舉辦 sharing session \n
 (新朋友可以想一下主題，鼓勵分享讓大家認識你XD)
 2. 其次是建好 PyCon TW 的 Data Infra
-3. 雙周會前請在 Hackmd 上更新自己的近況：[Hackmd](https://hackmd.io/LLcaglX0Szed-AsHUdC3bg)
+3. 雙周會前請在 Hackmd 上更新自己的近況：[Hackmd](https://hackmd.io/hAO4NFR3SfWt1fodHtI_nA)
 4. 認領任務：[Trello](https://trello.com/b/Rxtrpqxi/data-squad)""",
             },
         )

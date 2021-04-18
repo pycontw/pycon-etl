@@ -6,6 +6,9 @@ Using Airflow to implement our ETL pipelines
 
 ## Dags
 
+* Dag 的命名規則請看這篇 [阿里巴巴大數據實戰](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c)
+* Please refer to [this article](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c) for naming guidline
+
 1. ods/opening_crawler: Crawlers written by @Rain. Those openings can be used for recuitment board, which was implemented by @tai271828 and @stacy.
 2. ods/survey_cake: A manually triggered uploader which would upload questionnaire to bigquery. The uploader should be invoked after we recieved the surveycake questionnaire.
 
@@ -20,7 +23,8 @@ Using Airflow to implement our ETL pipelines
 
 1. `docker pull puckel/docker-airflow:1.10.9`
 2. Python dependencies:
-    1. `virtualenv venv; . venv/bin/activate`
+    1. `virtualenv venv`
+        * `. venv/bin/activate`
     2. `pip install poetry`
     3. `poetry install`
 3. Npm dependencies, for linter, formatter and commit linter (optional):

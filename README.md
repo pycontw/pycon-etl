@@ -54,7 +54,7 @@ Using Airflow to implement our ETL pipelines
     * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference are just the env file name and the image cache.
 4. Enter the `localhost:80` in the address bar in your browser. Open the Airflow Page.
-![image](airflow.png)
+![image](./docs/airflow.png)
 
 #### BigQuery (Optional)
 1. Setup the Authentication of GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>

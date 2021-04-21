@@ -53,7 +53,9 @@ Using Airflow to implement our ETL pipelines
     * production: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
     * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference are just the env file name and the image cache.
-4. Enter the `localhost:80` in the address bar in your browser. Open the Airflow Page.
+4. Enter the `localhost` or `127.0.0.1` in the address bar in your browser. Open the Airflow Page.
+   * If Port 80 is already in use. You can select a different host port in the `-p` argument to `docker run`. And enter the `localhost:<host port>` in the address bar.
+
 ![image](./docs/airflow.png)
 
 #### BigQuery (Optional)

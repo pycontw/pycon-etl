@@ -322,5 +322,63 @@ class Test2020Ticket(unittest.TestCase):
         )
 
 
+class Test2019Ticket(unittest.TestCase):
+    """python -m unittest upload-kktix-ticket-csv-to-bigquery.py"""
+
+    CANONICAL_COLUMN_NAMES_2019 = [
+        "ticket_type",
+        "payment_status",
+        "tags",
+        "paid_date",
+        "price",
+        "invoice_policy",
+        "invoiced_company_name",
+        "unified_business_no",
+        "dietary_habit",
+        "need_shuttle_bus_service",
+        "size_of_tshirt_t",
+        "years_of_using_python",
+        "area_of_interest",
+        "organization",
+        "job_title",
+        "country_or_region",
+        "gender",
+        "email",
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.df = pd.read_csv("./data/corporate-attendees-2019.csv")
+        cls.sanitized_df = sanitize_column_names(cls.df)
+
+    def test_column_number(self):
+        assert len(self.sanitized_df.columns) == 18
+
+    def test_column_title_content(self):
+        for column in self.sanitized_df.columns:
+            if column not in self.CANONICAL_COLUMN_NAMES_2019:
+                logging.info(f"{column} is not in the canonical table.")
+                assert False
+
+    def test_column_content(self):
+        assert self.sanitized_df["ticket_type"][1] == "Regular 原價"
+
+    def test_hash(self):
+        string_hashed = hash_string("1234567890-=qwertyuiop[]")
+
+        assert (
+            string_hashed
+            == "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+        )
+
+    def test_hash_email(self):
+        hash_privacy_info(self.sanitized_df)
+
+        assert (
+            self.sanitized_df["email"][1]
+            == "bd48b12afbfd15ed6b308e7aeb0d76168b7973efd0d1c31838d0a756b094c446"
+        )
+
+
 if __name__ == "__main__":
     main()

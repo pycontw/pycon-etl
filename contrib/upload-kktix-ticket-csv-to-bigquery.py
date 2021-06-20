@@ -215,7 +215,9 @@ def main():
     )
 
     parser.add_argument(
-        "csv_file", type=str, help="Ticket CSV file",
+        "csv_file",
+        type=str,
+        help="Ticket CSV file",
     )
 
     parser.add_argument("-p", "--project-id", help="BigQuery project ID")

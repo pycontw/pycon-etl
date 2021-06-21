@@ -290,7 +290,7 @@ class Test2020Ticket(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.df = pd.read_csv("./data/corporate-attendees.csv")
+        cls.df = pd.read_csv("./data/corporate-attendees-2020.csv")
         cls.sanitized_df = sanitize_column_names(cls.df)
 
     def test_column_number(self):

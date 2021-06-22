@@ -356,7 +356,11 @@ class Test2019Ticket(unittest.TestCase):
 
     def test_column_title_content(self):
         for column in self.sanitized_df.columns:
-            self.assertTrue(column in self.CANONICAL_COLUMN_NAMES_2019)
+            self.assertIn(
+                column,
+                self.CANONICAL_COLUMN_NAMES_2019,
+                f"{column} is not in {self.CANONICAL_COLUMN_NAMES_2019}",
+            )
 
     def test_column_content(self):
         self.assertEqual(self.sanitized_df["ticket_type"][1], "Regular 原價")

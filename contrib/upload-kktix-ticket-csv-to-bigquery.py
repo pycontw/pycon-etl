@@ -267,25 +267,26 @@ class Test2020Ticket(unittest.TestCase):
         "paid_date",
         "price",
         "invoice_policy",
-        "invoiced_company_name_optional",
-        "unified_business_no_optional",
+        "invoiced_company_name",
+        "unified_business_no",
         "dietary_habit",
         "years_of_using_python",
         "area_of_interest",
         "organization",
-        "job_role",
+        "job_title",
         "country_or_region",
         "departure_from_region",
         "how_did_you_know_pycon_tw",
         "have_you_ever_attended_pycon_tw",
-        "do_you_know_we_have_financial_aid_this_year",
+        "know_financial_aid",
         "gender",
         "pynight_attendee_numbers",
         "pynight_attending_or_not",
         "email_from_sponsor",
         "email_to_sponsor",
-        "privacy_policy_of_pycon_tw",
+        "ive_already_read_and_i_accept_the_epidemic_prevention_of_pycon_tw",
         "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
+        "email",
     ]
 
     @classmethod
@@ -294,31 +295,33 @@ class Test2020Ticket(unittest.TestCase):
         cls.sanitized_df = sanitize_column_names(cls.df)
 
     def test_column_number(self):
-        assert len(self.sanitized_df.columns) == 26
+        self.assertEqual(len(self.sanitized_df.columns), 26)
 
     def test_column_title_content(self):
         for column in self.sanitized_df.columns:
-            if column not in CANONICAL_COLUMN_NAMES:
-                logging.info(f"{column} is not in the canonical table.")
-                assert False
+            self.assertIn(
+                column,
+                self.CANONICAL_COLUMN_NAMES_2020,
+                f"{column} is not in {self.CANONICAL_COLUMN_NAMES_2020}",
+            )
 
     def test_column_content(self):
-        assert self.sanitized_df["ticket_type"][1] == "Regular 原價"
+        self.assertEqual(self.sanitized_df["ticket_type"][1], "Regular 原價")
 
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        assert (
-            string_hashed
-            == "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+        self.assertEqual(
+            string_hashed,
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512",
         )
 
     def test_hash_email(self):
         hash_privacy_info(self.sanitized_df)
 
-        assert (
-            self.sanitized_df["email"][1]
-            == "caecbd114bfa0cc3fd43f2a68ce52a8a92141c6bca87e0418d4833af56e504f1"
+        self.assertEqual(
+            self.sanitized_df["email"][1],
+            "caecbd114bfa0cc3fd43f2a68ce52a8a92141c6bca87e0418d4833af56e504f1",
         )
 
 

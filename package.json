@@ -4,7 +4,7 @@
   "description": "[![Build Status](https://github.com/david30907d/pyproject_template.svg?token=FjZQpfwxUNPpEosXv6sy&branch=master)](https://github.com/david30907d/pyproject_template)",
   "main": "index.js",
   "scripts": {
-    "test": "pytest --cov=dags --cov-fail-under=10 --cov-report=term-missing tests",
+    "test": "pytest --cov=contrib --cov-fail-under=10 --cov-report=term-missing tests",
     "commit": "git-cz",
     "check": "lint-staged"
   },
@@ -16,7 +16,7 @@
   },
   "lint-staged": {
     "tests/*.py": [
-      "pytest --cov=dags --cov-fail-under=10 --cov-report=term-missing"
+      "pytest --cov=dags --cov=contrib --cov-fail-under=10 --cov-report=term-missing"
     ],
     "**/*.py": [
       "isort",

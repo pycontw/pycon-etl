@@ -38,7 +38,17 @@ Using Airflow to implement our ETL pipelines
 3. `npm run commit`
 
 ## Run
-### Local environment
+
+### Local environment Python Script
+
+1. `. venv/bin/activate`
+2. `. ./.env.sh`
+3. `cd contrib`
+4. Check its command in [contrib/README.md](contrib/README.md)
+5. `python xxx.py`
+
+
+### Local environment Docker
 
 > Would need to setup Snowflake Connection manually, find @davidtnfsh if you don't have those secrets
 

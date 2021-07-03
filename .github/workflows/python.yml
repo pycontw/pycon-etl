@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 env:
   POETRY_VIRTUALENVS_CREATE: false
-
+  AIRFLOW_TEST_MODE: true
 jobs:
   build:
     runs-on: ubuntu-16.04

@@ -8,36 +8,7 @@ import unittest
 import pandas as pd
 from google.cloud import bigquery
 
-CANONICAL_COLUMN_NAMES = [
-    "ticket_type",
-    "payment_status",
-    "tags",
-    "paid_date",
-    "price",
-    "invoice_policy",
-    "invoiced_company_name",
-    "unified_business_no",
-    "dietary_habit",
-    "years_of_using_python",
-    "area_of_interest",
-    "organization",
-    "job_title",
-    "country_or_region",
-    "departure_from_region",
-    "how_did_you_know_pycon_tw",
-    "have_you_ever_attended_pycon_tw",
-    "know_financial_aid",
-    "gender",
-    "pynight_attendee_numbers",
-    "pynight_attending_or_not",
-    "email_from_sponsor",
-    "email_to_sponsor",
-    "ive_already_read_and_i_accept_the_epidemic_prevention_of_pycon_tw",
-    "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
-    "email",
-]
-
-CANONICAL_COLUMN_NAMES_CORE = [
+CANONICAL_COLUMN_NAMES_CORE = {
     "paid_date",
     "area_of_interest",
     "payment_status",
@@ -51,10 +22,10 @@ CANONICAL_COLUMN_NAMES_CORE = [
     "gender",
     "years_of_using_python",
     "registration_no",
-]
+}
 
 
-CANONICAL_COLUMN_NAMES_2020_CORE = [
+CANONICAL_COLUMN_NAMES_2020_CORE = {
     "ticket_type",
     "payment_status",
     "tags",
@@ -75,9 +46,9 @@ CANONICAL_COLUMN_NAMES_2020_CORE = [
     "email",
     "registration_no",
     "attendance_book",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE = [
+CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE = {
     "invoice_policy",
     "invoiced_company_name",
     "unified_business_no",
@@ -86,19 +57,20 @@ CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE = [
     "have_you_ever_attended_pycon_tw",
     "pynight_attending_or_not",
     "how_did_you_know_pycon_tw",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL = [
+CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL = {
     "pynight_attendee_numbers",
     "know_financial_aid",
     "have_you_ever_attended_pycon_tw",
     "pynight_attending_or_not",
     "how_did_you_know_pycon_tw",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED = []
+CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED = {}
 
-CANONICAL_COLUMN_NAMES_2019_CORE = [
+
+CANONICAL_COLUMN_NAMES_2019_CORE = {
     "ticket_type",
     "payment_status",
     "tags",
@@ -116,19 +88,22 @@ CANONICAL_COLUMN_NAMES_2019_CORE = [
     "email",
     "registration_no",
     "attendance_book",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE = [
+CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE = {
     "invoice_policy",
     "invoiced_company_name",
     "unified_business_no",
-]
-CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL = []
-CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED = [
-    "invoice_policy",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2018_CORE = [
+CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL = {}
+
+CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED = {
+    "invoice_policy",
+}
+
+
+CANONICAL_COLUMN_NAMES_2018_CORE = {
     "registration_no",
     "ticket_type",
     "payment_status",
@@ -147,17 +122,19 @@ CANONICAL_COLUMN_NAMES_2018_CORE = [
     "email",
     "tags",
     "attendance_book",
-]
+}
 
-CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE = [
+CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE = {
     "invoiced_company_name",
     "unified_business_no",
-]
-CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL = []
-CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED = [
+}
+
+CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL = {}
+
+CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED = {
     "invoiced_company_name",
     "unified_business_no",
-]
+}
 
 
 HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
@@ -187,7 +164,7 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "size_of_tshirt_t": "size_of_tshirt",
 }
 
-UNWANTED_DATA_TO_UPLOAD = [
+UNWANTED_DATA_TO_UPLOAD = (
     # raw column names
     "Id",
     "Order Number",
@@ -200,7 +177,7 @@ UNWANTED_DATA_TO_UPLOAD = [
     "Epidemic Prevention of PyCon TW 2020",
     "Privacy Policy of PyCon TW 2020 / PyCon TW 2020 個人資料保護聲明 bit.ly/3eipAut",
     "Privacy Policy of PyCon TW 2020",
-]
+)
 
 
 logging.basicConfig(level=logging.INFO)

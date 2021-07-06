@@ -197,7 +197,7 @@ def upload_dataframe_to_bigquery(
     job.result()
 
     logging.info(
-        "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_name, table_name)
+        "Loaded %s rows into %s:%s.", job.output_rows, dataset_name, table_name
     )
 
 
@@ -320,7 +320,7 @@ def sanitize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     duplicate_column_names = find_reformat_none_unique(style_reformatted_columns)
     if duplicate_column_names:
         logging.error(
-            f"Found the following duplicate column names: {duplicate_column_names}"
+            "Found the following duplicate column names: %s", duplicate_column_names
         )
 
     # pre-process of backward compatibility

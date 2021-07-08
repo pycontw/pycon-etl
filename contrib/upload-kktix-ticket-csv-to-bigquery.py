@@ -277,17 +277,16 @@ def init_rename_column_dict(columns_array: pd.core.indexes.base.Index) -> dict:
 
 
 def strip_unwanted_columns(df: pd.DataFrame) -> pd.DataFrame:
-    columns_to_strip = []
-    for column_name in UNWANTED_DATA_TO_UPLOAD:
-        if column_name in df.columns:
-            columns_to_strip.append(column_name)
+    columns_to_strip = [
+        column_name
+        for column_name in UNWANTED_DATA_TO_UPLOAD
+        if column_name in df.columns
+    ]
 
-    if columns_to_strip:
-        stripped_df = df.drop(columns=columns_to_strip)
-    else:
-        stripped_df = df
+    if not columns_to_strip:
+        return df
 
-    return stripped_df
+    return df.drop(columns=columns_to_strip)
 
 
 def sanitize_column_names(df: pd.DataFrame) -> pd.DataFrame:
@@ -398,14 +397,14 @@ class TestCrossYear(unittest.TestCase):
     def test_columns_intersection(self):
         set_extra = {"tags", "attendance_book"}
 
-        set_2020 = set(CANONICAL_COLUMN_NAMES_2020_CORE)
-        set_2019 = set(CANONICAL_COLUMN_NAMES_2019_CORE)
-        set_2018 = set(CANONICAL_COLUMN_NAMES_2018_CORE)
+        set_2020 = CANONICAL_COLUMN_NAMES_2020_CORE
+        set_2019 = CANONICAL_COLUMN_NAMES_2019_CORE
+        set_2018 = CANONICAL_COLUMN_NAMES_2018_CORE
         set_intersection_cross_year = set_2020.intersection(
             set_2019.intersection(set_2018.difference(set_extra))
         )
 
-        set_core = set(CANONICAL_COLUMN_NAMES_CORE)
+        set_core = CANONICAL_COLUMN_NAMES_CORE
 
         self.assertFalse(set_intersection_cross_year.difference(set_core))
         self.assertFalse(set_core.difference(set_intersection_cross_year))
@@ -460,24 +459,24 @@ class Test2020Ticket(unittest.TestCase):
     def test_column_title_content_corporate(self):
         self.compare_column_set(
             set(self.sanitized_df_corporate.columns),
-            set(CANONICAL_COLUMN_NAMES_2020_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE)
+            CANONICAL_COLUMN_NAMES_2020_CORE.union(
+                CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE
             ),
         )
 
     def test_column_title_content_individual(self):
         self.compare_column_set(
             set(self.sanitized_df_individual.columns),
-            set(CANONICAL_COLUMN_NAMES_2020_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL)
+            CANONICAL_COLUMN_NAMES_2020_CORE.union(
+                CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL
             ),
         )
 
     def test_column_title_content_reserved(self):
         self.compare_column_set(
             set(self.sanitized_df_reserved.columns),
-            set(CANONICAL_COLUMN_NAMES_2020_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED)
+            CANONICAL_COLUMN_NAMES_2020_CORE.union(
+                CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED
             ),
         )
 
@@ -574,24 +573,24 @@ class Test2019Ticket(unittest.TestCase):
     def test_column_title_content_corporate(self):
         self.compare_column_set(
             set(self.sanitized_df_corporate.columns),
-            set(CANONICAL_COLUMN_NAMES_2019_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE)
+            CANONICAL_COLUMN_NAMES_2019_CORE.union(
+                CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE
             ),
         )
 
     def test_column_title_content_individual(self):
         self.compare_column_set(
             set(self.sanitized_df_individual.columns),
-            set(CANONICAL_COLUMN_NAMES_2019_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL)
+            CANONICAL_COLUMN_NAMES_2019_CORE.union(
+                CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL
             ),
         )
 
     def test_column_title_content_reserved(self):
         self.compare_column_set(
             set(self.sanitized_df_reserved.columns),
-            set(CANONICAL_COLUMN_NAMES_2019_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED)
+            CANONICAL_COLUMN_NAMES_2019_CORE.union(
+                CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED
             ),
         )
 
@@ -686,24 +685,24 @@ class Test2018Ticket(unittest.TestCase):
     def test_column_title_content_corporate(self):
         self.compare_column_set(
             set(self.sanitized_df_corporate.columns),
-            set(CANONICAL_COLUMN_NAMES_2018_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE)
+            CANONICAL_COLUMN_NAMES_2018_CORE.union(
+                CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE
             ),
         )
 
     def test_column_title_content_individual(self):
         self.compare_column_set(
             set(self.sanitized_df_individual.columns),
-            set(CANONICAL_COLUMN_NAMES_2018_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL)
+            CANONICAL_COLUMN_NAMES_2018_CORE.union(
+                CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL
             ),
         )
 
     def test_column_title_content_reserved(self):
         self.compare_column_set(
             set(self.sanitized_df_reserved.columns),
-            set(CANONICAL_COLUMN_NAMES_2018_CORE).union(
-                set(CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED)
+            CANONICAL_COLUMN_NAMES_2018_CORE.union(
+                CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED
             ),
         )
 

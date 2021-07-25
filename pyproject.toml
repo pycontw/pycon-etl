@@ -12,6 +12,8 @@ searchconsole = "^0.0.4"
 google-cloud-bigquery = "<2.8.0"
 pandas = "^1.2.3"
 pyarrow = "^3.0.0"
+pydantic = "^1.8.2"
+python-fb-page-insights-client = {git = "git@github.com:pycontw/python-fb-page-insights-client.git", rev = "main"}
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

@@ -8,6 +8,8 @@ PyConTW2020-CCIP-DB-dump/
 dags_data-venue-booth-checking-in_PyConTW2019-20200906T164504Z-001.zip
 dags_data-venue-booth-checking-in_PyConTW2020-CCIP-DB-dump.zip
 .env
+PyConTW-ab56b4c31ba4-bigquery-data-strat-owned-by-tai.json
+PyConTW-ab56b4c31ba4-bigquery-data-strat-owned-by-tai.json.gz
 
 # npm stuff
 node_modules/

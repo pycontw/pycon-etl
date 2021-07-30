@@ -1,3 +1,2 @@
 export BIGQUERY_PROJECT=pycontw-225217
-export DATATEAM_DISCORD_WEBHOOK=https://discord.com/api/webhooks/777156183055269908/pi3qUddHWyxE1uBpe6CUolJ0q2JUp_aJKvDEgvzXHjrkZwSBl1vSEN1IDqPsvbC8LaEU
 export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json

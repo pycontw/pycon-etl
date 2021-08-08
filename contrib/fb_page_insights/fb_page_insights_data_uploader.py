@@ -17,8 +17,12 @@ class Settings(BaseSettings):
     BIGQUERY_PROJECT = ""
 
 
+#  write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
 def write_data_to_bigquery(
-    table_id: str, rows_to_insert: List[Dict[str, str]], json_schema: Dict[str, str],
+    table_id: str,
+    rows_to_insert: List[Dict[str, str]],
+    json_schema: Dict[str, str],
+    is_truncate=False,
 ):
     # init bigquery
     dataset_id = "ods"
@@ -48,10 +52,23 @@ def write_data_to_bigquery(
         bigquery_schema.append(schema)
     # upload to bigquery
     complete_table_id = f"{settings.BIGQUERY_PROJECT}.{dataset_id}.{table_id}"
+    write_disposition = (
+        bigquery.WriteDisposition.WRITE_TRUNCATE
+        if is_truncate
+        else bigquery.WriteDisposition.WRITE_APPEND,
+    )
+    if is_truncate:
+        write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
+        schema_update_options = []
+    else:
+        write_disposition = bigquery.WriteDisposition.WRITE_APPEND
+        schema_update_options = [bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION]
+
     job_config = bigquery.LoadJobConfig(
         schema=bigquery_schema,
+        write_disposition=write_disposition,
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-        schema_update_options=[bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION,],
+        schema_update_options=schema_update_options,
     )
     # batch write
     load_job = client.load_table_from_json(
@@ -93,6 +110,7 @@ def download_fb_insight_data_upload_to_bigquery():
         "pycontw_fb_posts",
         posts_insight.dict()["post_list"],
         posts_insight.post_json_schema.properties,
+        True,
     )
 
 

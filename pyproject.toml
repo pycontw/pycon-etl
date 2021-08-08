@@ -13,7 +13,7 @@ google-cloud-bigquery = "<2.8.0"
 pandas = "^1.2.3"
 pyarrow = "^3.0.0"
 pydantic = "^1.8.2"
-python-fb-page-insights-client = {git = "git@github.com:pycontw/python-fb-page-insights-client.git", rev = "main"}
+python-fb-page-insights-client = {git = "git@github.com:pycontw/python-fb-page-insights-client.git", rev = "1c52268845b8d8c92ba02da5ba0e602b4119730f"}
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

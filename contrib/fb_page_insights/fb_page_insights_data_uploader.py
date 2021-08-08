@@ -35,7 +35,11 @@ def write_data_to_bigquery(
         type = property["type"]
         bigquery_type = ""
         if type == "string":
-            bigquery_type = "STRING"
+            format = property.get("format")
+            if format != None and format == "date-time":
+                bigquery_type = "TIMESTAMP"  # TIMESTAMP
+            else:
+                bigquery_type = "STRING"
         elif type == "integer":
             bigquery_type = "INTEGER"
         else:

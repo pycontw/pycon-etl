@@ -1,3 +1,5 @@
+import time
+
 from python_fb_page_insights_client import (
     FBPageInsight,
     PageWebInsightData,
@@ -98,9 +100,7 @@ def download_fb_insight_data_upload_to_bigquery():
 
     ## NOTE: until_date can be omitted but it will query data since (2020, 9, 7) until now.
     #  Remove it for production, use it to speed up for developing
-    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight(
-        until_date=(2020, 11, 15)
-    )
+    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
     write_data_to_bigquery(
         "pycontw_fb_posts_insight",
         posts_insight.dict()["insight_list"],
@@ -115,5 +115,8 @@ def download_fb_insight_data_upload_to_bigquery():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     download_fb_insight_data_upload_to_bigquery()
+    delta = time.time() - start_time
+    print("--- %s seconds ---" % (delta))
 

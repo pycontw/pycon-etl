@@ -93,7 +93,7 @@ def download_fb_insight_data_upload_to_bigquery():
 
     page_insight: PageWebInsightData = fb.get_page_default_web_insight()
     write_data_to_bigquery(
-        "pycontw_fb_page_summary_insight",
+        "ods_pycontw_fb_page_summary_insights",
         page_insight.dict()["insight_list"],
         page_insight.insight_json_schema.properties,
     )
@@ -102,12 +102,12 @@ def download_fb_insight_data_upload_to_bigquery():
     #  Remove it for production, use it to speed up for developing
     posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
     write_data_to_bigquery(
-        "pycontw_fb_posts_insight",
+        "ods_pycontw_fb_posts_insights",
         posts_insight.dict()["insight_list"],
         posts_insight.insight_json_schema.properties,
     )
     write_data_to_bigquery(
-        "pycontw_fb_posts",
+        "ods_pycontw_fb_posts",
         posts_insight.dict()["post_list"],
         posts_insight.post_json_schema.properties,
         True,

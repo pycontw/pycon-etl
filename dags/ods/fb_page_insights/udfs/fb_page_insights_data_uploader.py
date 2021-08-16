@@ -1,17 +1,16 @@
 import time
-
-from python_fb_page_insights_client import (
-    FBPageInsight,
-    PageWebInsightData,
-    PostsWebInsightData,
-    DatePreset,
-    Period,
-)
-from pydantic import BaseSettings
-from typing import List, Dict, Union
+from typing import Dict, List, Union
 
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from pydantic import BaseSettings
+from python_fb_page_insights_client import (
+    DatePreset,
+    FBPageInsight,
+    PageWebInsightData,
+    Period,
+    PostsWebInsightData,
+)
 
 
 class Settings(BaseSettings):
@@ -19,7 +18,6 @@ class Settings(BaseSettings):
     BIGQUERY_PROJECT = ""
 
 
-#  write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
 def write_data_to_bigquery(
     table_id: str,
     rows_to_insert: List[Dict[str, str]],
@@ -119,4 +117,3 @@ if __name__ == "__main__":
     download_fb_insight_data_upload_to_bigquery()
     delta = time.time() - start_time
     print("--- %s seconds ---" % (delta))
-

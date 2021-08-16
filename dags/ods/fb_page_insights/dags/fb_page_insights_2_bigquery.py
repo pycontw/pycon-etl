@@ -9,7 +9,6 @@ from ods.fb_page_insights.udfs.fb_page_insights_data_uploader import (
     download_fb_insight_data_upload_to_bigquery,
 )
 
-
 DEFAULT_ARGS = {
     "owner": "Grimmer",
     "start_date": datetime(2021, 8, 21),

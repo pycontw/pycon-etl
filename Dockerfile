@@ -9,12 +9,15 @@ RUN apt-get update \
     # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy
     # 2. libglib2.0-0 libsm6 libxext6 libxrender-dev libgl1-mesa-dev are required by opencv
     # 3. git is required by pip install git+https
-    && pip install --no-cache-dir poetry==1.0.5 \
+    && pip install --no-cache-dir poetry==1.1.7 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
+# RUN apt-get install -y python-setuptools 
+# RUN pip install -U pip
+# RUN pip install -U setuptools
 RUN python -m poetry install --no-interaction --no-ansi --no-dev \
     # Cleaning poetry installation's cache for production:
     && rm -rf "$POETRY_CACHE_DIR" \

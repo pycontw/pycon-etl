@@ -1,14 +1,12 @@
 import time
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from pydantic import BaseSettings
 from python_fb_page_insights_client import (
-    DatePreset,
     FBPageInsight,
     PageWebInsightData,
-    Period,
     PostsWebInsightData,
 )
 
@@ -40,7 +38,7 @@ def write_data_to_bigquery(
         bigquery_type = ""
         if type == "string":
             format = property.get("format")
-            if format != None and format == "date-time":
+            if format is not None and format == "date-time":
                 bigquery_type = "TIMESTAMP"  # TIMESTAMP
             else:
                 bigquery_type = "STRING"
@@ -96,8 +94,8 @@ def download_fb_insight_data_upload_to_bigquery():
         page_insight.insight_json_schema.properties,
     )
 
-    ## NOTE: until_date can be omitted but it will query data since (2020, 9, 7) until now.
-    #  Remove it for production, use it to speed up for developing
+    # NOTE: until_date can be omitted but it will query data since (2020, 9, 7) until now.
+    # Remove it for production, use it to speed up for developing
     posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
     write_data_to_bigquery(
         "ods_pycontw_fb_posts_insights",

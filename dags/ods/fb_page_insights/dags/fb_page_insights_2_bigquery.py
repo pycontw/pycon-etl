@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from ods.fb_page_insights.udfs.fb_page_insights_data_uploader import (
-    download_fb_page_insight_data_upload_to_bigquery, download_fb_post_insight_data_upload_to_bigquery
+    download_fb_page_insight_data_upload_to_bigquery,
+    download_fb_post_insight_data_upload_to_bigquery,
 )
 
 DEFAULT_PAGE_ARGS = {

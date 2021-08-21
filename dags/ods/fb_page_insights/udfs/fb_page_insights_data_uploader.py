@@ -1,4 +1,3 @@
-import time
 from typing import Dict, List
 
 from google.cloud import bigquery
@@ -75,16 +74,7 @@ def write_data_to_bigquery(
     load_job.result()
 
 
-def download_fb_insight_data_upload_to_bigquery():
-
-    # NOTE: currently you need to specify below in .env or fill them as function parameters
-    #   fb_user_access_token=
-    #   fb_app_id=
-    #   fb_app_secret=
-    #   fb_default_page_id=
-    #   GOOGLE_APPLICATION_CREDENTIALS=
-    #   BIGQUERY_PROJECT=
-
+def download_fb_page_insight_data_upload_to_bigquery():
     fb = FBPageInsight()
 
     page_insight: PageWebInsightData = fb.get_page_default_web_insight()
@@ -94,8 +84,10 @@ def download_fb_insight_data_upload_to_bigquery():
         page_insight.insight_json_schema.properties,
     )
 
-    # NOTE: until_date can be omitted but it will query data since (2020, 9, 7) until now.
-    # Remove it for production, use it to speed up for developing
+
+def download_fb_post_insight_data_upload_to_bigquery():
+    fb = FBPageInsight()
+
     posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
     write_data_to_bigquery(
         "ods_pycontw_fb_posts_insights",
@@ -111,7 +103,5 @@ def download_fb_insight_data_upload_to_bigquery():
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    download_fb_insight_data_upload_to_bigquery()
-    delta = time.time() - start_time
-    print("--- %s seconds ---" % (delta))
+    download_fb_page_insight_data_upload_to_bigquery
+    download_fb_post_insight_data_upload_to_bigquery()

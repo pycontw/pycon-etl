@@ -15,9 +15,6 @@ RUN apt-get update \
 
 COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
-# RUN apt-get install -y python-setuptools 
-# RUN pip install -U pip
-# RUN pip install -U setuptools
 RUN python -m poetry install --no-interaction --no-ansi --no-dev \
     # Cleaning poetry installation's cache for production:
     && rm -rf "$POETRY_CACHE_DIR" \

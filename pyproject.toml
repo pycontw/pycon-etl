@@ -9,9 +9,11 @@ python = "^3.7.1"
 requests = "^2.26.0"
 apache-airflow = {version = "^2.1.2", extras = ["google_auth"]}
 searchconsole = "^0.0.4"
+pydantic = "^1.8.2"
 google-cloud-bigquery = {version = "^2.24.0", python = ">=3.7.1,<3.10"}
 pandas = "^1.3.2"
 pyarrow = "^5.0.0"
+python-fb-page-insights-client = {git = "https://github.com/pycontw/python-fb-page-insights-client.git", rev = "088dd72"}
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"
@@ -24,7 +26,7 @@ flake8 = "^3.8.3"
 isort = "^5.6.4"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["setuptools", "poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
 

@@ -14,7 +14,7 @@ Using Airflow to implement our ETL pipelines
 
 ## Prerequisites
 
-1. [Install Python 3.7](https://www.python.org/downloads/release/python-379/)
+1. [Install Python 3.8+](https://www.python.org/downloads/release/python-3811/)
 2. [Get Docker](https://docs.docker.com/get-docker/)
 3. [Install Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
 4. [Get npm](https://www.npmjs.com/get-npm)

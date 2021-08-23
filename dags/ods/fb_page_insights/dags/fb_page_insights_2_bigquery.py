@@ -13,7 +13,7 @@ from ods.fb_page_insights.udfs.fb_page_insights_data_uploader import (
 DEFAULT_PAGE_ARGS = {
     "owner": "Grimmer",
     "start_date": datetime(2021, 8, 22),
-    "schedule_interval": "@weekly",
+    "schedule_interval": "@daily",
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "max_active_runs": 1,

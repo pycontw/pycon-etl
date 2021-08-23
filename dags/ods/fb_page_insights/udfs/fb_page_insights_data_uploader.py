@@ -103,5 +103,5 @@ def download_fb_post_insight_data_upload_to_bigquery():
 
 
 if __name__ == "__main__":
-    download_fb_page_insight_data_upload_to_bigquery
+    download_fb_page_insight_data_upload_to_bigquery()
     download_fb_post_insight_data_upload_to_bigquery()

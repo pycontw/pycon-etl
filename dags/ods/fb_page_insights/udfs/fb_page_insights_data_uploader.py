@@ -1,3 +1,4 @@
+from enum import auto
 from typing import Dict, List, Set
 
 from google.cloud import bigquery
@@ -5,11 +6,11 @@ from google.oauth2 import service_account
 from pydantic import BaseSettings
 from python_fb_page_insights_client import (
     FBPageInsight,
+    FBPageInsightConst,
     PageWebInsightData,
-    PostsWebInsightData, FBPageInsightConst
+    PostsWebInsightData,
 )
 
-from enum import auto
 # Python 3.10 will have enum.StrEnum built-in. Similar
 from strenum import StrEnum
 
@@ -21,7 +22,7 @@ class FBPageInsightKey(StrEnum):
 
 class BigQueryConst(StrEnum):
     PAGE_INSIGHT_TABLE = "ods_pycontw_fb_page_summary_insights"
-    POSTS_TABLE = "ods_pycontw_fb_posts",
+    POSTS_TABLE = "ods_pycontw_fb_posts"
     POSTS_INSIGHTS_TABLE = "ods_pycontw_fb_posts_insights"
     DATASET_ODS = "ods"
 
@@ -92,7 +93,9 @@ def init_bigquery_client():
 
 def get_complete_table_id(table_id: str):
     settings = Settings()
-    complete_table_id = f"{settings.BIGQUERY_PROJECT}.{BigQueryConst.DATASET_ODS}.{table_id}"
+    complete_table_id = (
+        f"{settings.BIGQUERY_PROJECT}.{BigQueryConst.DATASET_ODS}.{table_id}"
+    )
     return complete_table_id
 
 
@@ -102,7 +105,9 @@ def write_data_to_bigquery(
     rows_to_insert: List[Dict[str, str]],
     json_schema: Dict[str, str],
 ):
-    bigquery_schema: List[bigquery.SchemaField] = convert_json_schema_to_bigquery_schema(json_schema)
+    bigquery_schema: List[
+        bigquery.SchemaField
+    ] = convert_json_schema_to_bigquery_schema(json_schema)
     complete_table_id = get_complete_table_id(table_id)
     write_disposition = bigquery.WriteDisposition.WRITE_APPEND
     schema_update_options = [bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION]
@@ -139,13 +144,17 @@ def download_fb_page_insight_data_upload_to_bigquery():
 
 def download_fb_post_insight_data_upload_to_bigquery():
     fb = FBPageInsight()
-    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight(between_days=FBPageInsightConst.between_days.value)
+    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight(
+        between_days=FBPageInsightConst.between_days.value
+    )
 
     client = init_bigquery_client()
 
     post_list_rows = posts_insight.dict()[FBPageInsightKey.post_list]
     complete_table_id = get_complete_table_id(BigQueryConst.POSTS_TABLE)
-    filtered_post_list_rows = extract_added_posts(client, post_list_rows, complete_table_id)
+    filtered_post_list_rows = extract_added_posts(
+        client, post_list_rows, complete_table_id
+    )
 
     write_data_to_bigquery(
         client,

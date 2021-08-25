@@ -60,6 +60,7 @@ def extract_added_posts(
 
 
 def convert_json_schema_to_bigquery_schema(json_schema: Dict[str, str]):
+    """ for posts' schema, should at least have id and created_time to align with extract_added_posts """
     bigquery_schema: List[bigquery.SchemaField] = []
     for key, property in json_schema.items():
         type = property["type"]
@@ -80,12 +81,10 @@ def convert_json_schema_to_bigquery_schema(json_schema: Dict[str, str]):
 
 
 def init_bigquery_client():
-    # init bigquery
     settings = Settings()
     credentials = service_account.Credentials.from_service_account_file(
         settings.GOOGLE_APPLICATION_CREDENTIALS
     )
-    # TODO: avoid duplicate instantiate twice
     client = bigquery.Client(credentials=credentials, project=settings.BIGQUERY_PROJECT)
 
     return client

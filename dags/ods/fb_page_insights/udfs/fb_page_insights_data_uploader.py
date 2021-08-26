@@ -38,7 +38,7 @@ def extract_added_posts(
     complete_table_id: str,
 ):
     # add 1 in case some "Off-by-one error" happens
-    days = FBPageInsightConst.between_days.value + 1
+    days = FBPageInsightConst.default_between_days + 2
     query_job = client.query(
         f"""
     SELECT id FROM `{complete_table_id}`
@@ -143,9 +143,7 @@ def download_fb_page_insight_data_upload_to_bigquery():
 
 def download_fb_post_insight_data_upload_to_bigquery():
     fb = FBPageInsight()
-    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight(
-        between_days=FBPageInsightConst.between_days.value
-    )
+    posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
 
     client = init_bigquery_client()
 

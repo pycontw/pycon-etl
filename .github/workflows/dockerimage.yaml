@@ -60,7 +60,7 @@ jobs:
       run: |
         chmod -R 777 logs;
         docker-compose -f docker-compose.yaml down --volumes; docker-compose -f docker-compose.yaml up -d;
-        sleep 20;
+        sleep 60;
         docker exec -i segments-etl_airflow-webserver_1 bash -c "pip install pytest pytest-cov; cd dags/dags; python -m pytest tests"
         [ $? -eq 0 ]  || exit 1
 

@@ -8,8 +8,8 @@ from python_fb_page_insights_client import (
     FBPageInsight,
     FBPageInsightConst,
     PageWebInsightData,
+    Period,
     PostsWebInsightData,
-    Period
 )
 
 # Python 3.10 will have enum.StrEnum built-in. Similar
@@ -140,7 +140,9 @@ def download_fb_page_insight_data_upload_to_bigquery():
         page_insight.insight_json_schema.properties,
     )
 
-    page_insight: PageWebInsightData = fb.get_page_default_web_insight(period=Period.day)
+    page_insight: PageWebInsightData = fb.get_page_default_web_insight(
+        period=Period.day
+    )
     write_data_to_bigquery(
         client,
         BigQueryConst.PAGE_INSIGHT_TABLE,

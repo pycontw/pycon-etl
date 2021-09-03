@@ -33,8 +33,8 @@ class Settings(BaseSettings):
     BIGQUERY_PROJECT = ""
 
     class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 def extract_added_posts(

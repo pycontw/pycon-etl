@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     GOOGLE_APPLICATION_CREDENTIALS = ""
     BIGQUERY_PROJECT = ""
 
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
 
 def extract_added_posts(
     client: bigquery.Client,

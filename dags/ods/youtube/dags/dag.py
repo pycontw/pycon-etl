@@ -13,7 +13,7 @@ DEFAULT_ARGS = {
     "start_date": datetime(2021, 9, 19),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
-    "on_failure_callback": lambda x: "Need to send notification to Telegrame",
+    "on_failure_callback": lambda x: "Need to send notification to Telegram",
 }
 dag = DAG(
     "ODS_YOUTUBE_2_BIGQUERY",

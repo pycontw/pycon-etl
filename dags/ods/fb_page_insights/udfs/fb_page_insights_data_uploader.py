@@ -158,10 +158,11 @@ def download_fb_page_insight_data_upload_to_bigquery():
 def download_fb_post_insight_data_upload_to_bigquery():
     fb = FBPageInsight()
     posts_insight: PostsWebInsightData = fb.get_post_default_web_insight()
+    posts_insight_dict = posts_insight.dict()
 
     client = init_bigquery_client()
 
-    post_list_rows = posts_insight.dict()[FBPageInsightKey.post_list]
+    post_list_rows = posts_insight_dict[FBPageInsightKey.post_list]
     complete_table_id = get_complete_table_id(BigQueryConst.POSTS_TABLE)
     filtered_post_list_rows = extract_added_posts(
         client, post_list_rows, complete_table_id
@@ -172,6 +173,16 @@ def download_fb_post_insight_data_upload_to_bigquery():
         BigQueryConst.POSTS_TABLE,
         filtered_post_list_rows,
         posts_insight.post_json_schema.properties,
+    )
+
+    post_insight_list_rows: List[Dict[str, str]] = posts_insight_dict[
+        FBPageInsightKey.insight_list
+    ]
+    write_data_to_bigquery(
+        client,
+        BigQueryConst.POSTS_INSIGHTS_TABLE,
+        post_insight_list_rows,
+        posts_insight.insight_json_schema.properties,
     )
 
 

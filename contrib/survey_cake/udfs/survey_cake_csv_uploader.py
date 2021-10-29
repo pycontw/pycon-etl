@@ -87,6 +87,7 @@ class SurveyCakeCSVUploader:
             autodetect=True,
             allow_quoted_newlines=True,
             write_disposition="WRITE_APPEND",
+            schema_update_options="ALLOW_FIELD_ADDITION",
         )
         with open(file_path, "rb") as source_file:
             job = self.client.load_table_from_file(

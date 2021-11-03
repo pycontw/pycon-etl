@@ -4,6 +4,7 @@ import hashlib
 import logging
 import re
 import unittest
+from typing import Dict, Set
 
 import pandas as pd
 from google.cloud import bigquery
@@ -67,7 +68,7 @@ CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL = {
     "how_did_you_know_pycon_tw",
 }
 
-CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED = {}
+CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED: Set = set()
 
 
 CANONICAL_COLUMN_NAMES_2019_CORE = {
@@ -96,7 +97,7 @@ CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE = {
     "unified_business_no",
 }
 
-CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL = {}
+CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL: Set = set()
 
 CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED = {
     "invoice_policy",
@@ -129,7 +130,7 @@ CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE = {
     "unified_business_no",
 }
 
-CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL = {}
+CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL: Set = set()
 
 CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED = {
     "invoiced_company_name",
@@ -162,6 +163,10 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "是否願意提供 Email 給贊助商": "email_to_sponsor",
     # from 2018 reformatted column names
     "size_of_tshirt_t": "size_of_tshirt",
+    # from 2021 reformatted column names
+    "Ive_already_read and_I_accept_the_Privacy_Policy_of_PyCon_TW_2021": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
+    "privacy_policy_of_pycon_tw_2021_pycon_tw_2021_httpsbitly2qwl0am": "privacy_policy_of_pycon_tw",
+    "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2021_pycon_tw_2021": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -177,6 +182,10 @@ UNWANTED_DATA_TO_UPLOAD = (
     "Epidemic Prevention of PyCon TW 2020",
     "Privacy Policy of PyCon TW 2020 / PyCon TW 2020 個人資料保護聲明 bit.ly/3eipAut",
     "Privacy Policy of PyCon TW 2020",
+    "If you buy the ticket with PySafe, remember to fill out correct address and size of t-shirt for us to send the parcel. if you fill the wrong information to cause missed delivery, we will not resend th",
+    "請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域）以避免 PySafe 無法送達，如因填寫錯誤致未收到 PySafe，報名人須自行負責，大會恕不再另行補寄",
+    "購買含 PySafe 票卷者，請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域），以避免 PySafe 無法送達，如因填寫錯誤致未收到 PySafe，報名人須自行負責，大會恕不再另行補寄",
+    "Address / 收件地址 EX: 115台北市南港區研究院路二段128號",
 )
 
 
@@ -190,9 +199,13 @@ def upload_dataframe_to_bigquery(
 
     dataset_ref = bigquery.dataset.DatasetReference(project_id, dataset_name)
     table_ref = bigquery.table.TableReference(dataset_ref, table_name)
-
+    job_config = bigquery.LoadJobConfig()
+    job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
+    job_config.schema_update_options = [
+        bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION
+    ]
     # dump the csv into bigquery
-    job = client.load_table_from_dataframe(df, table_ref)
+    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
 
     job.result()
 
@@ -238,7 +251,7 @@ def get_reformatted_style_columns(columns: dict) -> dict:
 
 def find_reformat_none_unique(columns: dict) -> list:
     # reverse key-value of original dict to be value-key of reverse_dict
-    reverse_dict = {}
+    reverse_dict: Dict = {}
 
     for key, value in columns.items():
         reverse_dict.setdefault(value, set()).add(key)

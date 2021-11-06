@@ -1,6 +1,7 @@
 import csv
 import os
 from pathlib import Path
+from typing import Dict, List
 
 from google.cloud import bigquery
 
@@ -13,7 +14,9 @@ class SurveyCakeCSVUploader:
         self.filename = Path(filename)
         if not bool(os.getenv("AIRFLOW_TEST_MODE")):
             self.client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-
+            self.existing_question_and_id_dict = self._get_existing_question_and_id()
+        else:
+            self.existing_question_and_id_dict = {"placeholder": 1}
         self.facttable_filepath = (
             self.filename.parent / f"{self.filename.stem}_facttable.csv"
         )
@@ -29,6 +32,16 @@ class SurveyCakeCSVUploader:
     def bigquery_project(self):
         return os.getenv("BIGQUERY_PROJECT")
 
+    def _get_existing_question_and_id(self):
+        query = """
+            SELECT
+                question, question_id
+            FROM
+                dim.dim_questionnaire_questionId_year;
+        """
+        query_job = self.client.query(query)
+        return {row["question"]: row["question_id"] for row in query_job}
+
     def transform(self):
         def _export_facttable(header_of_fact_table):
             with open(self.facttable_filepath, "w") as target:
@@ -43,16 +56,34 @@ class SurveyCakeCSVUploader:
                 writer = csv.writer(target)
                 writer.writerow(("question_id", "question", "year"))
                 for question_id, question in question_id_dimension_table.items():
-                    writer.writerow((question_id, question, self.year))
+                    # need to filter out existing question_id, otherwise we would end up having duplicate question_id in BigQuery
+                    if question not in self.existing_question_and_id_dict.keys():
+                        writer.writerow((question_id, question, self.year))
+
+        def _get_question_ids_of_this_year(
+            header: List, question_id_dimension_table: Dict
+        ) -> List:
+            reversed_question_id_dimension_table = {
+                question: question_id
+                for question_id, question in question_id_dimension_table.items()
+            }
+            return [
+                reversed_question_id_dimension_table[column]
+                for column in header
+                if column not in self.USELESS_COLUMNS
+            ]
 
         with open(Path(self.filename), "r", encoding="utf-8-sig") as csvfile:
             rows = csv.reader(csvfile)
             # skip header
-            header = next(iter(rows))
+            header = [column.strip() for column in next(iter(rows))]
             question_id_dimension_table = self._generate_question_id_dimension_table(
                 header
             )
-            question_ids = sorted(question_id_dimension_table.keys())
+
+            question_ids = _get_question_ids_of_this_year(
+                header, question_id_dimension_table
+            )
             header_of_fact_table = ("ip", "question_id", "answer", "year")
             rows_of_fact_table = self._transform_raw_data_to_fact_table_format(
                 rows, question_id_dimension_table, question_ids
@@ -98,26 +129,22 @@ class SurveyCakeCSVUploader:
 
         table = self.client.get_table(table_id)  # Make an API request.
         print(
-            f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}"
+            f"There's {table.num_rows} rows and {len(table.schema)} columns in {table_id} now!"
         )
 
     def _generate_question_id_dimension_table(self, header):
+        max_existing_question_id = int(max(self.existing_question_and_id_dict.values()))
         question_id_dim_table = {}
-        for index, column in enumerate(header):
+        for index, column in enumerate(header, start=max_existing_question_id):
             if column in self.USELESS_COLUMNS:
                 continue
-            column = column.strip()
-            question_id_dim_table[
-                index if column != "其他" else self._get_index_of_else_column(index)
-            ] = column
+            if column in self.existing_question_and_id_dict:
+                question_id_dim_table[
+                    self.existing_question_and_id_dict[column]
+                ] = column
+            else:
+                question_id_dim_table[float(index)] = column
         return question_id_dim_table
-
-    @staticmethod
-    def _get_index_of_else_column(index):
-        """
-        use 0.1 to represent "其他"
-        """
-        return index - 1 + 0.1
 
     @staticmethod
     def _transform_raw_data_to_fact_table_format(

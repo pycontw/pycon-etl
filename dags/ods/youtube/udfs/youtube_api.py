@@ -7,16 +7,17 @@ from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
+from datetime import datetime
 
 # channel id of YouTube is public to everyone, so it's okay to commit this ID into git
 CHANNEL_ID = "UCHLnNgRnfGYDzPCCH8qGbQw"
 MAX_RESULTS = 50
-TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_youtubeStatistics_videoId_datetime"
+PROJECT = os.getenv('BIGQUERY_PROJECT')
 
 
 def create_table_if_needed():
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-    sql = Path("dags/ods/youtube/sqls/create_table.sql").read_text().format(TABLE)
+    sql = Path("dags/ods/youtube/sqls/create_table.sql").read_text().format(PROJECT)
     client.query(sql)
 
 
@@ -53,15 +54,16 @@ def get_video_ids(**context) -> None:
     task_instance.xcom_push("GET_VIDEO_IDS", video_metadatas)
 
 
-def save_statistics_data_2_bq(**context):
+def save_video_data_2_bq(**context):
     def _init():
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+        client = bigquery.Client(project=PROJECT)
         http_conn = HttpHook(method="GET", http_conn_id="youtube")
         execution_date = context["execution_date"].replace(tzinfo=None)
         task_instance = context["task_instance"]
+        datatype = context["datatype"]
         video_metadatas = task_instance.xcom_pull("GET_VIDEO_IDS", key="GET_VIDEO_IDS")
         result = []
-        return client, http_conn, execution_date, task_instance, video_metadatas, result
+        return client, http_conn, execution_date, task_instance, datatype, video_metadatas, result
 
     def _get_statistics():
         for video_metadata in video_metadatas:
@@ -89,6 +91,31 @@ def save_statistics_data_2_bq(**context):
             )
         return result
 
+    def _get_info():
+        for video_metadata in video_metadatas:
+            video_id = video_metadata["videoId"]
+            title = video_metadata["title"]
+            response_json = http_conn.run_with_advanced_retry(
+                endpoint=f"/youtube/v3/videos?id={video_id}&key={Variable.get('YOUTUBE_KEY')}&part=snippet",
+                _retry_args=RETRY_ARGS,
+                headers={
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-cache",
+                },
+            ).json()
+            result.append(
+                (
+                    execution_date,
+                    video_id,
+                    title,
+                    response_json["items"][0]["snippet"]["thumbnails"]["default"]["url"],
+                    response_json["items"][0]["description"],
+                    datetime.strptime(response_json["items"][0]["publishedAt"], '%Y-%m-%dT%H:%M:%SZ'),
+                    f"https://www.youtube.com/watch?v={response_json["items"][0]["id"]}",
+                )
+            )
+        return result
+
     def _transform_to_pandas_dataframe(result):
         df = pd.DataFrame(
             result,
@@ -105,11 +132,21 @@ def save_statistics_data_2_bq(**context):
         )
         return df
 
-    def _insert_to_bq(df):
+    def _insert_to_bq(df, tablename):
+        TABLE = f"PROJECT.{tablename}"
         job = client.load_table_from_dataframe(df, TABLE)
         job.result()
 
-    client, http_conn, execution_date, task_instance, video_metadatas, result = _init()
-    result = _get_statistics()
+    client, http_conn, execution_date, task_instance, datatype, video_metadatas, result = _init()
+
+    if datatype == 'statistics':
+        tablename = "ods.ods_youtubeStatistics_videoId_datetime"
+        result = _get_statistics()
+    elif datatype == 'info':
+        tablename = "ods.ods_youtubeInfo_videoId_datetime"
+        result = _get_info()
+    else:
+        raise RuntimeError(f"Unsupported datatype: {datatype}")
+
     df = _transform_to_pandas_dataframe(result)
-    _insert_to_bq(df)
+    _insert_to_bq(df, tablename)

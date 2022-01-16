@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `{}`
+CREATE TABLE IF NOT EXISTS `{}.ods.ods_youtubeStatistics_videoId_datetime`
 (
     created_at TIMESTAMP NOT NULL,
     videoId STRING NOT NULL,
@@ -9,3 +9,15 @@ CREATE TABLE IF NOT EXISTS `{}`
     favoriteCount INT64 NOT NULL,
     commentCount INT64 NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS `{}.ods.ods_youtubeInfo_videoId_datetime`
+(
+    created_at TIMESTAMP NOT NULL,
+    videoId STRING NOT NULL,
+    title STRING NOT NULL,
+    image_url STRING NOT NULL,
+    subtitle STRING NOT NULL,
+    time TIMESTAMP NOT NULL,
+    url STRING NOT NULL
+);
+

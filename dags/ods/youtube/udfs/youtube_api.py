@@ -75,6 +75,7 @@ def save_statistics_data_2_bq(**context):
                     "Cache-Control": "no-cache",
                 },
             ).json()
+            print(response_json["items"][0]["statistics"].keys())
             result.append(
                 (
                     execution_date,
@@ -82,7 +83,7 @@ def save_statistics_data_2_bq(**context):
                     title,
                     int(response_json["items"][0]["statistics"]["viewCount"]),
                     int(response_json["items"][0]["statistics"]["likeCount"]),
-                    int(response_json["items"][0]["statistics"]["dislikeCount"]),
+                    0,  # dislikeCount field is not available in statistics API since 2021!
                     int(response_json["items"][0]["statistics"]["favoriteCount"]),
                     int(response_json["items"][0]["statistics"]["commentCount"]),
                 )

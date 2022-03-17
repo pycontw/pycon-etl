@@ -105,3 +105,8 @@ rows = query_job.result()  # Waits for query to finish
 for row in rows:
     print(row.diet)
 ```
+
+### Conventions
+
+* table name convention:
+    ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)

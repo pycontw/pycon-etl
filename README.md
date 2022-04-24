@@ -50,7 +50,7 @@ Using Airflow to implement our ETL pipelines
 
 ### Local environment Docker
 
-> Would need to setup Snowflake Connection manually, find @davidtnfsh if you don't have those secrets
+> Find @davidtnfsh if you don't have those secrets.
 
 > **⚠ WARNING: About .env**  
 > Please don't use the .env for local development, or it might screw up the production tables.
@@ -70,6 +70,33 @@ Using Airflow to implement our ETL pipelines
 4. Portforward compute instance to your local and then navigate to <http://localhost:8080/admin/>:
    1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -NL 8080:localhost:8080`
    2. If Port 8080 is already in use. You need to stop the service occupied 8080 port on your local first.
+
+![image](./docs/airflow.png)
+
+### Local environment Docker(windows)
+> Do not use Windows Powershell, please use Comman Prompt instead.
+
+> Find @davidtnfsh if you don't have those secrets.
+
+> **⚠ WARNING: About .env**  
+> Please don't use the .env for local development, or it might screw up the production tables.
+
+1. Build docker image:
+    * Build a production image (for production): `docker build -t davidtnfsh/pycon_etl:prod --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile .`
+      If you want to build dev/test image, you also need to build this docker image first because dev/test image is on top of this production image. See below.
+    * Build dev/test image (for dev/test): `docker build -t davidtnfsh/pycon_etl:test --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile.test .`
+2. Fill in some secrets:
+    1. `copy .env.template .env.staging` for dev/test. `copy .env.template .env.production` instead if you are going to start a production instance.
+    2. Follow the instruction in `.env.<staging|production>` and fill in your secrets.
+       If you are just running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
+3. Start the Airflow server:
+    * production: `docker run -p 80:8080 --name airflow -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run -p 80:8080 --name airflow  -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * Note the difference are just the env file name and the image cache.
+4. Portforward compute instance to your local and then navigate to <http://localhost/admin/>:
+   1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -N -L 8080:localhost:8080`
+   2. If Port 8080 is already in use. You need to stop the service occupied 8080 port on your local first.
+
 
 ![image](./docs/airflow.png)
 #### BigQuery (Optional)

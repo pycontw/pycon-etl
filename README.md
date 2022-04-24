@@ -74,7 +74,9 @@ Using Airflow to implement our ETL pipelines
 
 ### Local environment Docker(windows)
 > Do not use Windows Powershell, please use Comman Prompt instead.
-> Find @davidtnfsh if you don't have those secrets
+
+> Find @davidtnfsh if you don't have those secrets.
+
 > **⚠ WARNING: About .env**  
 > Please don't use the .env for local development, or it might screw up the production tables.
 

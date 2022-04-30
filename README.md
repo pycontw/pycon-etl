@@ -71,7 +71,10 @@ Using Airflow to implement our ETL pipelines
    1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -NL 8080:localhost:8080`
    2. If Port 8080 is already in use. You need to stop the service occupied 8080 port on your local first.
 
-![image](./docs/airflow.png)
+    ![image](./docs/airflow.png)
+5. Setup Airflow's Variable and Connections:
+    * Youtube: ![img](docs/youtube-connection.png)
+
 
 ### Local environment Docker(windows)
 > Do not use Windows Powershell, please use Comman Prompt instead.

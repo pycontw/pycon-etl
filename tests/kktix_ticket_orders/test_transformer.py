@@ -122,11 +122,11 @@ def test_transform() -> None:
                         ],
                         [
                             "購買含 Pyckage 票卷者，請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域），以避免 Pyckage 無法送達，如因填寫錯誤致未收到 Pyckage ，報名人須自行負責，大會恕不再另行補寄",
-                            "",
+                            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
                         ],
                         [
                             "Address / 收件地址  Ex: No. 128, Sec. 2, Academia Rd., Nangang Dist., Taipei City 115201, Taiwan (R.O.C.) / 115台北市南港區研究院路二段128號",
-                            "新竹市北區天府路一段162號4樓之3",
+                            "36190b79eb7396cfb91e413fecef9707bca87f32012fb01fc38caa236fb053d0",
                         ],
                         [
                             "Size of T-shirt / T恤尺寸",

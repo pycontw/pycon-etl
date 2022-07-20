@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
+from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api, discord_bot
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh@gmail.com",
@@ -33,7 +33,13 @@ with dag:
         python_callable=kktix_api.main,
         provide_context=True,
     )
-    CREATE_TABLE_IF_NEEDED >> GET_ATTENDEE_INFOS
+
+    SEND_MSG_TO_DISCORD = PythonOperator(
+        task_id="LOAD_TO_DISCORD",
+        python_callable=discord_bot.send,
+    )
+
+    CREATE_TABLE_IF_NEEDED >> GET_ATTENDEE_INFOS >> SEND_MSG_TO_DISCORD
 
 if __name__ == "__main__":
     dag.cli()

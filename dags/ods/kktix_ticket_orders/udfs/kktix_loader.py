@@ -25,7 +25,6 @@ def load(event_raw_data_array: List):
             return
     _load_to_bigquery(event_raw_data_array)
     _load_to_klaviyo()
-    _load_to_discord()
 
 
 def _load_to_bigquery(event_raw_data_array: List[Dict]) -> None:
@@ -44,13 +43,6 @@ def _load_to_bigquery(event_raw_data_array: List[Dict]) -> None:
 def _load_to_klaviyo():
     """
     Henry to implement!
-    """
-    pass
-
-
-def _load_to_discord():
-    """
-    someone to implement lol!
     """
     pass
 

@@ -108,11 +108,13 @@ Using Airflow to implement our ETL pipelines
     * service-account.json: Please contact @david30907d using email, telegram or discord. No worry about this json if you are just running the sandbox staging instance for development.
 2. Give [Toy-Examples](#Toy-Examples) a try
 
-## Deployment
+## Deployment & Setting Up Credentials/Env
 
 1. Manually deploy to Google compute instance
-2. Fill out `airflow.cfg` with Google OAuth ID and credential (Ref: [setting-up-google-authentication](https://airflow.apache.org/docs/apache-airflow/1.10.1/security.html#setting-up-google-authentication))
-
+2. Credentials:
+    * Airflow:
+        * Connections:
+            * kktix_api: `conn_id=kktix_api`, `host` and `extra(header)` are confidential since its KKTIX's private endpoint. Please DM @GTB or data team's teammembers for these credentials.
 ### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details

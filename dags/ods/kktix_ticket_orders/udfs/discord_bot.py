@@ -21,12 +21,13 @@ def _get_statistics_from_bigquery() -> Dict:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     query_job = client.query('''
         SELECT
-            name,
-            COUNT(1) as counts
+          NAME,
+          REPLACE(JSON_EXTRACT(ATTENDEE_INFOS, '$[0].ticket_name'), '"', '') AS TICKET_NAME,
+          COUNT(1) AS COUNTS
         FROM
-            `pycontw-225217.ods.ods_kktix_attendeeId_datetime`
+          `pycontw-225217.ods.ods_kktix_attendeeId_datetime`
         GROUP BY
-            name;
+          NAME, TICKET_NAME;
     ''')
     result = dict(query_job.result())
     return result

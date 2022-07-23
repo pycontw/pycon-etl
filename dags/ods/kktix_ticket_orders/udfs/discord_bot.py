@@ -28,7 +28,7 @@ def _get_statistics_from_bigquery() -> Dict:
         """
         SELECT
           NAME,
-          REPLACE(JSON_EXTRACT(ATTENDEE_INFOS, '$[0].ticket_name'), '"', '') AS TICKET_NAME,
+          REPLACE(JSON_EXTRACT(ATTENDEE_INFO, '$.ticket_name'), '"', '') AS TICKET_NAME,
           COUNT(1) AS COUNTS
         FROM
           `pycontw-225217.ods.ods_kktix_attendeeId_datetime`

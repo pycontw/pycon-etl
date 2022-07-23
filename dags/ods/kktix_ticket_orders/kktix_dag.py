@@ -10,13 +10,13 @@ from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
 DEFAULT_ARGS = {
     "owner": "davidtnfsh@gmail.com",
     "depends_on_past": False,
-    "start_date": datetime(2022, 7, 4),
+    "start_date": datetime(2022, 4, 22),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "KKTIX_TICKET_ORDERS",
+    "KKTIX_TICKET_ORDERS_V2",
     default_args=DEFAULT_ARGS,
     schedule_interval="*/5 * * * *",
     max_active_runs=1,

@@ -7,8 +7,6 @@ from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 
 SCHEDULE_INTERVAL_SECONDS: int = 300
-# TIMESTAMP_FOR_BACKFILL's value is 2022/07/23
-TIMESTAMP_FOR_BACKFILL: int = 1658512921
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
 RETRY_ARGS = dict(
     wait=tenacity.wait_none(),
@@ -46,13 +44,14 @@ def _extract(year: int, timestamp: float) -> List[Dict]:
     event_metadatas = get_event_metadatas(condition_filter_callback)
     for event_metadata in event_metadatas:
         event_id = event_metadata["id"]
-        event_raw_data_array.append(
-            {
-                "id": event_id,
-                "name": event_metadata["name"],
-                "attendee_infos": get_attendee_infos(event_id, timestamp),
-            }
-        )
+        for attendee_info in get_attendee_infos(event_id, timestamp):
+            event_raw_data_array.append(
+                {
+                    "id": event_id,
+                    "name": event_metadata["name"],
+                    "attendee_info": attendee_info,
+                }
+            )
     return event_raw_data_array
 
 
@@ -124,8 +123,6 @@ def _get_attendee_infos(
             timestamp
             < attendee_info["updated_at"]
             < timestamp + SCHEDULE_INTERVAL_SECONDS
-        ) or attendee_info["updated_at"] < TIMESTAMP_FOR_BACKFILL:
-            # WARNING: `attendee_info["updated_at"] < TIMESTAMP_FOR_BACKFILL` would make this pipeline not idempotent
-            # need to remove it once backfill is finished
+        ):
             attendee_infos.append(attendee_info)
     return attendee_infos

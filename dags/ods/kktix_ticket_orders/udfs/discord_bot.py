@@ -36,7 +36,7 @@ def _get_statistics_from_bigquery() -> Dict:
           NAME, TICKET_NAME;
     """
     )
-    result = dict(query_job.result())
+    result = query_job.result()
     return result
 
 
@@ -48,8 +48,8 @@ def _send_webhook_to_discord(payload: Text) -> None:
     )
 
 
-def _compose_discord_msg(payload: Dict) -> Text:
-    msg = "Hi 這是今天的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n"
-    for key, value in payload.items():
-        msg += f"票種：{key}\t{value}張\n"
+def _compose_discord_msg(payload) -> Text:
+    msg = "Hi 這是今天的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+    for name, ticket_name, counts in payload:
+        msg += f"{name}\t票種：{ticket_name}\t{counts}張\n"
     return msg

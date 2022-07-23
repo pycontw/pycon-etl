@@ -7,6 +7,8 @@ from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 
 SCHEDULE_INTERVAL_SECONDS: int = 300
+# TIMESTAMP_FOR_BACKFILL's value is 2022/07/23
+TIMESTAMP_FOR_BACKFILL: int = 1658512921
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
 RETRY_ARGS = dict(
     wait=tenacity.wait_none(),
@@ -21,7 +23,7 @@ def main(**context):
     """
     schedule_interval = context["dag"].schedule_interval
     # If we change the schedule_interval, we need to update the logic in condition_filter_callback
-    assert schedule_interval == "*/5 * * * *"
+    assert schedule_interval == "*/5 * * * *"  # nosec
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
@@ -122,6 +124,8 @@ def _get_attendee_infos(
             timestamp
             < attendee_info["updated_at"]
             < timestamp + SCHEDULE_INTERVAL_SECONDS
-        ):
+        ) or attendee_info["updated_at"] < TIMESTAMP_FOR_BACKFILL:
+            # WARNING: `attendee_info["updated_at"] < TIMESTAMP_FOR_BACKFILL` would make this pipeline not idempotent
+            # need to remove it once backfill is finished
             attendee_infos.append(attendee_info)
     return attendee_infos

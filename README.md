@@ -64,7 +64,7 @@ Using Airflow to implement our ETL pipelines
     2. Follow the instruction in `.env.<staging|production>` and fill in your secrets.
        If you are just running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
 3. Start the Airflow server:
-    * production: `docker run -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * production: `docker run --log-opt max-size=1m -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
     * dev/test: `docker run -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference are just the env file name and the image cache.
 4. Portforward compute instance to your local and then navigate to <http://localhost:8080/admin/>:

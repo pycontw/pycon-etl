@@ -1,11 +1,11 @@
 """
-Save view, like count these kind of metrics into BigQuery
+Ingest KKTIX's data and load them to BigQuery every 5mins
 """
 from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from ods.kktix_ticket_orders.udfs import bigquery_loader, discord_bot, kktix_api
+from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh@gmail.com",
@@ -34,11 +34,7 @@ with dag:
         provide_context=True,
     )
 
-    SEND_MSG_TO_DISCORD = PythonOperator(
-        task_id="LOAD_TO_DISCORD", python_callable=discord_bot.send,
-    )
-
-    CREATE_TABLE_IF_NEEDED >> GET_ATTENDEE_INFOS >> SEND_MSG_TO_DISCORD
+    CREATE_TABLE_IF_NEEDED >> GET_ATTENDEE_INFOS
 
 if __name__ == "__main__":
     dag.cli()

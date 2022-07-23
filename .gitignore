@@ -1,4 +1,7 @@
 # project stuff
+.env.staging
+env
+env.sh
 client_secret_google_search_console*
 *.csv
 !dags/fixtures/*.csv

@@ -1,5 +1,5 @@
 """
-Save view, like count these kind of metrics into BigQuery
+Ingest KKTIX's data and load them to BigQuery every 5mins
 """
 from datetime import datetime, timedelta
 

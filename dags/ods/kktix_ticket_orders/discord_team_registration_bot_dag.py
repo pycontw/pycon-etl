@@ -1,5 +1,5 @@
 """
-Save view, like count these kind of metrics into BigQuery
+send daily ordering metrics to discord channel, this feature is for team registration
 """
 from datetime import datetime, timedelta
 
@@ -16,11 +16,11 @@ DEFAULT_ARGS = {
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "KKTIX_TICKET_ORDERS",
+    "KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION",
     default_args=DEFAULT_ARGS,
     schedule_interval="@daily",
     max_active_runs=1,
-    catchup=True,
+    catchup=False,
 )
 with dag:
     SEND_MSG_TO_DISCORD = PythonOperator(

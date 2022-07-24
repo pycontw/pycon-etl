@@ -49,6 +49,7 @@ def get_video_ids(**context) -> None:
         video_metadatas += [
             {"videoId": item["id"]["videoId"], "title": item["snippet"]["title"]}
             for item in response_json["items"]
+            if "videoId" in item["id"]
         ]
     task_instance = context["task_instance"]
     task_instance.xcom_push("GET_VIDEO_IDS", video_metadatas)

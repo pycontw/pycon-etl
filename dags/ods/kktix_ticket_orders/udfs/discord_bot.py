@@ -61,5 +61,6 @@ def _compose_discord_msg(payload) -> Text:
         for ticket_name, counts in ticket_name_counts_tuples:
             msg += f"  * 票種：{ticket_name}\t{counts}張\n"
             total += counts
+    msg += "dashboard: https://metabase.pycon.tw/question/142\n"
     msg += f"總共賣出 {total} 張喔～"
     return msg

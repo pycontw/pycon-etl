@@ -56,9 +56,11 @@ def _compose_discord_msg(payload) -> Text:
     msg_dict = defaultdict(list)
     for name, ticket_name, counts in payload:
         msg_dict[name].append((ticket_name, counts))
-    for name, ticket_name_counts_tuples in msg_dict.items():
+    for name, ticket_name_counts_tuples in sorted(msg_dict.items(), key=lambda x: x[0]):
         msg += f"{name}\n"
-        for ticket_name, counts in ticket_name_counts_tuples:
+        for ticket_name, counts in sorted(
+            ticket_name_counts_tuples, key=lambda x: x[0]
+        ):
             msg += f"  * 票種：{ticket_name}\t{counts}張\n"
             total += counts
     msg += "dashboard: https://metabase.pycon.tw/question/142\n"

@@ -1,5 +1,7 @@
 import json
 import os
+from collections import defaultdict
+from datetime import datetime
 from typing import Dict, Text
 
 import requests
@@ -49,7 +51,18 @@ def _send_webhook_to_discord(payload: Text) -> None:
 
 
 def _compose_discord_msg(payload) -> Text:
-    msg = "Hi 這是今天的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+    msg = f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+    total = 0
+    msg_dict = defaultdict(list)
     for name, ticket_name, counts in payload:
-        msg += f"{name}\t票種：{ticket_name}\t{counts}張\n"
+        msg_dict[name].append((ticket_name, counts))
+    for name, ticket_name_counts_tuples in sorted(msg_dict.items(), key=lambda x: x[0]):
+        msg += f"{name}\n"
+        for ticket_name, counts in sorted(
+            ticket_name_counts_tuples, key=lambda x: x[0]
+        ):
+            msg += f"  * 票種：{ticket_name}\t{counts}張\n"
+            total += counts
+    msg += "dashboard: https://metabase.pycon.tw/question/142\n"
+    msg += f"總共賣出 {total} 張喔～"
     return msg

@@ -51,7 +51,7 @@ def _check_refunded_ticket_exists() -> List[int]:
             FROM
               `{TABLE}`
             WHERE
-              REFUNDED IS NULL
+              REFUNDED IS NULL OR REFUNDED = FALSE
         """  # nosec
     )
     event_ids_and_attendee_ids = query_job.result()
@@ -101,7 +101,7 @@ def _get_statistics_from_bigquery() -> Dict:
         FROM
           `{TABLE}`
         WHERE
-          REFUNDED IS NULL
+          REFUNDED IS NULL OR REFUNDED = FALSE
         GROUP BY
           NAME, TICKET_NAME;
     """  # nosec

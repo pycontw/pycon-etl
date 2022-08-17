@@ -10,6 +10,7 @@ SCHEMA = [
     bigquery.SchemaField("id", "INTEGER", mode="REQUIRED"),
     bigquery.SchemaField("name", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("attendee_info", "STRING", mode="REQUIRED"),
+    bigquery.SchemaField("refunded", "BOOLEAN", mode="REQUIRED"),
 ]
 JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
 
@@ -36,6 +37,9 @@ def _load_to_bigquery(payload: List[Dict]) -> None:
     """
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     df = pd.DataFrame(payload, columns=["id", "name", "attendee_info"],)
+    # for now, these attendees haven't refunded our ticket, yet...
+    # we don't know if they would refund down the road
+    df["refunded"] = [False] * len(payload)
     job = client.load_table_from_dataframe(df, TABLE, job_config=JOB_CONFIG)
     job.result()
 

@@ -26,7 +26,7 @@ CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
 def send() -> None:
-    refunded_attendee_ids = _check_refunded_ticket_exists()
+    refunded_attendee_ids = _check_if_refunded_ticket_exists()
     if refunded_attendee_ids:
         _mark_tickets_as_refunded(refunded_attendee_ids)
     statistics = _get_statistics_from_bigquery()
@@ -34,7 +34,7 @@ def send() -> None:
     _send_webhook_to_discord(msg)
 
 
-def _check_refunded_ticket_exists() -> List[int]:
+def _check_if_refunded_ticket_exists() -> List[int]:
     """
     1. iterate through all unrefunded tickets
     2. build up a hash map

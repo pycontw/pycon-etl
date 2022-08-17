@@ -63,7 +63,7 @@ def get_attendee_infos(event_id: int, timestamp: float) -> List:
     it's a public wrapper for people to get attendee infos!
     """
     attendance_book_id = _get_attendance_book_id(event_id)
-    attendee_ids = _get_attendee_ids(event_id, attendance_book_id, timestamp)
+    attendee_ids = _get_attendee_ids(event_id, attendance_book_id)
     attendee_infos = _get_attendee_infos(event_id, attendee_ids, timestamp)
     return attendee_infos
 
@@ -94,9 +94,7 @@ def _get_attendance_book_id(event_id: int) -> int:
     return attendance_books_resp[0]["id"]
 
 
-def _get_attendee_ids(
-    event_id: int, attendance_book_id: int, timestamp: float
-) -> List[int]:
+def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
     """
     get all attendee ids!
     """

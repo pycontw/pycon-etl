@@ -3,7 +3,8 @@ from pathlib import Path
 
 from google.cloud import bigquery
 
-TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_kktix_attendeeId_datetime"
+# TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_kktix_attendeeId_datetime"
+TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_kktix_attendeeId_datetime_test"
 
 
 def create_table_if_needed() -> None:

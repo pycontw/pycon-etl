@@ -120,6 +120,8 @@ def _get_attendee_infos(
             endpoint=f"/api/v2/hosting_events/{event_id}/attendees/{attendee_id}",
             _retry_args=RETRY_ARGS,
         ).json()
+        if not attendee_info["is_paid"]:
+            continue
         if (
             timestamp
             < attendee_info["updated_at"]

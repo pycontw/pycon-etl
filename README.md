@@ -149,3 +149,11 @@ for row in rows:
 
 * table name convention:
     ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
+
+
+## DevOps (Will deprecate this if we don't bump into out-of-disk issue any more)
+
+1. Find topk biggest folders: `du -a /var/lib/docker/overlay2 | sort -n -r | head -n 20`
+2. Show the folder size: `du -hs xxxx`
+3. delete those pretty big folder
+4. `df -h`

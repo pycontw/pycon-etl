@@ -37,6 +37,10 @@ Using Airflow to implement our ETL pipelines
 2. `npm run check`: Apply all the linter and formatter
 3. `npm run commit`
 
+## PR
+
+Please use Gitlab Flow, otherwise you cannot pass dockerhub CI
+
 ## Run
 
 ### Local environment Python Script
@@ -111,6 +115,8 @@ Using Airflow to implement our ETL pipelines
 ## Deployment & Setting Up Credentials/Env
 
 1. Manually deploy to Google compute instance
+    1. `cd /home/zhangtaiwei/pycon-etl`
+    2. `sudo git pull`
 2. Credentials:
     * Airflow:
         * Connections:

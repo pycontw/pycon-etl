@@ -7,13 +7,13 @@ Requirements:
 2. Create a template [campaign](https://www.klaviyo.com/campaigns) and set the previous List as target recipients list
 
 """
-import requests
-import tenacity
 from datetime import datetime
 from typing import List
+
+import requests
+import tenacity
 from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
-
 
 SCHEDULE_INTERVAL_SECONDS: int = 300
 RETRY_ARGS = dict(
@@ -24,10 +24,7 @@ RETRY_ARGS = dict(
 
 
 def main(
-    list_id: str,
-    campaign_id: str,
-    campaign_name: str,
-    datas: List[dict],
+    list_id: str, campaign_id: str, campaign_name: str, datas: List[dict],
 ):
     """
     Args:
@@ -59,10 +56,7 @@ def main(
     existed_members = _klaviyo_get_list_members(list_id)["records"]
     if existed_members:
         _klaviyo_remove_list_members(
-            list_id,
-            body={
-                "emails": list(map(lambda x: x["email"], existed_members)),
-            },
+            list_id, body={"emails": list(map(lambda x: x["email"], existed_members))}
         )
 
     _klaviyo_add_list_members(list_id, body={"profiles": datas})
@@ -72,9 +66,7 @@ def main(
     # create a new compaign and send mail immediately
     campaign_suffix = "{:%Y-%m-%d_%H:%M:%S}".format(datetime.now())
     response = _klaviyo_clone_campaign(
-        campaign_id,
-        name=f"{campaign_name}_{campaign_suffix}",
-        list_id=list_id,
+        campaign_id, name=f"{campaign_name}_{campaign_suffix}", list_id=list_id,
     )
     new_campaign_id = response["id"]
     _klaviyo_send_campaign(new_campaign_id)
@@ -83,7 +75,7 @@ def main(
 
 def _klaviyo_get_list_info(list_id: str) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="GET")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v2/list/{list_id}?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
@@ -93,7 +85,7 @@ def _klaviyo_get_list_info(list_id: str) -> dict:
 
 def _klaviyo_get_list_members(list_id: str) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="GET")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v2/group/{list_id}/members/all?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
@@ -103,7 +95,7 @@ def _klaviyo_get_list_members(list_id: str) -> dict:
 
 def _klaviyo_remove_list_members(list_id: str, body: dict) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="DELETE")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v2/list/{list_id}/members?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
@@ -114,21 +106,18 @@ def _klaviyo_remove_list_members(list_id: str, body: dict) -> dict:
 
 def _klaviyo_add_list_members(list_id: str, body: dict) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="POST")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v2/list/{list_id}/members?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
         json=body,
-        headers={
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
     ).json()
 
 
 def _klaviyo_get_campaign_info(campaign_id: str) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="GET")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v1/campaign/{campaign_id}?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
@@ -138,14 +127,11 @@ def _klaviyo_get_campaign_info(campaign_id: str) -> dict:
 
 def _klaviyo_clone_campaign(campaign_id: str, name: str, list_id: str) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="POST")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v1/campaign/{campaign_id}/clone?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,
-        data={
-            "name": name,
-            "list_id": list_id,
-        },
+        data={"name": name, "list_id": list_id},
         headers={
             "Accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
@@ -155,7 +141,7 @@ def _klaviyo_clone_campaign(campaign_id: str, name: str, list_id: str) -> dict:
 
 def _klaviyo_send_campaign(campaign_id: str) -> dict:
     HTTP_HOOK = HttpHook(http_conn_id="klaviyo_api", method="POST")
-    API_KEY = Variable.get('KLAVIYO_KEY')
+    API_KEY = Variable.get("KLAVIYO_KEY")
     return HTTP_HOOK.run_with_advanced_retry(
         endpoint=f"/v1/campaign/{campaign_id}/send?api_key={API_KEY}",
         _retry_args=RETRY_ARGS,

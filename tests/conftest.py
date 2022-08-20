@@ -1,11 +1,9 @@
-"""
-test transformer
-"""
-from dags.ods.kktix_ticket_orders.udfs.kktix_transformer import transform
+import pytest
 
 
-def test_transform(kktix_api_data) -> None:
-    ground_truth = [
+@pytest.fixture(scope="function")
+def kktix_api_data():
+    return [
         {
             "id": 84296,
             "name": "PyCon APAC 2022 Registration: Individual【Online Conference】",
@@ -30,11 +28,11 @@ def test_transform(kktix_api_data) -> None:
                     ],
                     [
                         "購買含 Pyckage 票卷者，請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域），以避免 Pyckage 無法送達，如因填寫錯誤致未收到 Pyckage ，報名人須自行負責，大會恕不再另行補寄",
-                        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                        "",
                     ],
                     [
                         "Address / 收件地址  Ex: No. 128, Sec. 2, Academia Rd., Nangang Dist., Taipei City 115201, Taiwan (R.O.C.) / 115台北市南港區研究院路二段128號",
-                        "36190b79eb7396cfb91e413fecef9707bca87f32012fb01fc38caa236fb053d0",
+                        "新竹市北區天府路一段162號4樓之3",
                     ],
                     ["Size of T-shirt / T恤尺寸", "M / 胸寬(F.W.): 49cm / 衣長(C.L.): 70cm"],
                     ["Come From / 國家或地區", "Taiwan 台灣"],
@@ -73,22 +71,14 @@ def test_transform(kktix_api_data) -> None:
                         "I am fully aware of the Gather Privacy Policy,  only participants that are over the age of 18 can access to the venue / 我已被告知因為 gather 政策，需滿18歲以上方能登入會議場地",
                         "",
                     ],
-                    [
-                        "聯絡人 姓名",
-                        "2150750f32ee8dcd40537be8b5bee7c26e893a77cb23049eb3a0ca49a7512791",
-                    ],
-                    [
-                        "聯絡人 Email",
-                        "26a695fcd9d98ffa1fba78cb5a1eacf0fbe19e40bf9de0cafa0080cdf4c14514",
-                    ],
-                    [
-                        "聯絡人 手機",
-                        "86f3abfffd2f714a6d611429f82fac9264e8036b0fb490320bfe3e56c494a0e0",
-                    ],
+                    ["聯絡人 姓名", "李xx"],
+                    ["聯絡人 Email", "xxx@gmail.com"],
+                    ["聯絡人 手機", "0900000000"],
                     ["標籤", ""],
                 ],
                 "kyc": {},
                 "id_number": None,
+                "search_string": "Stanley\nMale",
                 "updated_at": 1656921502.5667331,
                 "ticket_type": "qrcode",
                 "slot": {},
@@ -96,8 +86,3 @@ def test_transform(kktix_api_data) -> None:
             },
         }
     ]
-    if __debug__:
-        if transform(kktix_api_data) != ground_truth:
-            raise AssertionError(
-                "Transform() might forget to de-identify some columns! e.g. name, email or phone number"
-            )

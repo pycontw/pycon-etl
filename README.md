@@ -115,6 +115,12 @@ Using Airflow to implement our ETL pipelines
     * Airflow:
         * Connections:
             * kktix_api: `conn_id=kktix_api`, `host` and `extra(header)` are confidential since its KKTIX's private endpoint. Please DM @GTB or data team's teammembers for these credentials.
+            * klaviyo_api: `conn_id=klaviyo_api`, `host` is https://a.klaviyo.com/api
+        * Variables:
+            * KLAVIYO_KEY: Create from https://www.klaviyo.com/account#api-keys-tab
+            * KLAVIYO_LIST_ID: Create from https://www.klaviyo.com/lists
+            * KLAVIYO_CAMPAIGN_ID: Create from https://www.klaviyo.com/campaigns
+
 ### CI/CD
 
 Please check [.github/workflows](.github/workflows) for details

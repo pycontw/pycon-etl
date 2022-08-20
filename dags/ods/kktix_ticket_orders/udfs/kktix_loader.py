@@ -28,7 +28,6 @@ def load(event_raw_data_array: List):
         sanitized_event_raw_data = _sanitize_payload(event_raw_data)
         payload.append(sanitized_event_raw_data)
     _load_to_bigquery(payload)
-    _load_to_klaviyo()
 
 
 def _load_to_bigquery(payload: List[Dict]) -> None:
@@ -42,13 +41,6 @@ def _load_to_bigquery(payload: List[Dict]) -> None:
     df["refunded"] = [False] * len(payload)
     job = client.load_table_from_dataframe(df, TABLE, job_config=JOB_CONFIG)
     job.result()
-
-
-def _load_to_klaviyo():
-    """
-    Henry to implement!
-    """
-    pass
 
 
 def _sanitize_payload(event_raw_data) -> Dict:

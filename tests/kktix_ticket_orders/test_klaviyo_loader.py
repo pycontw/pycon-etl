@@ -10,9 +10,9 @@ def fake_airflow_variable():
     }
 
 
-@patch("ods.kktix_ticket_orders.udfs.klaviyo_mailer.main")
+@patch("dags.ods.kktix_ticket_orders.udfs.klaviyo_loader.klaviyo_mailer.main")
 @patch(
-    "ods.kktix_ticket_orders.udfs.klaviyo_loader.Variable",
+    "dags.ods.kktix_ticket_orders.udfs.klaviyo_loader.Variable",
     new_callable=fake_airflow_variable,
 )
 def test_klaviyo_loader(variable, mailer, kktix_api_data):

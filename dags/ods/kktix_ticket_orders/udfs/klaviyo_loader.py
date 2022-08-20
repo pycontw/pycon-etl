@@ -1,4 +1,5 @@
-from typing import List, Iterable
+from typing import Iterable, List
+
 from airflow.models import Variable
 from ods.kktix_ticket_orders.udfs import klaviyo_mailer
 
@@ -14,22 +15,22 @@ def _load_raw_data(event_raw_data_array: List) -> Iterable:
             if key in ("聯絡人 Email", "聯絡人 姓名")
         }
 
+
 def load(event_raw_data_array: List) -> None:
     """
     Send a notify mail for all participants via third-party service
     """
     try:
         list_id = Variable.get("KLAVIYO_LIST_ID")
-        campaign_id  = Variable.get("KLAVIYO_CAMPAIGN_ID")
+        campaign_id = Variable.get("KLAVIYO_CAMPAIGN_ID")
     except KeyError:
-        print("Skip klaviyo mailer, 'KLAVIYO_LIST_ID' or 'KLAVIYO_CAMPAIGN_ID' variable not found")
+        print(
+            "Skip klaviyo mailer, 'KLAVIYO_LIST_ID' or 'KLAVIYO_CAMPAIGN_ID' variable not found"
+        )
         return
 
     datas = [
-        {
-            "email": item["聯絡人 Email"],
-            "name": item["聯絡人 姓名"],
-        }
+        {"email": item["聯絡人 Email"], "name": item["聯絡人 姓名"]}
         for item in _load_raw_data(event_raw_data_array)
     ]
     if not datas:
@@ -37,8 +38,5 @@ def load(event_raw_data_array: List) -> None:
         return
 
     klaviyo_mailer.main(
-        list_id=list_id,
-        campaign_id=campaign_id,
-        campaign_name="隨買即用",
-        datas=datas,
+        list_id=list_id, campaign_id=campaign_id, campaign_name="隨買即用", datas=datas,
     )

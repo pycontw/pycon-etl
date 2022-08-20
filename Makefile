@@ -11,7 +11,7 @@ format:
 	$(VENV_PREFIX) isort .
 
 test:
-	$(VENV_PREFIX) pytest
+	PYTHONPATH=./dags $(VENV_PREFIX) pytest
 
 coverage:
 	$(VENV_PREFIX) pytest --cov=dags tests

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from ods.kktix_ticket_orders.udfs import klaviyo_loader
+from dags.ods.kktix_ticket_orders.udfs import klaviyo_loader
 
 
 def fake_airflow_variable():

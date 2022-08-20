@@ -14,4 +14,4 @@ test:
 	PYTHONPATH=./dags $(VENV_PREFIX) pytest
 
 coverage:
-	$(VENV_PREFIX) pytest --cov=dags tests
+	PYTHONPATH=./dags $(VENV_PREFIX) pytest --cov=dags tests

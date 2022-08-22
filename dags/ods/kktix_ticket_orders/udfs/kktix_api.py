@@ -25,12 +25,18 @@ def main(**context):
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
-    event_raw_data_array = _extract(year=year, timestamp=timestamp,)
+    event_raw_data_array = _extract(
+        year=year,
+        timestamp=timestamp,
+    )
     # load name and email to mailer before data has been hashed
     klaviyo_loader.load(event_raw_data_array)
     transformed_event_raw_data_array = kktix_transformer.transform(event_raw_data_array)
     kktix_loader.load(transformed_event_raw_data_array)
     print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")
+
+    # pass these unhashed data through xcom to next airflow task
+    return kktix_transformer._extract_sensitive_unhashed_raw_data(event_raw_data_array)
 
 
 def _extract(year: int, timestamp: float) -> List[Dict]:

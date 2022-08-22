@@ -115,6 +115,7 @@ def _send_webhook_to_discord(payload: Text) -> None:
         endpoint=Variable.get("discord_webhook_registration_endpoint"),
         _retry_args=RETRY_ARGS,
         data=json.dumps({"content": payload}),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
     )
 
 

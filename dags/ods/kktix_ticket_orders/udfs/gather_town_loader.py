@@ -23,7 +23,7 @@ def load(**context):
             endpoint="/api/setEmailGuestlist",
             _retry_args=RETRY_ARGS,
             json={
-                "spaceId": "VUJexktI2UhoGaun\\FunFunPython",
+                "spaceId": Variable.get("gather_town_space_id"),
                 "apiKey": Variable.get("gather_town_api_key"),
                 "guestlist": {
                     event_raw_data["聯絡人 Email"]: {

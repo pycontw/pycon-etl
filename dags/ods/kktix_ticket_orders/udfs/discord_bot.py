@@ -84,7 +84,7 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: List[int]) -> None:
       refunded=TRUE
     WHERE
       CAST(REPLACE(JSON_EXTRACT(ATTENDEE_INFO,
-          '$.id'), '"', '') AS INT64) in {tuple(refunded_attendee_ids)}
+          '$.id'), '"', '') AS INT64) in ({','.join(str(i) for i in refunded_attendee_ids)})
     """
     )
     result = query_job.result()
@@ -115,6 +115,7 @@ def _send_webhook_to_discord(payload: Text) -> None:
         endpoint=Variable.get("discord_webhook_registration_endpoint"),
         _retry_args=RETRY_ARGS,
         data=json.dumps({"content": payload}),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
     )
 
 

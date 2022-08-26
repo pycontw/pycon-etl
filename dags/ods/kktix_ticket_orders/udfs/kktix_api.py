@@ -4,7 +4,7 @@ import requests
 import tenacity
 from airflow.hooks.http_hook import HttpHook
 from dateutil.parser import parse
-from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer, klaviyo_loader
+from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 
 SCHEDULE_INTERVAL_SECONDS: int = 300
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
@@ -27,7 +27,8 @@ def main(**context):
     timestamp = ts_datetime_obj.timestamp()
     event_raw_data_array = _extract(year=year, timestamp=timestamp,)
     # load name and email to mailer before data has been hashed
-    klaviyo_loader.load(event_raw_data_array)
+    # BUG: wait for henry
+    # klaviyo_loader.load(event_raw_data_array)
     transformed_event_raw_data_array = kktix_transformer.transform(event_raw_data_array)
     kktix_loader.load(transformed_event_raw_data_array)
     print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")

@@ -27,9 +27,9 @@ def load(**context):
                 "apiKey": Variable.get("gather_town_api_key"),
                 "guestlist": {
                     event_raw_data["聯絡人 Email"]: {
-                        "name": event_raw_data["聯絡人 姓名"],
+                        "name": "",
                         "role": "guest",
-                        "affiliation": "pyguest",
+                        "affiliation": "Attendee",
                     }
                 },
             },

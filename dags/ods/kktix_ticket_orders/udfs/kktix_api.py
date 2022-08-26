@@ -32,6 +32,9 @@ def main(**context):
     kktix_loader.load(transformed_event_raw_data_array)
     print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")
 
+    # pass these unhashed data through xcom to next airflow task
+    return kktix_transformer._extract_sensitive_unhashed_raw_data(event_raw_data_array)
+
 
 def _extract(year: int, timestamp: float) -> List[Dict]:
     """

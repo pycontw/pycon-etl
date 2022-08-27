@@ -18,7 +18,7 @@ GATHERTOWN_HTTP_HOOK = HttpHook(http_conn_id="gathertown_api", method="POST")
 
 def load(**context):
     event_raw_data_array = context["ti"].xcom_pull(task_ids="GET_ATTENDEE_INFOS")
-    for event_raw_data in event_raw_data_array[:1]:
+    for event_raw_data in event_raw_data_array:
         resp = GATHERTOWN_HTTP_HOOK.run_with_advanced_retry(
             endpoint="/api/setEmailGuestlist",
             _retry_args=RETRY_ARGS,

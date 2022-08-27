@@ -34,7 +34,7 @@ def load(event_raw_data_array: List) -> None:
         for item in _load_raw_data(event_raw_data_array)
     ]
     if not datas:
-        print("Skip klaviyo mailer, not user profiles")
+        print("Skip klaviyo mailer, no user profiles")
         return
 
     klaviyo_mailer.main(

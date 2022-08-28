@@ -21,5 +21,11 @@ def test_klaviyo_loader(variable, mailer, kktix_api_data):
         list_id="abc",
         campaign_id="123",
         campaign_name="隨買即用",
-        datas=[{"email": "xxx@gmail.com", "name": "李xx"}],
+        datas=[
+            {
+                "email": "xxx@gmail.com",
+                "name": "李xx",
+                "qrcode": "bc7bd846f49d2d2e1g833cc92gdg2cf9",
+            }
+        ],
     )

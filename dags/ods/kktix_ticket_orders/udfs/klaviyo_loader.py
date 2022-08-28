@@ -9,11 +9,13 @@ def _load_raw_data(event_raw_data_array: List) -> Iterable:
         attendee_info = event["attendee_info"]
         # search string contains personal information and it's unstructured. Therefore just drop it!
         del attendee_info["search_string"]
-        yield {
+        tmp = {
             key: value
             for index, (key, value) in enumerate(attendee_info["data"])
             if key in ("聯絡人 Email", "聯絡人 姓名")
         }
+        tmp.update({"qrcode": attendee_info["qrcode"]})
+        yield tmp
 
 
 def load(event_raw_data_array: List) -> None:
@@ -30,7 +32,7 @@ def load(event_raw_data_array: List) -> None:
         return
 
     datas = [
-        {"email": item["聯絡人 Email"], "name": item["聯絡人 姓名"]}
+        {"email": item["聯絡人 Email"], "name": item["聯絡人 姓名"], "qrcode": item["qrcode"]}
         for item in _load_raw_data(event_raw_data_array)
     ]
     if not datas:

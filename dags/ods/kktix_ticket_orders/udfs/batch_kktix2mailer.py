@@ -4,9 +4,9 @@ import requests
 import tenacity
 from airflow.hooks.http_hook import HttpHook
 from dateutil.parser import parse
-from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer, klaviyo_loader
+from ods.kktix_ticket_orders.udfs import klaviyo_loader
 
-SCHEDULE_INTERVAL_SECONDS: int = 300
+SCHEDULE_INTERVAL_SECONDS: int = 24 * 60 * 60
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
 RETRY_ARGS = dict(
     wait=tenacity.wait_none(),
@@ -17,23 +17,18 @@ RETRY_ARGS = dict(
 
 def main(**context):
     """
-    ETL pipeline should consists of extract, transform and load
+    Extract user info from kktix api and load to mailer
     """
     schedule_interval = context["dag"].schedule_interval
     # If we change the schedule_interval, we need to update the logic in condition_filter_callback
-    assert schedule_interval == "*/5 * * * *"  # nosec
+    assert schedule_interval == "0 23 * * *"  # nosec
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
     event_raw_data_array = _extract(year=year, timestamp=timestamp,)
     # load name and email to mailer before data has been hashed
     klaviyo_loader.load(event_raw_data_array)
-    transformed_event_raw_data_array = kktix_transformer.transform(event_raw_data_array)
-    kktix_loader.load(transformed_event_raw_data_array)
-    print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")
-
-    # pass these unhashed data through xcom to next airflow task
-    return kktix_transformer._extract_sensitive_unhashed_raw_data(event_raw_data_array)
+    print(f"Batch load {len(event_raw_data_array)} data to downstream task")
 
 
 def _extract(year: int, timestamp: float) -> List[Dict]:

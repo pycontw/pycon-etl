@@ -11,7 +11,7 @@ DEFAULT_ARGS = {
     "owner": "henry410213028@gmail.com",
     "depends_on_past": False,
     "start_date": datetime(2022, 7, 23),
-    "end_date": datetime(2022, 8, 25),
+    "end_date": datetime(2022, 8, 29),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",

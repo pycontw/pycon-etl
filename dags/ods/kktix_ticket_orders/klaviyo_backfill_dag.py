@@ -10,14 +10,14 @@ from ods.kktix_ticket_orders.udfs import batch_kktix2mailer
 DEFAULT_ARGS = {
     "owner": "henry410213028@gmail.com",
     "depends_on_past": False,
-    "start_date": datetime(2022, 7, 23),
-    "end_date": datetime(2022, 8, 29),
+    "start_date": datetime(2022, 4, 21),
+    "end_date": datetime(2022, 7, 23),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "KLAVIYO_SEND_MAIL_BACKFILL_V1",
+    "KLAVIYO_SEND_MAIL_BACKFILL_V2",
     default_args=DEFAULT_ARGS,
     schedule_interval="0 23 * * *",
     max_active_runs=1,

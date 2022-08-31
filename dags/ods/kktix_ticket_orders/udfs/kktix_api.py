@@ -27,8 +27,6 @@ def main(**context):
     timestamp = ts_datetime_obj.timestamp()
     event_raw_data_array = _extract(year=year, timestamp=timestamp,)
     # load name and email to mailer before data has been hashed
-    # wait for other services
-    # klaviyo_loader.load(event_raw_data_array)
     transformed_event_raw_data_array = kktix_transformer.transform(event_raw_data_array)
     kktix_loader.load(transformed_event_raw_data_array)
     print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")

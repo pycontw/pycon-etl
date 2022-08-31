@@ -6,7 +6,7 @@ from airflow.hooks.http_hook import HttpHook
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import klaviyo_loader
 
-SCHEDULE_INTERVAL_SECONDS: int = 24 * 60 * 60
+SCHEDULE_INTERVAL_SECONDS: int = 60 * 60
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
 RETRY_ARGS = dict(
     wait=tenacity.wait_none(),
@@ -21,7 +21,7 @@ def main(**context):
     """
     schedule_interval = context["dag"].schedule_interval
     # If we change the schedule_interval, we need to update the logic in condition_filter_callback
-    assert schedule_interval == "0 23 * * *"  # nosec
+    assert schedule_interval == "0 * * * *"  # nosec
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()

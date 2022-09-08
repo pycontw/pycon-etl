@@ -3,6 +3,7 @@ from typing import Callable, Dict, List
 import requests
 import tenacity
 from airflow.hooks.http_hook import HttpHook
+from airflow.models import Variable
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import klaviyo_loader
 
@@ -71,8 +72,7 @@ def get_event_metadatas(condition_filter: Callable) -> List[Dict]:
     Fetch all the ongoing events
     """
     event_list_resp = HTTP_HOOK.run_with_advanced_retry(
-        endpoint="/api/v2/hosting_events?only_not_ended_event=true",
-        _retry_args=RETRY_ARGS,
+        endpoint=Variable.get("kktix_events_endpoint"), _retry_args=RETRY_ARGS,
     ).json()
     event_metadatas: List[dict] = []
     for event in event_list_resp["data"]:
@@ -86,7 +86,7 @@ def _get_attendance_book_id(event_id: int) -> int:
     Fetch attendance books
     """
     attendance_books_resp = HTTP_HOOK.run_with_advanced_retry(
-        endpoint=f"/api/v2/hosting_events/{event_id}/attendance_books",
+        endpoint=f"{Variable.get('kktix_hosting_events_endpoint_prefix')}/{event_id}/attendance_books",
         _retry_args=RETRY_ARGS,
     ).json()
     return attendance_books_resp[0]["id"]
@@ -98,7 +98,7 @@ def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
     """
     attendee_ids = []
     attendees_resp = HTTP_HOOK.run_with_advanced_retry(
-        endpoint=f"/api/v2/hosting_events/{event_id}/attendance_books/{attendance_book_id}",
+        endpoint=f"{Variable.get('kktix_hosting_events_endpoint_prefix')}/{event_id}/attendance_books/{attendance_book_id}",
         _retry_args=RETRY_ARGS,
     ).json()
     for signin_status_tuple in attendees_resp["signin_status"]:
@@ -115,7 +115,7 @@ def _get_attendee_infos(
     attendee_infos = []
     for attendee_id in attendee_ids:
         attendee_info = HTTP_HOOK.run_with_advanced_retry(
-            endpoint=f"/api/v2/hosting_events/{event_id}/attendees/{attendee_id}",
+            endpoint=f"{Variable.get('kktix_hosting_events_endpoint_prefix')}/{event_id}/attendees/{attendee_id}",
             _retry_args=RETRY_ARGS,
         ).json()
         if not attendee_info["is_paid"]:

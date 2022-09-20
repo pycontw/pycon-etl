@@ -30,6 +30,9 @@ if __name__ == "__main__":
     )
     PARSER.add_argument("-p", "--prod", action="store_true")
     ARGS = PARSER.parse_args()
+    print(
+        "HINT: the default mode would load data to dataset `test`. To load data to bigquery's `ods` dataset, please add `--prod` flag!"
+    )
     for filename, metadata in FILENAMES.items():
         SURVEY_CAKE_CSV_UPLOADER = SurveyCakeCSVUploader(
             year=ARGS.year, filename=filename

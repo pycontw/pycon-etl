@@ -204,9 +204,11 @@ def upload_dataframe_to_bigquery(
     job_config.schema_update_options = [
         bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION
     ]
+    if "vat_number" in df.columns:
+        df["vat_number"] = df["vat_number"].astype("string")
     # dump the csv into bigquery
-    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
 
+    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
     job.result()
 
     logging.info(
@@ -343,7 +345,7 @@ def sanitize_column_names(df: pd.DataFrame) -> pd.DataFrame:
 
 def hash_string(string_to_hash: str) -> str:
     sha = hashlib.sha256()
-    sha.update(string_to_hash.encode("utf-8"))
+    sha.update(str(string_to_hash).encode("utf-8"))
     string_hashed = sha.hexdigest()
 
     return string_hashed
@@ -386,6 +388,10 @@ def main():
 
     # load the csv into bigquery
     df = pd.read_csv(args.csv_file)
+    if "Email" in df.columns:
+        # BUG: theoretically, column name should be `Contact Email` not `Email`
+        # hope registration team would remove `Email` column in 2023
+        df = df.drop(columns=["Email"])
     sanitized_df = sanitize_column_names(df)
     hash_privacy_info(sanitized_df)
 

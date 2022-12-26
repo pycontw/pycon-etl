@@ -3,7 +3,7 @@ from pathlib import Path
 
 from google.cloud import bigquery
 
-TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_kktix_attendeeId_datetime"
+TABLE = f"{os.getenv('BIGQUERY_PROJECT')}.ods.ods_kktix_attendeeId_datetime_copy2"
 # since backfill would insert duplicate records, we need this dedupe to make it idempotent
 DEDUPE_SQL = f"""
 CREATE OR REPLACE TABLE

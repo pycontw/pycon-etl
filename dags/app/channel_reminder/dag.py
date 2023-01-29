@@ -10,33 +10,29 @@ from app.channel_reminder.udfs import discord
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
     "depends_on_past": False,
-    "start_date": datetime(2020, 12, 9),
+    "start_date": datetime(2022, 9, 15),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord",
 }
 dag = DAG(
-    "DISCORD_REMINDER",
+    "DISCORD_CHORES_REMINDER",
     default_args=DEFAULT_ARGS,
-    schedule_interval=timedelta(weeks=2),
+    schedule_interval="@yearly",
     max_active_runs=1,
     catchup=False,
 )
 with dag:
-    for team in ("DATATEAM",):
-        REMINDER_OF_THIS_TEAM = PythonOperator(
-            task_id=f"REMINDER_OF_TEAM_{team}",
-            python_callable=discord.main,
-            op_kwargs={
-                "team": team,
-                "msg": """
-1. Data Team 這一季最重要的目標是讓大家多 social 以及多舉辦 sharing session \n
-(新朋友可以想一下主題，鼓勵分享讓大家認識你XD)
-2. 其次是建好 PyCon TW 的 Data Infra
-3. 雙周會前請在 Hackmd 上更新自己的近況：[Hackmd](https://hackmd.io/hAO4NFR3SfWt1fodHtI_nA)
-4. 認領任務：[Trello](https://trello.com/b/Rxtrpqxi/data-squad)""",
-            },
-        )
+    REMINDER_OF_THIS_TEAM = PythonOperator(
+        task_id="KLAIVYO_REMINDER",
+        python_callable=discord.main,
+        op_kwargs={
+            "msg": """
+<@&790739794148982796> <@&755827317904769184> <@&791157626099859487>
+記得大會結束後，要有一個人負責去取消 Klaviyo 的訂閱，不然我們每個月會一直繳 $NTD2000 喔！
+""",
+        },
+    )
 
 if __name__ == "__main__":
     dag.cli()

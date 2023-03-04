@@ -1,10 +1,9 @@
-import os
-
 import requests
+from airflow.models import Variable
 
 
-def main(team: str, msg: str) -> None:
+def main(msg: str) -> None:
     requests.post(
-        os.getenv(f"{team}_DISCORD_WEBHOOK", ""),
+        Variable.get("DISCORD_CHORES_REMINDER_WEBHOOK"),
         json={"username": "Data Team Airflow reminder", "content": msg},
     )

@@ -49,6 +49,7 @@ def get_video_ids(**context) -> None:
         video_metadatas += [
             {"videoId": item["id"]["videoId"], "title": item["snippet"]["title"]}
             for item in response_json["items"]
+            if "videoId" in item["id"]
         ]
     task_instance = context["task_instance"]
     task_instance.xcom_push("GET_VIDEO_IDS", video_metadatas)
@@ -77,6 +78,7 @@ def save_video_data_2_bq(**context):
                     "Cache-Control": "no-cache",
                 },
             ).json()
+            print(response_json["items"][0]["statistics"].keys())
             result.append(
                 (
                     execution_date,
@@ -84,7 +86,7 @@ def save_video_data_2_bq(**context):
                     title,
                     int(response_json["items"][0]["statistics"]["viewCount"]),
                     int(response_json["items"][0]["statistics"]["likeCount"]),
-                    int(response_json["items"][0]["statistics"]["dislikeCount"]),
+                    0,  # dislikeCount field is not available in statistics API since 2021!
                     int(response_json["items"][0]["statistics"]["favoriteCount"]),
                     int(response_json["items"][0]["statistics"]["commentCount"]),
                 )

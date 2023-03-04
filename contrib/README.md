@@ -2,6 +2,12 @@
 
 ## Upload KKTIX
 
+![](../docs/kktix.png)
+
+1. Navigate to KKTIX's attendees page
+2. Download the CSV
+3. `upload-kktix-ticket-csv-to-bigquery.py -p pycontw-225217 -d ods -t ods_kktix_ticket_<corporate/individual/reserved>_attendees --upload`
+
 ## Survey Cake
 
 [Demo Video](https://www.loom.com/share/4c494f1d3ce443c6a43ed514c53b70ff)

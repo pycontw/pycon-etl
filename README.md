@@ -37,6 +37,10 @@ Using Airflow to implement our ETL pipelines
 2. `npm run check`: Apply all the linter and formatter
 3. `npm run commit`
 
+## PR
+
+Please use Gitlab Flow, otherwise you cannot pass dockerhub CI
+
 ## Run
 
 ### Local environment Python Script
@@ -50,7 +54,7 @@ Using Airflow to implement our ETL pipelines
 
 ### Local environment Docker
 
-> Would need to setup Snowflake Connection manually, find @davidtnfsh if you don't have those secrets
+> Find @davidtnfsh if you don't have those secrets.
 
 > **⚠ WARNING: About .env**  
 > Please don't use the .env for local development, or it might screw up the production tables.
@@ -64,11 +68,42 @@ Using Airflow to implement our ETL pipelines
     2. Follow the instruction in `.env.<staging|production>` and fill in your secrets.
        If you are just running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
 3. Start the Airflow server:
-    * production: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
-    * dev/test: `docker run --rm -p 80:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * production: `docker run --log-opt max-size=1m -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference are just the env file name and the image cache.
-4. Enter the `localhost` or `127.0.0.1` in the address bar in your browser. Open the Airflow Page.
-   * If Port 80 is already in use. You can select a different host port in the `-p` argument to `docker run`. And enter the `localhost:<host port>` in the address bar.
+4. Portforward compute instance to your local and then navigate to <http://localhost:8080/admin/>:
+   1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -NL 8080:localhost:8080`
+   2. If Port 8080 is already in use. You need to stop the service occupied 8080 port on your local first.
+
+    ![image](./docs/airflow.png)
+5. Setup Airflow's Variable and Connections:
+    * Youtube: ![img](docs/youtube-connection.png)
+
+
+### Local environment Docker(windows)
+> Do not use Windows Powershell, please use Comman Prompt instead.
+
+> Find @davidtnfsh if you don't have those secrets.
+
+> **⚠ WARNING: About .env**  
+> Please don't use the .env for local development, or it might screw up the production tables.
+
+1. Build docker image:
+    * Build a production image (for production): `docker build -t davidtnfsh/pycon_etl:prod --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile .`
+      If you want to build dev/test image, you also need to build this docker image first because dev/test image is on top of this production image. See below.
+    * Build dev/test image (for dev/test): `docker build -t davidtnfsh/pycon_etl:test --cache-from davidtnfsh/pycon_etl:prod -f Dockerfile.test .`
+2. Fill in some secrets:
+    1. `copy .env.template .env.staging` for dev/test. `copy .env.template .env.production` instead if you are going to start a production instance.
+    2. Follow the instruction in `.env.<staging|production>` and fill in your secrets.
+       If you are just running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
+3. Start the Airflow server:
+    * production: `docker run -p 8080:8080 --name airflow -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run -p 8080:8080 --name airflow  -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * Note the difference are just the env file name and the image cache.
+4. Portforward compute instance to your local and then navigate to <http://localhost/admin/>:
+   1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -N -L 8080:localhost:8080`
+   2. If Port 8080 is already in use. You need to stop the service occupied 8080 port on your local first.
+
 
 ![image](./docs/airflow.png)
 #### BigQuery (Optional)
@@ -77,10 +112,21 @@ Using Airflow to implement our ETL pipelines
     * service-account.json: Please contact @david30907d using email, telegram or discord. No worry about this json if you are just running the sandbox staging instance for development.
 2. Give [Toy-Examples](#Toy-Examples) a try
 
-## Deployment
+## Deployment & Setting Up Credentials/Env
 
 1. Manually deploy to Google compute instance
-2. Fill out `airflow.cfg` with Google OAuth ID and credential (Ref: [setting-up-google-authentication](https://airflow.apache.org/docs/apache-airflow/1.10.1/security.html#setting-up-google-authentication))
+    1. `cd /home/zhangtaiwei/pycon-etl`
+    2. `sudo git pull`
+2. Credentials:
+    * Airflow:
+        * Connections:
+            * kktix_api: `conn_id=kktix_api`, `host` and `extra(header)` are confidential since its KKTIX's private endpoint. Please DM @GTB or data team's teammembers for these credentials.
+            * klaviyo_api: `conn_id=klaviyo_api`, `host` is https://a.klaviyo.com/api
+        * Variables:
+            * KLAVIYO_KEY: Create from https://www.klaviyo.com/account#api-keys-tab
+            * KLAVIYO_LIST_ID: Create from https://www.klaviyo.com/lists
+            * KLAVIYO_CAMPAIGN_ID: Create from https://www.klaviyo.com/campaigns
+            * kktix_events_endpoint: url path of kktix's `hosting_events`, ask @gtb for details!
 
 ### CI/CD
 
@@ -105,3 +151,16 @@ rows = query_job.result()  # Waits for query to finish
 for row in rows:
     print(row.diet)
 ```
+
+### Conventions
+
+* table name convention:
+    ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
+
+
+## DevOps (Will deprecate this if we don't bump into out-of-disk issue any more)
+
+1. Find topk biggest folders: `du -a /var/lib/docker/overlay2 | sort -n -r | head -n 20`
+2. Show the folder size: `du -hs xxxx`
+3. delete those pretty big folder
+4. `df -h`

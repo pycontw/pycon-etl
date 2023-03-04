@@ -11,7 +11,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
@@ -21,7 +21,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install poetry
+        pip install poetry==1.1.14
+        poetry config experimental.new-installer false
         poetry install
 
     - name: Run linters

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from ods.kktix_ticket_orders.udfs import bigquery_loader, gather_town_loader, kktix_api
+from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
 
 DEFAULT_ARGS = {
     "owner": "bc842017@gmail.com",
@@ -32,7 +32,7 @@ with dag:
         task_id="GET_ATTENDEE_INFOS",
         python_callable=kktix_api.main,
         provide_context=True,
-        op_kwargs={"backfill": True}
+        op_kwargs={"backfill": True},
     )
 
     CREATE_TABLE_IF_NEEDED >> GET_ATTENDEE_INFOS

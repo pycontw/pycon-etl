@@ -28,7 +28,9 @@ def main(**context):
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
     is_backfill = context["backfill"]
-    event_raw_data_array = _extract(year=year, timestamp=timestamp, backfill=is_backfill)
+    event_raw_data_array = _extract(
+        year=year, timestamp=timestamp, backfill=is_backfill
+    )
     transformed_event_raw_data_array = kktix_transformer.transform(
         copy.deepcopy(event_raw_data_array)
     )
@@ -41,7 +43,7 @@ def main(**context):
     )
 
 
-def _extract(year: int, timestamp: float, backfill: bool()) -> List[Dict]:
+def _extract(year: int, timestamp: float, backfill: bool) -> List[Dict]:
     """
     get data from KKTIX's API
     1. condition_filter_callb: use this callbacl to filter out unwanted event!
@@ -66,7 +68,7 @@ def _extract(year: int, timestamp: float, backfill: bool()) -> List[Dict]:
     return event_raw_data_array
 
 
-def get_attendee_infos(event_id: int, timestamp: float, backfill: bool()) -> List:
+def get_attendee_infos(event_id: int, timestamp: float, backfill: bool) -> List:
     """
     it's a public wrapper for people to get attendee infos!
     """
@@ -117,7 +119,7 @@ def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
 
 
 def _get_attendee_infos(
-    event_id: int, attendee_ids: List[int], timestamp: float, backfill: bool()
+    event_id: int, attendee_ids: List[int], timestamp: float, backfill: bool
 ) -> List:
     """
     get attendee infos, e.g. email, phonenumber, name and etc

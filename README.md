@@ -13,7 +13,7 @@ Using Airflow to implement our ETL pipelines
 3. 打開下列的 Airflow tasks:
     1. `KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION`: 每天送賣票的銷量資訊到 discord 給註冊組看
     2. `KKTIX_TICKET_ORDERS_V3`: 每五分鐘就去抓最新的 kktix 資料進 BigQuery, 更新後 metabase 相關連的 dashboard 就會更新（售票完之後可以關掉）
-    3. `KLAVIYO_SEND_MAIL_V3`: henry to confirm, 看今年什麼時候還有需不需要打開
+    3. `KLAVIYO_SEND_MAIL_V3`: 每年寄發行前信時啓動隨買即用, 已購票的用戶會批次寄發信件, 新的購票者也會批次派發送信
 
 ## Dags
 

@@ -4,6 +4,17 @@
 
 Using Airflow to implement our ETL pipelines
 
+## Year to Year Jobs
+
+這三個 job 什麼時候打開需要人工確認（麻煩當年的組長大大了），理論上是售票開始前我們要測試一下然後打開
+
+1. `gcloud beta compute ssh --zone asia-east1-b data-team --project pycontw-225217 -- -NL 8080:localhost:8080`
+2. Navigate to <http://localhost:8080/admin/>
+3. 打開下列的 Airflow tasks:
+    1. `KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION`: 每天送賣票的銷量資訊到 discord 給註冊組看
+    2. `KKTIX_TICKET_ORDERS_V3`: 每五分鐘就去抓最新的 kktix 資料進 BigQuery, 更新後 metabase 相關連的 dashboard 就會更新（售票完之後可以關掉）
+    3. `KLAVIYO_SEND_MAIL_V3`: henry to confirm, 看今年什麼時候還有需不需要打開
+
 ## Dags
 
 * Dag 的命名規則請看這篇 [阿里巴巴大數據實戰](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c)
@@ -114,10 +125,13 @@ Please use Gitlab Flow, otherwise you cannot pass dockerhub CI
 
 ## Deployment & Setting Up Credentials/Env
 
-1. Manually deploy to Google compute instance
-    1. `cd /home/zhangtaiwei/pycon-etl`
-    2. `sudo git pull`
-2. Credentials:
+1. Login to data team's server:
+    1. `gcloud compute ssh --zone "asia-east1-b" "data-team"  --project "pycontw-225217"`
+    2. service:
+        * ETL: `/home/zhangtaiwei/pycon-etl`
+        * btw, metabase is located here: `/mnt/disks/data-team-additional-disk/pycontw-infra-scripts/data_team/metabase_server`
+2. Pull the latest codebase to this server: `sudo git pull`
+3. Add Credentials (only need to do once):
     * Airflow:
         * Connections:
             * kktix_api: `conn_id=kktix_api`, `host` and `extra(header)` are confidential since its KKTIX's private endpoint. Please DM @GTB or data team's teammembers for these credentials.

@@ -16,9 +16,9 @@ DEFAULT_ARGS = {
 }
 
 with DAG(
-    "DISCORD_PROPOSAL_REMINDER",
+    "DISCORD_PROPOSAL_REMINDER_v2",
     default_args=DEFAULT_ARGS,
-    schedule_interval="0 16 * * 5",  # At 16:00 (00:00 +8) on Friday
+    schedule_interval="0 16 * * *",  # At 16:00 (00:00 +8)
     max_active_runs=1,
     catchup=False,
 ) as dag:

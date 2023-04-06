@@ -27,7 +27,10 @@ def main(**context):
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
-    event_raw_data_array = _extract(year=year, timestamp=timestamp,)
+    is_backfill = context["backfill"]
+    event_raw_data_array = _extract(
+        year=year, timestamp=timestamp, backfill=is_backfill
+    )
     transformed_event_raw_data_array = kktix_transformer.transform(
         copy.deepcopy(event_raw_data_array)
     )
@@ -40,7 +43,7 @@ def main(**context):
     )
 
 
-def _extract(year: int, timestamp: float) -> List[Dict]:
+def _extract(year: int, timestamp: float, backfill: bool) -> List[Dict]:
     """
     get data from KKTIX's API
     1. condition_filter_callb: use this callbacl to filter out unwanted event!
@@ -54,7 +57,7 @@ def _extract(year: int, timestamp: float) -> List[Dict]:
     event_metadatas = get_event_metadatas(condition_filter_callback)
     for event_metadata in event_metadatas:
         event_id = event_metadata["id"]
-        for attendee_info in get_attendee_infos(event_id, timestamp):
+        for attendee_info in get_attendee_infos(event_id, timestamp, backfill):
             event_raw_data_array.append(
                 {
                     "id": event_id,
@@ -65,13 +68,13 @@ def _extract(year: int, timestamp: float) -> List[Dict]:
     return event_raw_data_array
 
 
-def get_attendee_infos(event_id: int, timestamp: float) -> List:
+def get_attendee_infos(event_id: int, timestamp: float, backfill: bool) -> List:
     """
     it's a public wrapper for people to get attendee infos!
     """
     attendance_book_id = _get_attendance_book_id(event_id)
     attendee_ids = _get_attendee_ids(event_id, attendance_book_id)
-    attendee_infos = _get_attendee_infos(event_id, attendee_ids, timestamp)
+    attendee_infos = _get_attendee_infos(event_id, attendee_ids, timestamp, backfill)
     return attendee_infos
 
 
@@ -80,7 +83,7 @@ def get_event_metadatas(condition_filter: Callable) -> List[Dict]:
     Fetch all the ongoing events
     """
     event_list_resp = HTTP_HOOK.run_with_advanced_retry(
-        endpoint=f"{Variable.get('kktix_events_endpoint')}?only_not_ended_event=true",
+        endpoint=f"{Variable.get('kktix_events_endpoint')}?only_not_ended_event={Variable.get('kktix_only_not_ended_events')}",
         _retry_args=RETRY_ARGS,
     ).json()
     event_metadatas: List[dict] = []
@@ -116,7 +119,7 @@ def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
 
 
 def _get_attendee_infos(
-    event_id: int, attendee_ids: List[int], timestamp: float
+    event_id: int, attendee_ids: List[int], timestamp: float, backfill: bool
 ) -> List:
     """
     get attendee infos, e.g. email, phonenumber, name and etc
@@ -127,12 +130,15 @@ def _get_attendee_infos(
             endpoint=f"{Variable.get('kktix_events_endpoint')}/{event_id}/attendees/{attendee_id}",
             _retry_args=RETRY_ARGS,
         ).json()
-        if not attendee_info["is_paid"]:
-            continue
-        if (
-            timestamp
-            < attendee_info["updated_at"]
-            < timestamp + SCHEDULE_INTERVAL_SECONDS
-        ):
+        if backfill:
             attendee_infos.append(attendee_info)
+        else:
+            if not attendee_info["is_paid"]:
+                continue
+            if (
+                timestamp
+                < attendee_info["updated_at"]
+                < timestamp + SCHEDULE_INTERVAL_SECONDS
+            ):
+                attendee_infos.append(attendee_info)
     return attendee_infos

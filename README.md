@@ -127,6 +127,7 @@ Please use Gitlab Flow, otherwise you cannot pass dockerhub CI
             * KLAVIYO_LIST_ID: Create from https://www.klaviyo.com/lists
             * KLAVIYO_CAMPAIGN_ID: Create from https://www.klaviyo.com/campaigns
             * kktix_events_endpoint: url path of kktix's `hosting_events`, ask @gtb for details!
+            * kktix_only_not_ended_events: decide whether to only retrieve ended events
 
 ### CI/CD
 

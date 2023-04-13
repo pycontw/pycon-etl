@@ -98,7 +98,7 @@ def _get_attendance_book_id(event_id: int) -> int:
     Fetch attendance books
     """
     attendance_books_resp = HTTP_HOOK.run_with_advanced_retry(
-        endpoint=f"{Variable.get('kktix_events_endpoint')}/{event_id}/attendance_books",
+        endpoint=f"{Variable.get('kktix_events_endpoint')}/{event_id}/attendance_books?only_not_ended_event=true",
         _retry_args=RETRY_ARGS,
     ).json()
     return attendance_books_resp[0]["id"]

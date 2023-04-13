@@ -106,9 +106,16 @@ def _get_statistics_from_bigquery() -> Dict:
         FROM
           `{TABLE}`
         WHERE
-          REFUNDED IS NULL OR REFUNDED = FALSE
+          (REFUNDED IS NULL
+            OR REFUNDED = FALSE)
+          AND EXTRACT(YEAR
+          FROM
+            TIMESTAMP_SECONDS(CAST(CAST(JSON_EXTRACT(ATTENDEE_INFO, '$.updated_at') AS FLOAT64) AS int64))) = EXTRACT(year
+          FROM
+            CURRENT_DATE())
         GROUP BY
-          NAME, TICKET_NAME;
+          NAME,
+          TICKET_NAME;
     """  # nosec
     )
     result = query_job.result()

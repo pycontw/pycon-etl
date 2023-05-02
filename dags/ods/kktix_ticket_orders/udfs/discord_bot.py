@@ -46,17 +46,12 @@ def _check_if_refunded_ticket_exists() -> List[int]:
         f"""
             SELECT
               ID,
-              CAST(REPLACE(JSON_EXTRACT(ATTENDEE_INFO, '$.id'), '"', '') AS INT64) AS ATTENDEE_ID
+              CAST(REPLACE(JSON_EXTRACT(ATTENDEE_INFO,
+                  '$.id'), '"', '') AS INT64) AS ATTENDEE_ID
             FROM
               `{TABLE}`
             WHERE
-              (REFUNDED IS NULL
-                OR REFUNDED = FALSE)
-              AND EXTRACT(YEAR
-              FROM
-                TIMESTAMP_SECONDS(CAST(CAST(JSON_EXTRACT(ATTENDEE_INFO, '$.updated_at') AS FLOAT64) AS int64))) = EXTRACT(year
-              FROM
-                CURRENT_DATE())
+              REFUNDED IS NULL OR REFUNDED = FALSE
         """  # nosec
     )
     event_ids_and_attendee_ids = query_job.result()
@@ -99,23 +94,24 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: List[int]) -> None:
 def _get_statistics_from_bigquery() -> Dict:
     query_job = CLIENT.query(
         f"""
+        WITH UNIQUE_RECORDS AS (
+          SELECT DISTINCT
+            NAME,
+            JSON_EXTRACT(ATTENDEE_INFO, '$.id') AS ORDER_ID,
+            REPLACE(JSON_EXTRACT(ATTENDEE_INFO, '$.ticket_name'), '"', '') AS TICKET_NAME,
+          FROM
+            `{TABLE}`
+          WHERE
+            ((REFUNDED IS NULL) OR (REFUNDED = FALSE)) AND (NAME LIKE "PyCon TW 2023 Registration%")
+        )
+
         SELECT
           NAME,
-          REPLACE(JSON_EXTRACT(ATTENDEE_INFO, '$.ticket_name'), '"', '') AS TICKET_NAME,
+          TICKET_NAME,
           COUNT(1) AS COUNTS
-        FROM
-          `{TABLE}`
-        WHERE
-          (REFUNDED IS NULL
-            OR REFUNDED = FALSE)
-          AND EXTRACT(YEAR
-          FROM
-            TIMESTAMP_SECONDS(CAST(CAST(JSON_EXTRACT(ATTENDEE_INFO, '$.updated_at') AS FLOAT64) AS int64))) = EXTRACT(year
-          FROM
-            CURRENT_DATE())
+        FROM UNIQUE_RECORDS
         GROUP BY
-          NAME,
-          TICKET_NAME;
+          NAME, TICKET_NAME;
     """  # nosec
     )
     result = query_job.result()
@@ -134,16 +130,9 @@ def _send_webhook_to_discord(payload: Text) -> None:
 def _compose_discord_msg(payload) -> Text:
     msg = f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
     total = 0
-    msg_dict = defaultdict(list)
     for name, ticket_name, counts in payload:
-        msg_dict[name].append((ticket_name, counts))
-    for name, ticket_name_counts_tuples in sorted(msg_dict.items(), key=lambda x: x[0]):
-        msg += f"{name}\n"
-        for ticket_name, counts in sorted(
-            ticket_name_counts_tuples, key=lambda x: x[0]
-        ):
-            msg += f"  * 票種：{ticket_name}\t{counts}張\n"
-            total += counts
+        msg += f"  * 票種：{ticket_name}\t{counts}張\n"
+        total += counts
     msg += "dashboard: https://metabase.pycon.tw/question/142\n"
     msg += f"總共賣出 {total} 張喔～"
     return msg

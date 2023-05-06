@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import Dict, Text
 
-import requests
 from airflow.models import Variable
 from app import discord
 from google.cloud import bigquery
@@ -18,7 +17,7 @@ def main() -> None:
     kwargs = {
         "webhook_url": Variable.get("discord_webhook_registration_endpoint"),
         "username": "KKTIX order report",
-        "msg": msg
+        "msg": msg,
     }
     discord.send_webhook_message(**kwargs)
 

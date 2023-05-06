@@ -1,6 +1,7 @@
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_api, klaviyo_loader
 
+
 def main(**context):
     """
     Extract user info from kktix api and load to mailer

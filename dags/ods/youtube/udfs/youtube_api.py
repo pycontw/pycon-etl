@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -7,12 +8,11 @@ from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
-from datetime import datetime
 
 # channel id of YouTube is public to everyone, so it's okay to commit this ID into git
 CHANNEL_ID = "UCHLnNgRnfGYDzPCCH8qGbQw"
 MAX_RESULTS = 50
-PROJECT = os.getenv('BIGQUERY_PROJECT')
+PROJECT = os.getenv("BIGQUERY_PROJECT")
 
 
 def create_table_if_needed():
@@ -64,7 +64,15 @@ def save_video_data_2_bq(**context):
         datatype = context["datatype"]
         video_metadatas = task_instance.xcom_pull("GET_VIDEO_IDS", key="GET_VIDEO_IDS")
         result = []
-        return client, http_conn, execution_date, task_instance, datatype, video_metadatas, result
+        return (
+            client,
+            http_conn,
+            execution_date,
+            task_instance,
+            datatype,
+            video_metadatas,
+            result,
+        )
 
     def _get_statistics():
         for video_metadata in video_metadatas:
@@ -110,10 +118,14 @@ def save_video_data_2_bq(**context):
                     execution_date,
                     video_id,
                     title,
-                    response_json["items"][0]["snippet"]["thumbnails"]["default"]["url"],
+                    response_json["items"][0]["snippet"]["thumbnails"]["default"][
+                        "url"
+                    ],
                     response_json["items"][0]["description"],
-                    datetime.strptime(response_json["items"][0]["publishedAt"], '%Y-%m-%dT%H:%M:%SZ'),
-                    f"https://www.youtube.com/watch?v={response_json["items"][0]["id"]}",
+                    datetime.strptime(
+                        response_json["items"][0]["publishedAt"], "%Y-%m-%dT%H:%M:%SZ"
+                    ),
+                    f'https://www.youtube.com/watch?v={response_json["items"][0]["id"]}',
                 )
             )
         return result
@@ -139,12 +151,20 @@ def save_video_data_2_bq(**context):
         job = client.load_table_from_dataframe(df, TABLE)
         job.result()
 
-    client, http_conn, execution_date, task_instance, datatype, video_metadatas, result = _init()
+    (
+        client,
+        http_conn,
+        execution_date,
+        task_instance,
+        datatype,
+        video_metadatas,
+        result,
+    ) = _init()
 
-    if datatype == 'statistics':
+    if datatype == "statistics":
         tablename = "ods.ods_youtubeStatistics_videoId_datetime"
         result = _get_statistics()
-    elif datatype == 'info':
+    elif datatype == "info":
         tablename = "ods.ods_youtubeInfo_videoId_datetime"
         result = _get_info()
     else:

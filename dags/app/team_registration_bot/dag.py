@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from app.team_registration_bot import udfs
+from app.team_registration_bot import udf
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh@gmail.com",
@@ -24,7 +24,7 @@ dag = DAG(
 )
 with dag:
     SEND_MSG_TO_DISCORD = PythonOperator(
-        task_id="LOAD_TO_DISCORD", python_callable=udfs.main,
+        task_id="LOAD_TO_DISCORD", python_callable=udf.main,
     )
 
 if __name__ == "__main__":

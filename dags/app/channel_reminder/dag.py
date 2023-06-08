@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from app.channel_reminder import udfs
+from app.channel_reminder import udf
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
@@ -24,7 +24,7 @@ dag = DAG(
 )
 with dag:
     REMINDER_OF_THIS_TEAM = PythonOperator(
-        task_id="KLAIVYO_REMINDER", python_callable=udfs.main
+        task_id="KLAIVYO_REMINDER", python_callable=udf.main
     )
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from app.channel_reminder.udfs import discord
+from app.channel_reminder import udfs
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
@@ -24,14 +24,7 @@ dag = DAG(
 )
 with dag:
     REMINDER_OF_THIS_TEAM = PythonOperator(
-        task_id="KLAIVYO_REMINDER",
-        python_callable=discord.main,
-        op_kwargs={
-            "msg": """
-<@&790739794148982796> <@&755827317904769184> <@&791157626099859487>
-記得大會結束後，要有一個人負責去取消 Klaviyo 的訂閱，不然我們每個月會一直繳 $NTD2000 喔！
-""",
-        },
+        task_id="KLAIVYO_REMINDER", python_callable=udfs.main
     )
 
 if __name__ == "__main__":

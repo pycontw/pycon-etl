@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from app.proposal_reminder import udf
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
@@ -22,7 +23,6 @@ with DAG(
     max_active_runs=1,
     catchup=False,
 ) as dag:
-    from app.proposal_reminder import udf
 
     PythonOperator(
         task_id="SEND_PROPOSAL_SUMMARY", python_callable=udf.main,

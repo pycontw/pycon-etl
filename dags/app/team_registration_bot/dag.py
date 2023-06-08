@@ -1,11 +1,11 @@
 """
-send daily ordering metrics to discord channel, this feature is for team registration
+send daily ordering metrics to discord channel
 """
 from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from ods.kktix_ticket_orders.udfs import discord_bot
+from app.team_registration_bot import udfs
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh@gmail.com",
@@ -24,7 +24,7 @@ dag = DAG(
 )
 with dag:
     SEND_MSG_TO_DISCORD = PythonOperator(
-        task_id="LOAD_TO_DISCORD", python_callable=discord_bot.send,
+        task_id="LOAD_TO_DISCORD", python_callable=udfs.main,
     )
 
 if __name__ == "__main__":

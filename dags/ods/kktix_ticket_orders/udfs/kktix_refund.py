@@ -1,13 +1,7 @@
-import json
 import os
 from collections import defaultdict
-from datetime import datetime
-from typing import Dict, List, Text
+from typing import List
 
-import requests
-import tenacity
-from airflow.hooks.http_hook import HttpHook
-from airflow.models import Variable
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs.bigquery_loader import TABLE
 from ods.kktix_ticket_orders.udfs.kktix_api import (
@@ -15,23 +9,13 @@ from ods.kktix_ticket_orders.udfs.kktix_api import (
     _get_attendee_ids,
 )
 
-DISCORD_HOOK = HttpHook(http_conn_id="discord_registration", method="POST")
-HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
-RETRY_ARGS = dict(
-    wait=tenacity.wait_random(min=1, max=10),
-    stop=tenacity.stop_after_attempt(10),
-    retry=tenacity.retry_if_exception_type(requests.exceptions.ConnectionError),
-)
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
-def send() -> None:
+def main() -> None:
     refunded_attendee_ids = _check_if_refunded_ticket_exists()
     if refunded_attendee_ids:
         _mark_tickets_as_refunded(refunded_attendee_ids)
-    statistics = _get_statistics_from_bigquery()
-    msg = _compose_discord_msg(statistics)
-    _send_webhook_to_discord(msg)
 
 
 def _check_if_refunded_ticket_exists() -> List[int]:
@@ -89,50 +73,3 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: List[int]) -> None:
     )
     result = query_job.result()
     print(f"Result of _mark_tickets_as_refunded: {result}")
-
-
-def _get_statistics_from_bigquery() -> Dict:
-    query_job = CLIENT.query(
-        f"""
-        WITH UNIQUE_RECORDS AS (
-          SELECT DISTINCT
-            NAME,
-            JSON_EXTRACT(ATTENDEE_INFO, '$.id') AS ORDER_ID,
-            REPLACE(JSON_EXTRACT(ATTENDEE_INFO, '$.ticket_name'), '"', '') AS TICKET_NAME,
-          FROM
-            `{TABLE}`
-          WHERE
-            ((REFUNDED IS NULL) OR (REFUNDED = FALSE)) AND (NAME LIKE "PyCon TW 2023 Registration%")
-        )
-
-        SELECT
-          NAME,
-          TICKET_NAME,
-          COUNT(1) AS COUNTS
-        FROM UNIQUE_RECORDS
-        GROUP BY
-          NAME, TICKET_NAME;
-    """  # nosec
-    )
-    result = query_job.result()
-    return result
-
-
-def _send_webhook_to_discord(payload: Text) -> None:
-    DISCORD_HOOK.run_with_advanced_retry(
-        endpoint=Variable.get("discord_webhook_registration_endpoint"),
-        _retry_args=RETRY_ARGS,
-        data=json.dumps({"content": payload}),
-        headers={"Accept": "application/json", "Content-Type": "application/json"},
-    )
-
-
-def _compose_discord_msg(payload) -> Text:
-    msg = f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
-    total = 0
-    for name, ticket_name, counts in payload:
-        msg += f"  * 票種：{ticket_name}\t{counts}張\n"
-        total += counts
-    msg += "dashboard: https://metabase.pycon.tw/question/142\n"
-    msg += f"總共賣出 {total} 張喔～"
-    return msg

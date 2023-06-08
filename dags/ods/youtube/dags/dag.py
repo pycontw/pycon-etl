@@ -36,10 +36,19 @@ with dag:
 
     SAVE_STATISTICS_DATA_2_BQ = PythonOperator(
         task_id="SAVE_STATISTICS_DATA_2_BQ",
-        python_callable=youtube_api.save_statistics_data_2_bq,
+        python_callable=youtube_api.save_video_data_2_bq,
         provide_context=True,
+        op_kwargs={"datatype": "statistics"},
     )
     CREATE_TABLE_IF_NEEDED >> GET_VIDEO_IDS >> SAVE_STATISTICS_DATA_2_BQ
+
+    SAVE_INFO_DATA_2_BQ = PythonOperator(
+        task_id="SAVE_INFO_DATA_2_BQ",
+        python_callable=youtube_api.save_video_data_2_bq,
+        provide_context=True,
+        op_kwargs={"datatype": "info"},
+    )
+    GET_VIDEO_IDS >> SAVE_INFO_DATA_2_BQ
 
 if __name__ == "__main__":
     dag.cli()

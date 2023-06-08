@@ -1,13 +1,18 @@
 import requests
 from airflow.models import Variable
+from app import discord
 
 
-def main():
+def main() -> None:
     summary = get_proposal_summary()
-    send_discord_reminder(
-        n_talk=summary["num_proposed_talk"],
-        n_tutorial=summary["num_proposed_tutorial"],
-    )
+    n_talk = summary["num_proposed_talk"]
+    n_tutorial = summary["num_proposed_tutorial"]
+    kwargs = {
+        "webhook_url": Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK"),
+        "username": "Program talk reminder",
+        "msg": f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}",
+    }
+    discord.send_webhook_message(**kwargs)
 
 
 def get_proposal_summary() -> dict:
@@ -18,11 +23,3 @@ def get_proposal_summary() -> dict:
     }
     response = requests.get(url, headers=headers)
     return response.json()
-
-
-def send_discord_reminder(n_talk: int, n_tutorial: int) -> None:
-    webhook_url = Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK")
-    msg = f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}"
-    requests.post(
-        url=webhook_url, json={"username": "Program talk reminder", "content": msg},
-    )

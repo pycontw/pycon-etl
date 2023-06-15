@@ -8,7 +8,7 @@ from airflow.models import Variable
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 
-SCHEDULE_INTERVAL_SECONDS: int = 300
+SCHEDULE_INTERVAL_SECONDS: int = 3600
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
 RETRY_ARGS = dict(
     wait=tenacity.wait_none(),
@@ -23,7 +23,7 @@ def main(**context):
     """
     schedule_interval = context["dag"].schedule_interval
     # If we change the schedule_interval, we need to update the logic in condition_filter_callback
-    assert schedule_interval == "*/5 * * * *"  # nosec
+    assert schedule_interval == "50 * * * *"  # nosec
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()

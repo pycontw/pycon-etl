@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import argparse
 import hashlib
+import json
 import logging
 import re
-import unittest
-from typing import Dict, Set, List
+from datetime import datetime
+from typing import Dict, Set
 
 import pandas as pd
-import json
-from datetime import datetime
 from google.cloud import bigquery
 
 CANONICAL_COLUMN_NAMES_CORE = {
@@ -170,7 +169,7 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "privacy_policy_of_pycon_tw_2021_pycon_tw_2021_httpsbitly2qwl0am": "privacy_policy_of_pycon_tw",
     "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2021_pycon_tw_2021": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
     # from 2022 reformatted column names
-    "how_did_you_know_pycon_apac_2022_pycon_apac_2022": "how_did_you_know_pycon_tw", 
+    "how_did_you_know_pycon_apac_2022_pycon_apac_2022": "how_did_you_know_pycon_tw",
     "Ive_already_read and_I_accept_the_Privacy_Policy_of_PyCon_TW_2022": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
     "privacy_policy_of_pycon_apac_2022_pycon_apac_2022_httpsreurlcc1zxzxw": "privacy_policy_of_pycon_tw",
     "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_apac_2022_pycon_apac_2022": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
@@ -180,11 +179,11 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "privacy_policy_of_pycon_apac_2022_pycon_apac_2022": "privacy_policy_of_pycon_tw",
     "privacy_policy_of_pycon_apac_2022": "privacy_policy_of_pycon_tw",
     # from 2023 reformatted column names
-    'attend_first_time_how_did_you_know_pycon_tw_2023_pycon_tw_2023': "how_did_you_know_pycon_tw", 
-    'ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2023_pycon_tw_2023': "privacy_policy_of_pycon_tw",
-    'size_of_tshirt_for_tickets_with_tshirt_should_fill_in_this_field': "size_of_tshirt",
-    'job_title_if_you_are_a_student_fill_in_student_student': 'job_title',
-    'would_you_like_to_receive_an_email_from_sponsors': "email_from_sponsor",
+    "attend_first_time_how_did_you_know_pycon_tw_2023_pycon_tw_2023": "how_did_you_know_pycon_tw",
+    "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2023_pycon_tw_2023": "privacy_policy_of_pycon_tw",
+    "size_of_tshirt_for_tickets_with_tshirt_should_fill_in_this_field": "size_of_tshirt",
+    "job_title_if_you_are_a_student_fill_in_student_student": "job_title",
+    "would_you_like_to_receive_an_email_from_sponsors": "email_from_sponsor",
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -205,24 +204,29 @@ UNWANTED_DATA_TO_UPLOAD = (
     "購買含 PySafe 票卷者，請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域），以避免 PySafe 無法送達，如因填寫錯誤致未收到 PySafe，報名人須自行負責，大會恕不再另行補寄",
     "Address / 收件地址 EX: 115台北市南港區研究院路二段128號",
     # For 2022
-    '聯絡人 姓名', '聯絡人 Email', '聯絡人 手機', '標籤', '姓名', '手機',
-    # For 2023, just for notes 
+    "聯絡人 姓名",
+    "聯絡人 Email",
+    "聯絡人 手機",
+    "標籤",
+    "姓名",
+    "手機",
+    # For 2023, just for notes
     "提醒填寫正確的衣服尺寸",
     "徵稿資訊管道",
     "個人資料保護聲明",
-    '行為準則',
-    '注意事項',
-    '企業票種將提供報帳收據',
-    '衣服尺寸注意事項',
-    'PyCon TW 2023 個人資料保護聲明',
-    'PyCon TW 2023 行為準則',
-    # For 2023, duplicated 
-    'Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？',
-    'I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)',
-    'Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)',
-    '(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？',
+    "行為準則",
+    "注意事項",
+    "企業票種將提供報帳收據",
+    "衣服尺寸注意事項",
+    "PyCon TW 2023 個人資料保護聲明",
+    "PyCon TW 2023 行為準則",
+    # For 2023, duplicated
+    "Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？",
+    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
+    "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
+    "(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？",
     '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)',
-    """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則"""
+    """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則""",
 )
 
 
@@ -241,7 +245,7 @@ def upload_dataframe_to_bigquery(
     job_config.schema_update_options = [
         bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION
     ]
-                  
+
     if "vat_number" in df.columns:
         df["vat_number"] = df["vat_number"].astype("string")
     # dump the csv into bigquery
@@ -380,6 +384,7 @@ def sanitize_column_names(df: pd.DataFrame) -> pd.DataFrame:
 
     return df_stripped_unwanted.rename(columns=compatible_columns)
 
+
 def hash_string(string_to_hash: str) -> str:
     sha = hashlib.sha256()
     sha.update(str(string_to_hash).encode("utf-8"))
@@ -387,12 +392,13 @@ def hash_string(string_to_hash: str) -> str:
 
     return string_hashed
 
+
 def hash_privacy_info(df: pd.DataFrame) -> None:
     if "email" in df.columns:
         df["email"] = df["email"].apply(hash_string)
 
 
-TABLE = f"pycontw-225217.ods.ods_kktix_attendeeId_datetime"
+TABLE = "pycontw-225217.ods.ods_kktix_attendeeId_datetime"
 
 
 SCHEMA = [
@@ -403,14 +409,15 @@ SCHEMA = [
 ]
 JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
 
+
 def main():
 
     # Set the default project ID and dataset ID
-    project_id = 'pycontw-225217'
-    dataset_id = 'ods'
-    table_id = 'your-table-id'
-    ticket_type = 'corporate'
-    ticket_year = '2022'
+    project_id = "pycontw-225217"
+    dataset_id = "ods"
+    table_id = "your-table-id"
+    ticket_type: str = "corporate"
+    ticket_year: str = "2022"
     """
     Commandline entrypoint
     """
@@ -429,13 +436,12 @@ def main():
     )
 
     parser.add_argument(
-        "-k", "--ticket-type", help="Attendee ticket-type name in corporate, individual, reserved"
-    )    
+        "-k",
+        "--ticket-type",
+        help="Attendee ticket-type name in corporate, individual, reserved",
+    )
 
-    parser.add_argument(
-        "-y", "--ticket-year", help="PyConTW year"
-    )    
-
+    parser.add_argument("-y", "--ticket-year", help="PyConTW year")
 
     parser.add_argument(
         "--upload",
@@ -446,16 +452,16 @@ def main():
 
     args = parser.parse_args()
 
-    if args.project_id: 
+    if args.project_id:
         project_id = args.project_id
-    if args.dataset_name:             
+    if args.dataset_name:
         dataset_id = args.dataset_name
-    if args.table_name:    
+    if args.table_name:
         table_id = args.table_name
-    if args.ticket_type:    
-        ticket_type = args.ticket_type        
-    if args.ticket_year:    
-        ticket_year = args.ticket_year            
+    if args.ticket_type:
+        ticket_type = args.ticket_type
+    if args.ticket_year:
+        ticket_year = args.ticket_year
 
     # Set up the client object
     client = bigquery.Client(project=project_id)
@@ -465,47 +471,73 @@ def main():
     job_config.use_legacy_sql = False
 
     # Build the SQL query to extract the data
-    query = f'SELECT * FROM `{TABLE}` WHERE lower( NAME ) LIKE "%{ticket_year}%{ticket_type}%"'
-
-    # Execute the query and extract the data 
+    # Use  parameterized queries to prevent SQL inject
+    job_config.query_parameters = [
+        bigquery.ScalarQueryParameter(
+            "t_year_type", "STRING", f"%{ticket_year}%{ticket_type}%"
+        ),
+        #    bigquery.ScalarQueryParameter("t_type", "STRING", f'%{ticket_type}%'),
+    ]
+    query = f"SELECT * FROM `{TABLE}` WHERE lower( NAME ) LIKE @t_year_type"
+    # Execute the query and extract the data
     # bigquery depends on db_dtypes for to_dataframe(), depends on apache-arrow, cannot be installed (build failed) on my old MAC
     # use the raw result from bigQuery is good for this use case
     job = client.query(query, job_config=job_config)
-    results = job.result() 
+    results = job.result()
 
     # print(results)
 
-    print(f'Extracted from {TABLE}  successful.')
-  
+    print(f"Extracted from {TABLE}  successful.")
+
     # Use DataFrame for table transform operations
     df = pd.DataFrame()
     for row in results:
-        json_dict = json.loads(row['ATTENDEE_INFO'])
+        json_dict = json.loads(row["ATTENDEE_INFO"])
         df_dict = pd.DataFrame([json_dict])
 
         # We don't have paid_date column from ATTENDEE_INFO, convert the updated_at timestamp
-        timestamp = df_dict.loc[0, 'updated_at']
+        timestamp = df_dict.loc[0, "updated_at"]
         # print(timestamp)
         dt_object = datetime.fromtimestamp(timestamp)
-        transc_date = dt_object.strftime('%Y-%m-%d')
-        # print(transc_date)    
-        df_dict['paid_date'] = transc_date
+        transc_date = dt_object.strftime("%Y-%m-%d")
+        # print(transc_date)
+        df_dict["paid_date"] = transc_date
 
-        # ticket_type value is always "qrcode" here, and conflict with old table, 
+        # ticket_type value is always "qrcode" here, and conflict with old table,
         # kyc, id_number, slot value is always empty
         # 'id','ticket_id','state','checkin_code', 'qrcode', updated_at, order_no no exist in old table
         # data will be handle later
-        useless_columns = ['id','ticket_id','state','checkin_code', 'qrcode', 'currency', 'data', 'ticket_type', 'kyc', 'updated_at', 'id_number', 'slot', 'order_no']
-        df_dict = df_dict.drop(columns = useless_columns) 
-        df_dict = df_dict.rename(columns = {"reg_no": "registration_no", "ticket_name": "ticket_type", "is_paid": "payment_status"})
-        if 'payment_status' in df_dict.columns:
-            if df_dict.loc[0, 'payment_status']:
+        useless_columns = [
+            "id",
+            "ticket_id",
+            "state",
+            "checkin_code",
+            "qrcode",
+            "currency",
+            "data",
+            "ticket_type",
+            "kyc",
+            "updated_at",
+            "id_number",
+            "slot",
+            "order_no",
+        ]
+        df_dict = df_dict.drop(columns=useless_columns)
+        df_dict = df_dict.rename(
+            columns={
+                "reg_no": "registration_no",
+                "ticket_name": "ticket_type",
+                "is_paid": "payment_status",
+            }
+        )
+        if "payment_status" in df_dict.columns:
+            if df_dict.loc[0, "payment_status"]:
                 # df_dict['payment_status'] = df_dict['payment_status'].astype("string")
-                df_dict.loc[0, 'payment_status'] = "paid"
+                df_dict.loc[0, "payment_status"] = "paid"
             else:
-                df_dict.loc[0, 'payment_status'] = "not"    
+                df_dict.loc[0, "payment_status"] = "not"
         # json_dict['data'] in format of [[item_name, item_value],[],...]
-        data_list = json_dict['data'] 
+        data_list = json_dict["data"]
         column_list = [dl[0] for dl in data_list]
         value_list = [dl[1] for dl in data_list]
         # print(column_list)
@@ -518,31 +550,34 @@ def main():
 
     # print(df.columns)
     sanitized_df = sanitize_column_names(df)
-    hash_privacy_info(sanitized_df)    
+    hash_privacy_info(sanitized_df)
 
-    # For columns with FLOAT type in table schema, do pd.to_numeric to handle empty string (convert to NaN)   
-    num_columns = ['price', 'invoice_policy', 'if_you_buy_the_ticket_with_pyckage', 'vat_number_optional']
+    # For columns with FLOAT type in table schema, do pd.to_numeric to handle empty string (convert to NaN)
+    num_columns = [
+        "price",
+        "invoice_policy",
+        "if_you_buy_the_ticket_with_pyckage",
+        "vat_number_optional",
+    ]
     for col in num_columns:
         if col in sanitized_df.columns:
             sanitized_df[[col]] = sanitized_df[[col]].apply(pd.to_numeric)
-    
+
     # Drop privacy columns
-    priv_columns = ['nickname', 'address_size_of_tshirt_t']
+    priv_columns = ["nickname", "address_size_of_tshirt_t"]
     for col in priv_columns:
         if col in sanitized_df.columns:
-            sanitized_df = sanitized_df.drop(columns = [col])
-    
-    #print(sanitized_df.columns)
-    #print(sanitized_df.head())
-    #df_null = sanitized_df.isnull()
-    #print(sanitized_df.iloc[:, :5])
+            sanitized_df = sanitized_df.drop(columns=[col])
+
+    # print(sanitized_df.columns)
+    # print(sanitized_df.head())
+    # df_null = sanitized_df.isnull()
+    # print(sanitized_df.iloc[:, :5])
 
     # TODO
     # Loop for the 3 tables by set the table ID and upload_dataframe_to_bigquery
     if args.upload:
-        upload_dataframe_to_bigquery(
-            sanitized_df, project_id, dataset_id, table_id
-        )
+        upload_dataframe_to_bigquery(sanitized_df, project_id, dataset_id, table_id)
     else:
         logging.info("Dry-run mode. Data will not be uploaded.")
         logging.info("Column names (as-is):")
@@ -550,10 +585,11 @@ def main():
         logging.info("")
         logging.info("Column names (to-be):")
         logging.info(sanitized_df.columns)
-        #print(sanitized_df.iloc[:, :5])
-        #print(sanitized_df[['paid_date', 'payment_status', 'email']])
+        # print(sanitized_df.iloc[:, :5])
+        # print(sanitized_df[['paid_date', 'payment_status', 'email']])
 
     return sanitized_df.columns
+
 
 if __name__ == "__main__":
     main()

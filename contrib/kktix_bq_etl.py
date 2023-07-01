@@ -180,10 +180,16 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "privacy_policy_of_pycon_apac_2022": "privacy_policy_of_pycon_tw",
     # from 2023 reformatted column names
     "attend_first_time_how_did_you_know_pycon_tw_2023_pycon_tw_2023": "how_did_you_know_pycon_tw",
+    "for_submitter_how_did_you_know_the_cfp_information_of_pycon_taiwan_pycon_taiwan_if_you_are_not_submitter_fill_in_nonsubmitter": "how_did_you_know_cfp_of_pycon_tw",
     "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2023_pycon_tw_2023": "privacy_policy_of_pycon_tw",
     "size_of_tshirt_for_tickets_with_tshirt_should_fill_in_this_field": "size_of_tshirt",
     "job_title_if_you_are_a_student_fill_in_student_student": "job_title",
     "would_you_like_to_receive_an_email_from_sponsors": "email_from_sponsor",
+    "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)": "size_of_tshirt_2023",
+    "Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？": "email_from_sponsor",
+    "Would you like to receive an email from sponsors？/ 是否願意收到贊助商轉發的電子郵件？": "email_from_sponsor_t",  # ? is different
+    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (ref: https://reurl.cc/ZQ6VY6)": "i_would_like_to_donate_invoice_to_open_culture_foundation",
+    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)": "i_would_like_to_donate_invoice_to_open_culture_foundation_t",  # ref vs Ref
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -205,7 +211,7 @@ UNWANTED_DATA_TO_UPLOAD = (
     "Address / 收件地址 EX: 115台北市南港區研究院路二段128號",
     # For 2022
     "聯絡人 姓名",
-    "聯絡人 Email",
+    # "聯絡人 Email",
     "聯絡人 手機",
     "標籤",
     "姓名",
@@ -221,12 +227,12 @@ UNWANTED_DATA_TO_UPLOAD = (
     "PyCon TW 2023 個人資料保護聲明",
     "PyCon TW 2023 行為準則",
     # For 2023, duplicated
-    "Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？",
-    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
-    "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
+    # "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
+    # "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
     "(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？",
     '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)',
     """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則""",
+    "Have you ever been a PyCon TW volunteer? / 是否曾擔任過 PyCon TW 志工？",
 )
 
 
@@ -540,7 +546,7 @@ def main():
         data_list = json_dict["data"]
         column_list = [dl[0] for dl in data_list]
         value_list = [dl[1] for dl in data_list]
-        # print(column_list)
+        # print(len(column_list))
         # print(value_list)
         df_data = pd.DataFrame()
         df_data[column_list] = [value_list]
@@ -550,8 +556,11 @@ def main():
 
     # print(df.columns)
     sanitized_df = sanitize_column_names(df)
-    hash_privacy_info(sanitized_df)
+    # The privacy info in "pycontw-225217.ods.ods_kktix_attendeeId_datetime" had already hashed
+    # hash_privacy_info(sanitized_df)
 
+    # Group the columns with the same names
+    # sanitized_df = sanitized_df.replace('null', np.nan).groupby(sanitized_df.columns, axis=1).first()
     # For columns with FLOAT type in table schema, do pd.to_numeric to handle empty string (convert to NaN)
     num_columns = [
         "price",
@@ -563,8 +572,53 @@ def main():
         if col in sanitized_df.columns:
             sanitized_df[[col]] = sanitized_df[[col]].apply(pd.to_numeric)
 
-    # Drop privacy columns
-    priv_columns = ["nickname", "address_size_of_tshirt_t"]
+    # Combine columns with the same purpose
+    s_columns = [
+        "size_of_tshirt_2023",
+        "size_of_tshirt",
+        "ticket_with_tshirt_size_of_tshirt",
+        "email_from_sponsor",
+        "email_from_sponsor_t",
+        "i_would_like_to_donate_invoice_to_open_culture_foundation",
+        "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
+    ]
+    # handle the null and data types
+    for col in s_columns:
+        if col in sanitized_df.columns:
+            sanitized_df[col] = sanitized_df[col].fillna("")
+            sanitized_df[col] = sanitized_df[col].astype(str)
+        else:
+            sanitized_df[col] = ""
+
+    # aggregate the size_of_tshirt
+    sanitized_df["size_of_tshirt"] = sanitized_df[
+        ["size_of_tshirt_2023", "size_of_tshirt", "ticket_with_tshirt_size_of_tshirt"]
+    ].agg("".join, axis=1)
+    # aggregate the email_from_sponsor
+    sanitized_df["email_from_sponsor"] = sanitized_df[
+        ["email_from_sponsor", "email_from_sponsor_t"]
+    ].agg("".join, axis=1)
+    # aggregate the donate_invoice
+    sanitized_df[
+        "i_would_like_to_donate_invoice_to_open_culture_foundation"
+    ] = sanitized_df[
+        [
+            "i_would_like_to_donate_invoice_to_open_culture_foundation",
+            "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
+        ]
+    ].agg(
+        "".join, axis=1
+    )
+
+    # Drop privacy, duplicated or temp columns
+    priv_columns = [
+        "nickname",
+        "address_size_of_tshirt_t",
+        "size_of_tshirt_2023",
+        "ticket_with_tshirt_size_of_tshirt",
+        "email_from_sponsor_t",
+        "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
+    ]
     for col in priv_columns:
         if col in sanitized_df.columns:
             sanitized_df = sanitized_df.drop(columns=[col])
@@ -582,6 +636,7 @@ def main():
         logging.info("Dry-run mode. Data will not be uploaded.")
         logging.info("Column names (as-is):")
         logging.info(df.columns)
+        # print(df[['paid_date', 'payment_status', 'email']])
         logging.info("")
         logging.info("Column names (to-be):")
         logging.info(sanitized_df.columns)

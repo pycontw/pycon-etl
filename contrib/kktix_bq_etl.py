@@ -175,6 +175,7 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "privacy_policy_of_pycon_apac_2022_pycon_apac_2022_httpsreurlcc1zxzxw": "privacy_policy_of_pycon_tw",
     "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_apac_2022_pycon_apac_2022": "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw",
     "would_you_like_to_receive_an_email_from_sponsors_email": "email_from_sponsor",
+    "would_you_like_to_receive_emails_from_the_sponsors_email": "email_from_sponsor",
     "pyckage_address_size_of_tshirt_t_pyckage_pyckage": "address_size_of_tshirt_t",
     "pyckage_address_size_of_tshirt_t": "address_size_of_tshirt_t",
     "privacy_policy_of_pycon_apac_2022_pycon_apac_2022": "privacy_policy_of_pycon_tw",
@@ -217,8 +218,10 @@ UNWANTED_DATA_TO_UPLOAD = (
     "購買含 PySafe 票卷者，請務必填寫正確之「Address / 收件地址」和「Size of T-shirt / T恤尺寸 」（僅限台灣及離島區域），以避免 PySafe 無法送達，如因填寫錯誤致未收到 PySafe，報名人須自行負責，大會恕不再另行補寄",
     "Address / 收件地址 EX: 115台北市南港區研究院路二段128號",
     # For 2022
+    "Address / 收件地址  Ex: No. 128, Sec. 2, Academia Rd., Nangang Dist., Taipei City 115201, Taiwan (R.O.C.) / 115台北市南港區研究院路二段128號",
+    "Address/ 收件地址 Ex: No. 128, Sec. 2, Academia Rd., Nangang Dist., Taipei City 115201, Taiwan (R.O.C.) / 115台北市南港區研究院路二段128號",
     "聯絡人 姓名",
-    # "聯絡人 Email",
+    "Email",  # duplicated with 聯絡人 Email
     "聯絡人 手機",
     "標籤",
     "姓名",
@@ -233,7 +236,7 @@ UNWANTED_DATA_TO_UPLOAD = (
     "衣服尺寸注意事項",
     "PyCon TW 2023 個人資料保護聲明",
     "PyCon TW 2023 行為準則",
-    # For 2023, duplicated
+    # For 2023, duplicated or unwanted
     # "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
     # "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
     """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則""",

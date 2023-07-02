@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 from typing import Dict, Set
 
+import numpy as np
 import pandas as pd
 from google.cloud import bigquery
 
@@ -183,13 +184,19 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "for_submitter_how_did_you_know_the_cfp_information_of_pycon_taiwan_pycon_taiwan_if_you_are_not_submitter_fill_in_nonsubmitter": "how_did_you_know_cfp_of_pycon_tw",
     "ive_already_read_and_i_accept_the_privacy_policy_of_pycon_tw_2023_pycon_tw_2023": "privacy_policy_of_pycon_tw",
     "size_of_tshirt_for_tickets_with_tshirt_should_fill_in_this_field": "size_of_tshirt",
+    "ticket_with_tshirt_size_of_tshirt": "size_of_tshirt",
     "job_title_if_you_are_a_student_fill_in_student_student": "job_title",
     "would_you_like_to_receive_an_email_from_sponsors": "email_from_sponsor",
-    "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)": "size_of_tshirt_2023",
+    "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)": "size_of_tshirt",
     "Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？": "email_from_sponsor",
-    "Would you like to receive an email from sponsors？/ 是否願意收到贊助商轉發的電子郵件？": "email_from_sponsor_t",  # ? is different
+    "Would you like to receive an email from sponsors？/ 是否願意收到贊助商轉發的電子郵件？": "email_from_sponsor",  # ? is different
     "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (ref: https://reurl.cc/ZQ6VY6)": "i_would_like_to_donate_invoice_to_open_culture_foundation",
-    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)": "i_would_like_to_donate_invoice_to_open_culture_foundation_t",  # ref vs Ref
+    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)": "i_would_like_to_donate_invoice_to_open_culture_foundation",  # ref vs Ref
+    "Have you ever been a PyCon TW volunteer？ / 是否曾擔任過 PyCon TW 志工？": "have_you_ever_been_a_pycontw_volunteer_pycontw",
+    "Have you ever been a PyCon TW volunteer? / 是否曾擔任過 PyCon TW 志工？": "have_you_ever_been_a_pycontw_volunteer_pycontw",
+    "How did you know PyCon TW 2023？ / 如何得知 PyCon TW 2023？": "how_did_you_know_pycon_tw",
+    "(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？": "how_did_you_know_pycon_tw",
+    '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)': "how_did_you_know_cfp_of_pycon_tw",
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -229,10 +236,8 @@ UNWANTED_DATA_TO_UPLOAD = (
     # For 2023, duplicated
     # "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
     # "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
-    "(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？",
-    '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)',
     """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則""",
-    "Have you ever been a PyCon TW volunteer? / 是否曾擔任過 PyCon TW 志工？",
+    # "Have you ever been a PyCon TW volunteer？ / 是否曾擔任過 PyCon TW 志工？",
 )
 
 
@@ -381,8 +386,9 @@ def sanitize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     # pre-process of name uniqueness
     duplicate_column_names = find_reformat_none_unique(style_reformatted_columns)
     if duplicate_column_names:
-        logging.error(
-            "Found the following duplicate column names: %s", duplicate_column_names
+        logging.info(
+            "Found the following duplicate column names: %s, will be grouped",
+            duplicate_column_names,
         )
 
     # pre-process of backward compatibility
@@ -523,7 +529,7 @@ def main():
             "data",
             "ticket_type",
             "kyc",
-            "updated_at",
+            # "updated_at",
             "id_number",
             "slot",
             "order_no",
@@ -559,9 +565,14 @@ def main():
     # The privacy info in "pycontw-225217.ods.ods_kktix_attendeeId_datetime" had already hashed
     # hash_privacy_info(sanitized_df)
 
-    # Group the columns with the same names
-    # sanitized_df = sanitized_df.replace('null', np.nan).groupby(sanitized_df.columns, axis=1).first()
-    # For columns with FLOAT type in table schema, do pd.to_numeric to handle empty string (convert to NaN)
+    # Group the columns with the same purposes and names
+    sanitized_df = (
+        sanitized_df.replace("null", np.nan)
+        .groupby(sanitized_df.columns, axis=1, sort=False)
+        .first()
+    )
+
+    # For columns with FLOAT type in BigQuery table schema, do pd.to_numeric to handle empty string (convert to NaN)
     num_columns = [
         "price",
         "invoice_policy",
@@ -572,56 +583,19 @@ def main():
         if col in sanitized_df.columns:
             sanitized_df[[col]] = sanitized_df[[col]].apply(pd.to_numeric)
 
-    # Combine columns with the same purpose
-    s_columns = [
-        "size_of_tshirt_2023",
-        "size_of_tshirt",
-        "ticket_with_tshirt_size_of_tshirt",
-        "email_from_sponsor",
-        "email_from_sponsor_t",
-        "i_would_like_to_donate_invoice_to_open_culture_foundation",
-        "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
-    ]
-    # handle the null and data types
-    for col in s_columns:
-        if col in sanitized_df.columns:
-            sanitized_df[col] = sanitized_df[col].fillna("")
-            sanitized_df[col] = sanitized_df[col].astype(str)
-        else:
-            sanitized_df[col] = ""
-
-    # aggregate the size_of_tshirt
-    sanitized_df["size_of_tshirt"] = sanitized_df[
-        ["size_of_tshirt_2023", "size_of_tshirt", "ticket_with_tshirt_size_of_tshirt"]
-    ].agg("".join, axis=1)
-    # aggregate the email_from_sponsor
-    sanitized_df["email_from_sponsor"] = sanitized_df[
-        ["email_from_sponsor", "email_from_sponsor_t"]
-    ].agg("".join, axis=1)
-    # aggregate the donate_invoice
-    sanitized_df[
-        "i_would_like_to_donate_invoice_to_open_culture_foundation"
-    ] = sanitized_df[
-        [
-            "i_would_like_to_donate_invoice_to_open_culture_foundation",
-            "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
-        ]
-    ].agg(
-        "".join, axis=1
-    )
-
     # Drop privacy, duplicated or temp columns
     priv_columns = [
         "nickname",
         "address_size_of_tshirt_t",
-        "size_of_tshirt_2023",
-        "ticket_with_tshirt_size_of_tshirt",
-        "email_from_sponsor_t",
-        "i_would_like_to_donate_invoice_to_open_culture_foundation_t",
     ]
     for col in priv_columns:
         if col in sanitized_df.columns:
             sanitized_df = sanitized_df.drop(columns=[col])
+
+    # Keep the latest update record with registration_no as the unique key
+    sanitized_df = sanitized_df.sort_values(by=["updated_at"])
+    sanitized_df = sanitized_df.drop_duplicates(subset=["registration_no"], keep="last")
+    sanitized_df = sanitized_df.set_index("registration_no")
 
     # print(sanitized_df.columns)
     # print(sanitized_df.head())

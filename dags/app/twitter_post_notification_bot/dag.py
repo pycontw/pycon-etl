@@ -23,8 +23,7 @@ with DAG(
     catchup=False,
 ) as dag:
     PythonOperator(
-        task_id="SEND_TWITTER_POST_NOTIFICATION",
-        python_callable=udf.main,
+        task_id="SEND_TWITTER_POST_NOTIFICATION", python_callable=udf.main,
     )
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import requests
 from airflow import settings
+from airflow.models import Variable
 from sqlalchemy.orm import sessionmaker
 
 

@@ -16,9 +16,9 @@ DEFAULT_ARGS = {
 }
 
 with DAG(
-    "TWITTER_POST_NOTIFICATION_BOT",
+    "TWITTER_POST_NOTIFICATION_BOT_V2",
     default_args=DEFAULT_ARGS,
-    schedule_interval="*/90 * * * *",
+    schedule_interval="@daily",
     max_active_runs=1,
     catchup=False,
 ) as dag:

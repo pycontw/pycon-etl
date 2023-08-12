@@ -3,7 +3,7 @@
 # export GOOGLE_APPLICATION_CREDENTIALS="<where to access service-account.json>"
 #
 project_id="pycontw-225217"
-cmd=${PWD}/kktix_bq_etl.py
+cmd=${PWD}/../dags/ods/kktix_ticket_orders/udfs/kktix_bq_dwd_etl.py
 
 
 for ticket_type in corporate individual reserved

@@ -5,11 +5,12 @@ import json
 import logging
 import re
 from datetime import datetime
-from typing import Dict, Set
+from typing import Dict, Set, Tuple
 
 import numpy as np
 import pandas as pd
 from google.cloud import bigquery
+from pandas import DataFrame
 
 CANONICAL_COLUMN_NAMES_CORE = {
     "paid_date",
@@ -425,143 +426,85 @@ SCHEMA = [
 JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
 
 
-def main():
+def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame:
+    df_dict = pd.DataFrame([json_dict])
 
-    # Set the default project ID and dataset ID
-    project_id = "pycontw-225217"
-    dataset_id = "ods"
-    table_id = "your-table-id"
-    ticket_type: str = "corporate"
-    ticket_year: str = "2022"
-    """
-    Commandline entrypoint
-    """
-    parser = argparse.ArgumentParser(
-        description="Deserialize Attendee info with JSON format from KKTIX and load to legcy 3 tables corporate, individual, reserved"
-    )
+    # We don't have paid_date column from ATTENDEE_INFO, convert the updated_at timestamp
+    timestamp = df_dict.loc[0, "updated_at"]
+    # filtering with timestamp if set
+    if update_after_ts:
+        if timestamp < update_after_ts:
+            return None
+    # print(timestamp)
+    dt_object = datetime.fromtimestamp(timestamp)
+    transc_date = dt_object.strftime("%Y-%m-%d")
+    # print(transc_date)
+    df_dict["paid_date"] = transc_date
 
-    parser.add_argument("-p", "--project-id", help="BigQuery project ID")
-
-    parser.add_argument(
-        "-d", "--dataset-name", help="BigQuery dataset name to create or append"
-    )
-
-    parser.add_argument(
-        "-t", "--table-name", help="BigQuery table name to create or append"
-    )
-
-    parser.add_argument(
-        "-k",
-        "--ticket-type",
-        help="Attendee ticket-type name in corporate, individual, reserved",
-    )
-
-    parser.add_argument("-y", "--ticket-year", help="PyConTW year")
-
-    parser.add_argument(
-        "--upload",
-        action="store_true",
-        help="Parsing the file but not upload it",
-        default=False,
-    )
-
-    args = parser.parse_args()
-
-    if args.project_id:
-        project_id = args.project_id
-    if args.dataset_name:
-        dataset_id = args.dataset_name
-    if args.table_name:
-        table_id = args.table_name
-    if args.ticket_type:
-        ticket_type = args.ticket_type
-    if args.ticket_year:
-        ticket_year = args.ticket_year
-
-    # Set up the client object
-    client = bigquery.Client(project=project_id)
-
-    # Set up the job config
-    job_config = bigquery.QueryJobConfig()
-    job_config.use_legacy_sql = False
-
-    # Build the SQL query to extract the data
-    # Use  parameterized queries to prevent SQL inject
-    job_config.query_parameters = [
-        bigquery.ScalarQueryParameter(
-            "t_year_type", "STRING", f"%{ticket_year}%{ticket_type}%"
-        ),
-        #    bigquery.ScalarQueryParameter("t_type", "STRING", f'%{ticket_type}%'),
+    # ticket_type value is always "qrcode" here, and conflict with old table,
+    # kyc, id_number, slot value is always empty
+    # 'id','ticket_id','state','checkin_code', 'qrcode', updated_at, order_no no exist in old table
+    # data will be handle later
+    useless_columns = [
+        "id",
+        "ticket_id",
+        "state",
+        "checkin_code",
+        # "qrcode",
+        "currency",
+        "data",
+        "ticket_type",
+        "kyc",
+        # "updated_at",
+        "id_number",
+        "slot",
+        "order_no",
     ]
-    query = f"SELECT * FROM `{TABLE}` WHERE lower( NAME ) LIKE @t_year_type"
-    # Execute the query and extract the data
-    # bigquery depends on db_dtypes for to_dataframe(), depends on apache-arrow, cannot be installed (build failed) on my old MAC
-    # use the raw result from bigQuery is good for this use case
-    job = client.query(query, job_config=job_config)
-    results = job.result()
+    df_dict = df_dict.drop(columns=useless_columns)
+    df_dict = df_dict.rename(
+        columns={
+            "reg_no": "registration_no",
+            "ticket_name": "ticket_type",
+            "is_paid": "payment_status",
+        }
+    )
+    if "payment_status" in df_dict.columns:
+        if df_dict.loc[0, "payment_status"]:
+            # df_dict['payment_status'] = df_dict['payment_status'].astype("string")
+            df_dict.loc[0, "payment_status"] = "paid"
+        else:
+            df_dict.loc[0, "payment_status"] = "not"
+    # json_dict['data'] in format of [[item_name, item_value],[],...]
+    data_list = json_dict["data"]
+    column_list = [dl[0] for dl in data_list]
+    value_list = [dl[1] for dl in data_list]
+    # print(len(column_list))
+    # print(value_list)
+    df_data = pd.DataFrame()
+    df_data[column_list] = [value_list]
 
-    # print(results)
+    df_dict = pd.concat([df_dict, df_data], axis=1)
+    return df_dict
 
-    print(f"Extracted from {TABLE}  successful.")
 
+def load_to_df_from_list(
+    results, source="dag", update_after_ts=0
+) -> Tuple[DataFrame, DataFrame]:
     # Use DataFrame for table transform operations
     df = pd.DataFrame()
+    attendee_info_str = "attendee_info"
+    if source == "bigquery":
+        attendee_info_str = attendee_info_str.upper()
     for row in results:
-        json_dict = json.loads(row["ATTENDEE_INFO"])
-        df_dict = pd.DataFrame([json_dict])
+        json_dict = json.loads(
+            row[attendee_info_str]
+        )  # The name will be uppercase if the results was from bg
+        df_dict = _load_row_df_from_dict(json_dict, update_after_ts)
+        if df_dict is not None:
+            df = pd.concat([df, df_dict], ignore_index=True)
 
-        # We don't have paid_date column from ATTENDEE_INFO, convert the updated_at timestamp
-        timestamp = df_dict.loc[0, "updated_at"]
-        # print(timestamp)
-        dt_object = datetime.fromtimestamp(timestamp)
-        transc_date = dt_object.strftime("%Y-%m-%d")
-        # print(transc_date)
-        df_dict["paid_date"] = transc_date
-
-        # ticket_type value is always "qrcode" here, and conflict with old table,
-        # kyc, id_number, slot value is always empty
-        # 'id','ticket_id','state','checkin_code', 'qrcode', updated_at, order_no no exist in old table
-        # data will be handle later
-        useless_columns = [
-            "id",
-            "ticket_id",
-            "state",
-            "checkin_code",
-            "qrcode",
-            "currency",
-            "data",
-            "ticket_type",
-            "kyc",
-            # "updated_at",
-            "id_number",
-            "slot",
-            "order_no",
-        ]
-        df_dict = df_dict.drop(columns=useless_columns)
-        df_dict = df_dict.rename(
-            columns={
-                "reg_no": "registration_no",
-                "ticket_name": "ticket_type",
-                "is_paid": "payment_status",
-            }
-        )
-        if "payment_status" in df_dict.columns:
-            if df_dict.loc[0, "payment_status"]:
-                # df_dict['payment_status'] = df_dict['payment_status'].astype("string")
-                df_dict.loc[0, "payment_status"] = "paid"
-            else:
-                df_dict.loc[0, "payment_status"] = "not"
-        # json_dict['data'] in format of [[item_name, item_value],[],...]
-        data_list = json_dict["data"]
-        column_list = [dl[0] for dl in data_list]
-        value_list = [dl[1] for dl in data_list]
-        # print(len(column_list))
-        # print(value_list)
-        df_data = pd.DataFrame()
-        df_data[column_list] = [value_list]
-
-        df_dict = pd.concat([df_dict, df_data], axis=1)
-        df = pd.concat([df, df_dict], ignore_index=True)
+    if len(df.index) == 0:
+        return df, df
 
     # print(df.columns)
     sanitized_df = sanitize_column_names(df)
@@ -595,11 +538,108 @@ def main():
         if col in sanitized_df.columns:
             sanitized_df = sanitized_df.drop(columns=[col])
 
+    # print(sanitized_df.iloc[:, :5])
     # Keep the latest update record with registration_no as the unique key
     sanitized_df = sanitized_df.sort_values(by=["updated_at"])
     sanitized_df = sanitized_df.drop_duplicates(subset=["registration_no"], keep="last")
     sanitized_df = sanitized_df.set_index("registration_no")
 
+    return df, sanitized_df
+
+
+def main():
+
+    # Set the default project ID and dataset ID
+    project_id = "pycontw-225217"
+    dataset_id = "ods"
+    table_id = "your-table-id"
+    ticket_type: str = "corporate"
+    ticket_year: str = "2023"
+    update_after_ts = 0
+    """
+    Commandline entrypoint
+    """
+    parser = argparse.ArgumentParser(
+        description="Deserialize Attendee info with JSON format from KKTIX and load to legcy 3 tables corporate, individual, reserved"
+    )
+
+    parser.add_argument("-p", "--project-id", help="BigQuery project ID")
+
+    parser.add_argument(
+        "-d", "--dataset-name", help="BigQuery dataset name to create or append"
+    )
+
+    parser.add_argument(
+        "-t", "--table-name", help="BigQuery table name to create or append"
+    )
+
+    parser.add_argument(
+        "-k",
+        "--ticket-type",
+        help="Attendee ticket-type name in corporate, individual, reserved",
+    )
+
+    parser.add_argument("-y", "--ticket-year", help="PyConTW year")
+
+    parser.add_argument("-f", "--update-after", help="TimeStamp filter")
+
+    parser.add_argument(
+        "--upload",
+        action="store_true",
+        help="Parsing the file but not upload it",
+        default=False,
+    )
+
+    args = parser.parse_args()
+
+    if args.project_id:
+        project_id = args.project_id
+    if args.dataset_name:
+        dataset_id = args.dataset_name
+    if args.table_name:
+        table_id = args.table_name
+    if args.ticket_type:
+        ticket_type = args.ticket_type
+    if args.ticket_year:
+        ticket_year = args.ticket_year
+    if args.update_after:
+        # update_after = args.update_after
+        # dt_string = "2018-1-1 09:15:32"
+        # Considering date is in dd/mm/yyyy format
+        dt_object = datetime.strptime(args.update_after, "%Y-%m-%d %H:%M:%S")
+        ticket_year = dt_object.year
+        update_after_ts = datetime.timestamp(dt_object)
+
+    # Set up the client object
+    client = bigquery.Client(project=project_id)
+
+    # Set up the job config
+    job_config = bigquery.QueryJobConfig()
+    job_config.use_legacy_sql = False
+
+    # Build the SQL query to extract the data
+    # Use  parameterized queries to prevent SQL inject
+    job_config.query_parameters = [
+        bigquery.ScalarQueryParameter(
+            "t_year_type", "STRING", f"%{ticket_year}%{ticket_type}%"
+        ),
+        #    bigquery.ScalarQueryParameter("t_type", "STRING", f'%{ticket_type}%'),
+    ]
+    query = f"SELECT * FROM `{TABLE}` WHERE lower( NAME ) LIKE @t_year_type"
+    # Execute the query and extract the data
+    # bigquery depends on db_dtypes for to_dataframe(), depends on apache-arrow, cannot be installed (build failed) on my old MAC
+    # use the raw result from bigQuery is good for this use case
+    job = client.query(query, job_config=job_config)
+    results = job.result()
+
+    # Don't iterate results before load_to_df_from_list, need copy first
+    # res_clone = copy.copy(results)
+    # print(res_clone)
+
+    print(f"Extracted from {TABLE}  successful.")
+
+    # load to DataFrame for later bigquery upload from the extracted results
+    df, sanitized_df = load_to_df_from_list(results, "bigquery", update_after_ts)
     # print(sanitized_df.columns)
     # print(sanitized_df.head())
     # df_null = sanitized_df.isnull()
@@ -617,7 +657,7 @@ def main():
         logging.info("")
         logging.info("Column names (to-be):")
         logging.info(sanitized_df.columns)
-        # print(sanitized_df.iloc[:, :5])
+        print(sanitized_df.iloc[:, :5])
         # print(sanitized_df[['paid_date', 'payment_status', 'email']])
 
     return sanitized_df.columns

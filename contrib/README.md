@@ -23,5 +23,4 @@
 1. Background: Start from 2022, we extract the KKTIX data via KKTIX API and load to "pycontw-225217.ods.ods_kktix_attendeeId_datetime". However most of the data are store in the ATTENDEE_INFO column with json format. To use metabase with SQL, users need to extract the data by json_extract with the knowledge kktix format instead of flat database. And we also need to rewrite all the SQLs build for current databases.
 2. Solution: Transform the tables in backend that we could keep the same user experience by using Metabase.
 3. Run: 
- - `./kktix_bq_etl.py -t ods_kktix_ticket_reserved_attendees_test -k reserved -y 2023 --upload`
- - for 3 tables: `./kktix_bq_etl.py 2023`
+ - for 3 tables in single bash script: `./kktix_bq_etl.sh 2023`

@@ -10,7 +10,7 @@ from app import discord
 session = requests.session()
 
 
-def main():
+def main() -> None:
     # read xls from google doc to df.
     df_xls = read_google_xls_to_df()
     # read bigquery to df.
@@ -26,12 +26,12 @@ def main():
     discord.send_webhook_message(webhook_url, username, msg)
 
 
-def df_difference(df_xls, df_bigquery):
+def df_difference(df_xls, df_bigquery) -> pd.DataFrame:
     merged = pd.merge(df_xls, df_bigquery, how='outer', indicator=True)
     return merged[merged['_merge'] == 'left_only'].drop('_merge', axis=1)
 
 
-def read_bigquery_to_df():
+def read_bigquery_to_df() -> pd.DataFrame:
     client = bigquery.Client()
     query = """
     SELECT *
@@ -47,7 +47,7 @@ def read_bigquery_to_df():
     return df
 
 
-def read_google_xls_to_df():
+def read_google_xls_to_df() -> pd.DataFrame:
     gc = pygsheets.authorize(service_file=os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
     sheet = gc.open_by_url(os.getenv('finance_xls_path'))
     wks = sheet.sheet1
@@ -59,7 +59,7 @@ def read_google_xls_to_df():
     return df
 
 
-def write_to_bigquery(df):
+def write_to_bigquery(df) -> None:
     project_id = 'pycontw-225217'
     dataset_id = 'test'
     table_id = 'pycontw_finance'
@@ -79,7 +79,7 @@ def write_to_bigquery(df):
     job.result()
 
 
-def refine_diff_df_to_string(df):
+def refine_diff_df_to_string(df) -> Text:
     msg = ''
     if df.empty:
         return "no data"

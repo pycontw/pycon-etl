@@ -20,15 +20,15 @@ def main() -> None:
     # link to bigquery and write xls file
     write_to_bigquery(df_diff)
     # push to discord
-    webhook_url = os.getenv('discord_data_stratagy_webhook')
-    username = '財務機器人'
+    webhook_url = os.getenv("discord_data_stratagy_webhook")
+    username = "財務機器人"
     msg = refine_diff_df_to_string(df_diff)
     discord.send_webhook_message(webhook_url, username, msg)
 
 
 def df_difference(df_xls, df_bigquery) -> pd.DataFrame:
-    merged = pd.merge(df_xls, df_bigquery, how='outer', indicator=True)
-    return merged[merged['_merge'] == 'left_only'].drop('_merge', axis=1)
+    merged = pd.merge(df_xls, df_bigquery, how="outer", indicator=True)
+    return merged[merged["_merge"] == "left_only"].drop("_merge", axis=1)
 
 
 def read_bigquery_to_df() -> pd.DataFrame:
@@ -48,21 +48,29 @@ def read_bigquery_to_df() -> pd.DataFrame:
 
 
 def read_google_xls_to_df() -> pd.DataFrame:
-    gc = pygsheets.authorize(service_file=os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-    sheet = gc.open_by_url(os.getenv('finance_xls_path'))
+    gc = pygsheets.authorize(service_file=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+    sheet = gc.open_by_url(os.getenv("finance_xls_path"))
     wks = sheet.sheet1
     df = wks.get_as_df(include_tailing_empty=False)
-    df.replace('', np.nan, inplace=True)
+    df.replace("", np.nan, inplace=True)
     df.dropna(inplace=True)
     df = df.astype(str)
-    df.columns = ['Reason', 'Price', 'Remarks', 'Team_name', 'Details', 'To_who', 'Yes_or_No']
+    df.columns = [
+        "Reason",
+        "Price",
+        "Remarks",
+        "Team_name",
+        "Details",
+        "To_who",
+        "Yes_or_No",
+    ]
     return df
 
 
 def write_to_bigquery(df) -> None:
-    project_id = 'pycontw-225217'
-    dataset_id = 'test'
-    table_id = 'pycontw_finance'
+    project_id = "pycontw-225217"
+    dataset_id = "test"
+    table_id = "pycontw_finance"
     client = bigquery.Client(project=project_id)
     table = client.dataset(dataset_id).table(table_id)
     schema = [
@@ -80,7 +88,7 @@ def write_to_bigquery(df) -> None:
 
 
 def refine_diff_df_to_string(df) -> Text:
-    msg = ''
+    msg = ""
     if df.empty:
         return "no data"
     else:

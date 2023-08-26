@@ -17,6 +17,7 @@ StrEnum = "^0.4.6"
 python-fb-page-insights-client = {git = "https://github.com/pycontw/python-fb-page-insights-client.git", rev = "bd221ff"}
 Flask-OAuthlib = "^0.9.6"
 Flask-OpenID = "1.3.0"
+pygsheets = "^2.0.6"
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

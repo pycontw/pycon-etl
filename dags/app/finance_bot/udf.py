@@ -1,11 +1,11 @@
-import pygsheets
-import numpy as np
-from google.cloud import bigquery
-import pandas as pd
-import requests
 import os
-from app import discord
 
+import numpy as np
+import pandas as pd
+import pygsheets
+import requests
+from app import discord
+from google.cloud import bigquery
 
 session = requests.session()
 
@@ -87,7 +87,7 @@ def write_to_bigquery(df) -> None:
     job.result()
 
 
-def refine_diff_df_to_string(df) -> Text:
+def refine_diff_df_to_string(df) -> str:
     msg = ""
     if df.empty:
         return "no data"

@@ -23,7 +23,8 @@ def main() -> None:
     webhook_url = os.getenv("discord_data_stratagy_webhook")
     username = "財務機器人"
     msg = refine_diff_df_to_string(df_diff)
-    discord.send_webhook_message(webhook_url, username, msg)
+    if msg != "no data":
+        discord.send_webhook_message(webhook_url, username, msg)
 
 
 def df_difference(df_xls, df_bigquery) -> pd.DataFrame:

@@ -16,7 +16,7 @@ DEFAULT_ARGS = {
     "on_failure_callback": lambda x: "Need to send notification to Discord",
 }
 dag = DAG(
-    "DISCORD_CHORES_REMINDER",
+    "DISCORD_FINANCE_REMINDER",
     default_args=DEFAULT_ARGS,
     schedule_interval="@daily",
     max_active_runs=1,

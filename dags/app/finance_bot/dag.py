@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from app.finance import udf
+from app.finance_bot import udf
 
 DEFAULT_ARGS = {
     "owner": "qchwan",

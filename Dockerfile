@@ -1,4 +1,4 @@
-FROM puckel/docker-airflow:1.10.9
+FROM apache/airflow:1.10.13-python3.8
 USER root
 ENV POETRY_VIRTUALENVS_CREATE=false \
     POETRY_CACHE_DIR='/var/cache/pypoetry' \

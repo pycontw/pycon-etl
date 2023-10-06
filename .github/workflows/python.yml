@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [master]
 env:
-  POETRY_VIRTUALENVS_CREATE: false
   AIRFLOW_TEST_MODE: true
 jobs:
   build:
@@ -22,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -U poetry
+          pip install -U poetry==1.6.1
           poetry install
 
       - name: Run linters

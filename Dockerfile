@@ -3,7 +3,8 @@ USER root
 ENV POETRY_CACHE_DIR='/var/cache/pypoetry' \
     GOOGLE_APPLICATION_CREDENTIALS='/usr/local/airflow/service-account.json'
 
-RUN apt-get update \
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29 \
+    && apt-get update \
     && apt-get install -y --no-install-recommends git \
     # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy
     # 2. libglib2.0-0 libsm6 libxext6 libxrender-dev libgl1-mesa-dev are required by opencv

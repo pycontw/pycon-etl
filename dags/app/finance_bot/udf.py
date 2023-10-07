@@ -21,11 +21,13 @@ def main() -> None:
     # link to bigquery and write xls file
     write_to_bigquery(df_diff)
     # push to discord
-    webhook_url = Variable.get("discord_data_stratagy_webhook")
-    username = "財務機器人"
-    msg = refine_diff_df_to_string(df_diff)
-    if msg != "no data":
-        discord.send_webhook_message(webhook_url, username, msg)
+    kwargs = {
+        "webhook_url": Variable.get("discord_data_stratagy_webhook"),
+        "username": "財務機器人",
+        "msg": refine_diff_df_to_string(df_diff),
+    }
+    if kwargs["msg"] != "no data":
+        discord.send_webhook_message(**kwargs)
 
 
 def df_difference(df_xls, df_bigquery) -> pd.DataFrame:

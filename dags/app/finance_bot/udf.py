@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pygsheets
 import requests
+from airflow.models import Variable
 from app import discord
 from google.cloud import bigquery
 
@@ -52,7 +53,7 @@ def read_bigquery_to_df() -> pd.DataFrame:
 
 def read_google_xls_to_df() -> pd.DataFrame:
     gc = pygsheets.authorize(service_file=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-    sheet = gc.open_by_url(os.getenv("finance_xls_path"))
+    sheet = gc.open_by_url(Variable.get("finance_xls_path"))
     wks = sheet.sheet1
     df = wks.get_as_df(include_tailing_empty=False)
     df.replace("", np.nan, inplace=True)

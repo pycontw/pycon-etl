@@ -54,7 +54,7 @@ jobs:
 
     - name: Push staging to docker registry
       uses: actions-hub/docker@master
-      if: github.ref == 'refs/heads/master' && success()
+      if: ${{ github.ref == 'refs/heads/master' }} && success()
       with:
         args: push ${RC_NAME}:staging
 

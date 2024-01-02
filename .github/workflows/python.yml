@@ -2,38 +2,36 @@ name: Python CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 env:
-  POETRY_VIRTUALENVS_CREATE: false
   AIRFLOW_TEST_MODE: true
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        pip install poetry==1.1.14
-        poetry config experimental.new-installer false
-        poetry install
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - name: Run linters
-      run: make lint
+      - name: Install dependencies
+        run: |
+          pip install -U poetry==1.6.1
+          poetry install
 
-    - name: Run test
-      run: make test
+      - name: Run linters
+        run: make lint
 
-    - name: Coverage
-      run: make coverage
+      - name: Run test
+        run: make test
 
+      - name: Coverage
+        run: make coverage
 
     # CD part
     # - name: Push dags to GCS

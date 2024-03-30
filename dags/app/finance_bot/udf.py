@@ -39,7 +39,7 @@ def read_bigquery_to_df() -> pd.DataFrame:
     client = bigquery.Client()
     query = """
     SELECT *
-    FROM `pycontw-225217.test.pycontw_finance`
+    FROM `pycontw-225217.ods.pycontw_finance`
     """
     query_job = client.query(query)
     results = query_job.result()
@@ -73,7 +73,7 @@ def read_google_xls_to_df() -> pd.DataFrame:
 
 def write_to_bigquery(df) -> None:
     project_id = "pycontw-225217"
-    dataset_id = "test"
+    dataset_id = "ods"
     table_id = "pycontw_finance"
     client = bigquery.Client(project=project_id)
     table = client.dataset(dataset_id).table(table_id)

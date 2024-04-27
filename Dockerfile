@@ -4,6 +4,7 @@ ENV POETRY_CACHE_DIR='/var/cache/pypoetry' \
     GOOGLE_APPLICATION_CREDENTIALS='/usr/local/airflow/service-account.json'
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29 \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C \
     && apt-get update \
     && apt-get install -y --no-install-recommends git \
     # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy

@@ -10,8 +10,8 @@ from app.proposal_reminder import udf
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
     "depends_on_past": False,
-    "start_date": datetime(2023, 3, 1),
-    "end_date": datetime(2023, 4, 1),
+    "start_date": datetime(2024, 2, 25),
+    "end_date": datetime(2024, 4, 9),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
 }

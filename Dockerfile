@@ -15,6 +15,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml pyproject.toml
+COPY poetry.toml poetry.toml
 COPY poetry.lock poetry.lock
 
 RUN python -m poetry install --no-interaction --no-ansi --no-dev \

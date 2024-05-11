@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python_project_template"
+name = "pycon-etl"
 version = "0.1.0"
 description = ""
 authors = ["davidtnfsh <davidtnfsh@gmail.com>"]

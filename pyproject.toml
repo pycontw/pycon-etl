@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "python_project_template"
+name = "pycon-etl"
 version = "0.1.0"
 description = ""
 authors = ["davidtnfsh <davidtnfsh@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
+python = "^3.8.0"
 requests = "^2.26.0"
 apache-airflow = "1.10.13"
 searchconsole = "^0.0.4"
@@ -14,10 +14,12 @@ google-cloud-bigquery = {version = "^2.24.0", python = ">=3.7.1,<3.10"}
 pandas = "^1.3.2"
 pyarrow = "^5.0.0"
 StrEnum = "^0.4.6"
-python-fb-page-insights-client = {git = "https://github.com/pycontw/python-fb-page-insights-client.git", rev = "bd221ff"}
 Flask-OAuthlib = "^0.9.6"
 Flask-OpenID = "1.3.0"
 pygsheets = "^2.0.6"
+# https://github.com/pallets/markupsafe/issues/304
+MarkupSafe = "==2.0.1"
+docutils = "^0.20"
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

@@ -25,10 +25,10 @@ def create_table_if_needed() -> None:
         post_id STRING,
         query_time TIMESTAMP,
         period STRING,
-        favorite NULLABLE INTEGER,
-        reply NULLABLE INTEGER,
-        retweet NULLABLE INTEGER,
-        views NULLABLE INTEGER
+        favorite INTEGER,
+        reply INTEGER,
+        retweet INTEGER,
+        views INTEGER
     )
     """
     client.query(insights_sql)
@@ -42,7 +42,9 @@ def save_twitter_posts_and_insights() -> None:
         new_posts = posts
     else:
         new_posts = [
-            post for post in posts if post["timestamp"] > last_post["created_at"]
+            post
+            for post in posts
+            if post["timestamp"] > last_post["created_at"].timestamp()
         ]
 
     if not dump_posts_to_bigquery(
@@ -60,8 +62,8 @@ def save_twitter_posts_and_insights() -> None:
     if not dump_posts_insights_to_bigquery(
         [
             {
-                "id": post["tweet_id"],
-                "query_time": datetime.now(),
+                "post_id": post["tweet_id"],
+                "query_time": datetime.now().timestamp(),
                 "period": "lifetime",
                 "favorite": post["favorite_count"],
                 "reply": post["reply_count"],
@@ -91,9 +93,15 @@ def query_last_post() -> Optional[dict]:
 
 
 def request_posts_data() -> List[dict]:
-    url = "https://twitter154.p.rapidapi.com/v2/UserTweets/"
+    url = "https://twitter154.p.rapidapi.com/user/tweets"
     # 499339900 is PyConTW's twitter id
-    querystring = {"id": "499339900", "count": "1"}
+    querystring = {
+        "username": "pycontw",
+        "user_id": "96479162",
+        "limit": "40",
+        "include_replies": "false",
+        "include_pinned": "false",
+    }
     headers = {
         "X-RapidAPI-Key": Variable.get("RAPIDAPIAPI_KEY"),
         "X-RapidAPI-Host": "twitter154.p.rapidapi.com",

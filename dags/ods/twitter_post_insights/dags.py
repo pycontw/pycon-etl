@@ -17,7 +17,7 @@ dag = DAG(
     default_args=DEFAULT_ARGS,
     schedule_interval="5 8 * * *",
     max_active_runs=1,
-    catchup=True,
+    catchup=False,
 )
 with dag:
     CREATE_TABLE_IF_NEEDED = PythonOperator(

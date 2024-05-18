@@ -15,3 +15,9 @@ test:
 
 coverage:
 	PYTHONPATH=./dags $(VENV_PREFIX) pytest --cov=dags tests
+
+deploy:
+	docker-compose -f ./docker/docker-compose.yml up -d
+
+down:
+	docker-compose -f ./docker/docker-compose.yml down

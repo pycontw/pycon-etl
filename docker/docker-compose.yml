@@ -1,0 +1,30 @@
+version: '3.4'
+
+x-docker-common:
+  &docker-common
+  image: davidtnfsh/pycon_etl:ee0e333877bc9b20a180ce9e1569156020c0f6a5
+  env_file: ../.env.production
+  volumes:
+    - ../dags:/usr/local/airflow/dags
+    - ../logs:/usr/local/airflow/logs
+    - ../service-account.json:/usr/local/airflow/service-account.json
+    - airflow-db-volume:/opt/airflow/
+  restart: "no"
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+
+services:
+
+  airflow:
+    <<: *docker-common
+    container_name: airflow
+    ports:
+      - 8080:8080
+    command: bash -c "([ ! -f /opt/airflow/airflow.db ] && airflow initdb || echo 'Database existed') && (airflow webserver &) && (airflow scheduler)"
+
+
+volumes:
+  airflow-db-volume:
+    external: true

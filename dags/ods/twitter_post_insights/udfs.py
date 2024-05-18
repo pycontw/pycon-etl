@@ -1,11 +1,11 @@
 import logging
 import os
-import requests
+from datetime import datetime
 from typing import List, Optional
+
+import requests
 from airflow.models import Variable
 from google.cloud import bigquery
-from datetime import datetime
-
 
 logger = logging.getLogger(__name__)
 

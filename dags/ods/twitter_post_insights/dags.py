@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from ods.twitter_post_insights import udfs
-
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
@@ -21,8 +21,7 @@ dag = DAG(
 )
 with dag:
     CREATE_TABLE_IF_NEEDED = PythonOperator(
-        task_id="CREATE_TABLE_IF_NEEDED",
-        python_callable=udfs.create_table_if_needed,
+        task_id="CREATE_TABLE_IF_NEEDED", python_callable=udfs.create_table_if_needed,
     )
 
     SAVE_TWITTER_POSTS_AND_INSIGHTS = PythonOperator(

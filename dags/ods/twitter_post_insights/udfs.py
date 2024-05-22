@@ -80,7 +80,7 @@ def query_last_post() -> Optional[dict]:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     sql = """
     SELECT
-        *
+        created_at
     FROM
         `pycontw-225217.ods.ods_pycontw_twitter_posts`
     ORDER BY
@@ -97,7 +97,7 @@ def request_posts_data() -> List[dict]:
     # 499339900 is PyConTW's twitter id
     querystring = {
         "username": "pycontw",
-        "user_id": "96479162",
+        "user_id": "499339900",
         "limit": "40",
         "include_replies": "false",
         "include_pinned": "false",

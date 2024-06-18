@@ -19,10 +19,6 @@ def create_table_if_needed() -> None:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     base_path = Path(__file__).parent.parent
     sql_path = base_path / "sql" / "create_table.sql"
-    sql = (
-        sql_path
-        .read_text()
-        .format(TABLE)
-    )
+    sql = sql_path.read_text().format(TABLE)
     client.query(sql)
     client.query(DEDUPE_SQL)

@@ -17,10 +17,8 @@ FROM
 
 def create_table_if_needed() -> None:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-    sql = (
-        Path("dags/ods/kktix_ticket_orders/sqls/create_table.sql")
-        .read_text()
-        .format(TABLE)
-    )
+    base_path = Path(__file__).parent.parent
+    sql_path = base_path / "sql" / "create_table.sql"
+    sql = sql_path.read_text().format(TABLE)
     client.query(sql)
     client.query(DEDUPE_SQL)

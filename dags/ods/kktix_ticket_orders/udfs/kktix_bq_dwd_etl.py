@@ -201,6 +201,8 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)': "how_did_you_know_cfp_of_pycon_tw",
     # form 2024 reformatted column names
     "來自國家、地區或縣市": "country_or_region",
+    "(Attend first time) How did you know PyCon TW 2024? / (初次參與) 如何得知 PyCon TW？": "how_did_you_know_pycon_tw",
+    "Dietary Preference / 飲食偏好": "dietary_habit",
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -246,6 +248,13 @@ UNWANTED_DATA_TO_UPLOAD = (
     # "Have you ever been a PyCon TW volunteer？ / 是否曾擔任過 PyCon TW 志工？",
     # For 2024, just for notes
     "地址",
+    "聯絡人 地址",
+    "注意事項",
+    "I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)",
+    "I’ve already read and I accept the Privacy Policy of PyCon TW 2024 / 我已閱讀並同意 PyCon TW 2024 個人資料保護聲明",
+    "I'm willing to comply with the PyCon TW 2024 CoC / 我願意遵守 PyCon TW 2024 行為準則",
+    "我願意收到未來 PyCon TW 贊助機會相關信件",
+    "願意收到未來 PyCon TW 活動訊息",
 )
 
 

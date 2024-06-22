@@ -199,6 +199,8 @@ HEURISTIC_COMPATIBLE_MAPPING_TABLE = {
     "How did you know PyCon TW 2023？ / 如何得知 PyCon TW 2023？": "how_did_you_know_pycon_tw",
     "(初次參與) How did you know PyCon TW 2023？ / (Attend first time) 如何得知 PyCon TW 2023？": "how_did_you_know_pycon_tw",
     '(投稿者) 你是怎麼得知 PyCon Taiwan 投稿資訊？/ (For Submitter) How did you know the CfP information of PyCon Taiwan? (If you are NOT submitter, fill in "non-submitter"/ 如果您沒有投稿，請填寫「非投稿者」)': "how_did_you_know_cfp_of_pycon_tw",
+    # form 2024 reformatted column names
+    "來自國家、地區或縣市": "country_or_region",
 }
 
 UNWANTED_DATA_TO_UPLOAD = (
@@ -242,6 +244,8 @@ UNWANTED_DATA_TO_UPLOAD = (
     # "Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)",
     """I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則""",
     # "Have you ever been a PyCon TW volunteer？ / 是否曾擔任過 PyCon TW 志工？",
+    # For 2024, just for notes
+    "地址",
 )
 
 

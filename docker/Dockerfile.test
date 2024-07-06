@@ -1,5 +1,0 @@
-FROM davidtnfsh/pycon_etl:prod
-ENV AIRFLOW_TEST_MODE=True
-ENV FERNET_KEY="uMnRC6ingT/WjPzPiXLvbWTJYzaA3sJdJRVkinceVp4="
-USER root
-COPY airflow.test.cfg airflow.cfg

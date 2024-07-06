@@ -20,8 +20,15 @@ pygsheets = "^2.0.6"
 # https://github.com/pallets/markupsafe/issues/304
 MarkupSafe = "==2.0.1"
 docutils = "^0.20"
+# azure-datalake-store, pip._vendor.packaging.requirements.InvalidRequirement
 azure-datalake-store = ">=0.0.45"
 azure-mgmt-datalake-store = ">=0.5.0"
+# https://stackoverflow.com/questions/68687548/apache-airflow-airflow-initdb-throws-modulenotfounderror-no-module-named-wtf
+marshmallow = "2.21.0"
+wtforms = "2.3.3"
+# https://stackoverflow.com/questions/66774109/install-airflow-importerror-no-module-named-clsregistry
+sqlalchemy = "1.3.23"
+flask-sqlalchemy = "2.4.4"
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

@@ -1,7 +1,7 @@
 FROM apache/airflow:1.10.13-python3.8
 USER root
 ENV POETRY_CACHE_DIR='/var/cache/pypoetry' \
-    GOOGLE_APPLICATION_CREDENTIALS='/usr/local/airflow/service-account.json'
+    GOOGLE_APPLICATION_CREDENTIALS='/opt/airflow/service-account.json'
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29 \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C \
@@ -24,5 +24,5 @@ RUN python -m poetry install --no-interaction --no-ansi --no-dev \
     && pip uninstall -yq poetry
 
 USER airflow
-COPY dags /usr/local/airflow/dags
+COPY dags /opt/airflow/dags
 COPY airflow.cfg airflow.cfg

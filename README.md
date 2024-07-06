@@ -65,7 +65,7 @@ Please use Gitlab Flow, otherwise, you cannot pass docker hub CI
 
 > Find @davidtnfsh if you don't have those secrets.
 
-> **⚠ WARNING: About .env**  
+> **⚠ WARNING: About .env**
 > Please don't use the .env for local development, or it might screw up the production tables.
 
 1. Build docker image:
@@ -77,8 +77,8 @@ Please use Gitlab Flow, otherwise, you cannot pass docker hub CI
     2. Follow the instructions in `.env.<staging|production>` and fill in your secrets.
        If you are running the staging instance for development as a sandbox and not going to access any specific third-party service, leave the `.env.staging` as-is should be fine.
 3. Start the Airflow server:
-    * production: `docker run --log-opt max-size=1m -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
-    * dev/test: `docker run -p 8080:8080 --name airflow  -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * production: `docker run --log-opt max-size=1m -p 8080:8080 --name airflow  -v $(pwd)/dags:/opt/airflow/dags -v $(pwd)/service-account.json:/opt/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run -p 8080:8080 --name airflow  -v $(pwd)/dags:/opt/airflow/dags -v $(pwd)/service-account.json:/opt/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference is just the env file name and the image cache.
 4. Portforward compute instance to your local and then navigate to <http://localhost:8080/admin/>:
    1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -NL 8080:localhost:8080`
@@ -93,7 +93,7 @@ Please use Gitlab Flow, otherwise, you cannot pass docker hub CI
 
 > Find @davidtnfsh if you don't have those secrets.
 
-> **⚠ WARNING: About .env**  
+> **⚠ WARNING: About .env**
 > Please don't use the .env for local development, or it might screw up the production tables.
 
 1. Build docker image:
@@ -105,8 +105,8 @@ Please use Gitlab Flow, otherwise, you cannot pass docker hub CI
     2. Follow the instructions in `.env.<staging|production>` and fill in your secrets.
        If you are running the staging instance for development as a sandbox, and not going to access any specific thrid-party service, leave the `.env.staging` as-is should be fine.
 3. Start the Airflow server:
-    * production: `docker run -p 8080:8080 --name airflow -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
-    * dev/test: `docker run -p 8080:8080 --name airflow  -v "/$(pwd)"/dags:/usr/local/airflow/dags -v "/$(pwd)"/service-account.json:/usr/local/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
+    * production: `docker run -p 8080:8080 --name airflow -v "/$(pwd)"/dags:/opt/airflow/dags -v "/$(pwd)"/service-account.json:/opt/airflow/service-account.json --env-file=./.env.production davidtnfsh/pycon_etl:prod webserver`
+    * dev/test: `docker run -p 8080:8080 --name airflow  -v "/$(pwd)"/dags:/opt/airflow/dags -v "/$(pwd)"/service-account.json:/opt/airflow/service-account.json --env-file=./.env.staging davidtnfsh/pycon_etl:test webserver`
     * Note the difference are just the env file name and the image cache.
 4. Portforward compute instance to your local and then navigate to <http://localhost/admin/>:
    1. `gcloud beta compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217" -- -N -L 8080:localhost:8080`

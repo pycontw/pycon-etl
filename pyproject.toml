@@ -20,6 +20,8 @@ pygsheets = "^2.0.6"
 # https://github.com/pallets/markupsafe/issues/304
 MarkupSafe = "==2.0.1"
 docutils = "^0.20"
+azure-datalake-store = ">=0.0.45"
+azure-mgmt-datalake-store = ">=0.5.0"
 
 [tool.poetry.dev-dependencies]
 safety = "^1.9.0"

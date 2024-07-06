@@ -4,6 +4,8 @@ from pathlib import Path
 
 from google.cloud import bigquery
 
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
+
 
 class SurveyCakeCSVUploader:
     def __init__(self, filename):
@@ -42,9 +44,8 @@ class SurveyCakeCSVUploader:
                 for question_id, question in question_id_dienstion_table.items():
                     writer.writerow((question_id, question, self.year))
 
-        with open(
-            Path("/usr/local/airflow/dags") / self.filename, "r", encoding="utf-8-sig"
-        ) as csvfile:
+        filepath = Path(AIRFLOW_HOME) / "dags" / self.filename
+        with open(filepath, "r", encoding="utf-8-sig") as csvfile:
             rows = csv.reader(csvfile)
             # skip header
             header = next(iter(rows))

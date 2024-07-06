@@ -13,11 +13,13 @@ from utils.hook_related import RETRY_ARGS
 CHANNEL_ID = "UCHLnNgRnfGYDzPCCH8qGbQw"
 MAX_RESULTS = 50
 PROJECT = os.getenv("BIGQUERY_PROJECT")
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 
 def create_table_if_needed():
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-    sql = Path("dags/ods/youtube/sqls/create_table.sql").read_text().format(PROJECT)
+    sql_filepath = Path(AIRFLOW_HOME) / "dags/ods/youtube/sqls/create_table.sql"
+    sql = sql_filepath.read_text().format(PROJECT)
     client.query(sql)
 
 

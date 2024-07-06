@@ -1,4 +1,6 @@
-FROM apache/airflow:1.10.13-python3.8
+ARG AIRFLOW_VERSION=1.10.13
+ARG PYTHON_VERSION=3.8
+FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}
 USER root
 ENV POETRY_CACHE_DIR='/var/cache/pypoetry' \
     GOOGLE_APPLICATION_CREDENTIALS='/opt/airflow/service-account.json'

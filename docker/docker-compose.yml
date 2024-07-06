@@ -5,9 +5,9 @@ x-docker-common:
   image: davidtnfsh/pycon_etl:ee0e333877bc9b20a180ce9e1569156020c0f6a5
   env_file: ../.env.production
   volumes:
-    - ../dags:/usr/local/airflow/dags
-    - ../logs:/usr/local/airflow/logs
-    - ../service-account.json:/usr/local/airflow/service-account.json
+    - ../dags:/opt/airflow/dags
+    - ../logs:/opt/airflow/logs
+    - ../service-account.json:/opt/airflow/service-account.json
     - airflow-db-volume:/opt/airflow/
   restart: "no"
   logging:

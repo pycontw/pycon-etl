@@ -8,6 +8,15 @@ if [ -z "${AIRFLOW_HOME}" ]; then
   exit 1
 fi
 
+# Create Fernet key if not exists
+if [ -z "${AIRFLOW__CORE__FERNET_KEY}" ]; then
+  echo "Fernet key not set. Generating a new one."
+  export AIRFLOW__CORE__FERNET_KEY=$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+  echo "Fernet key generated and set."
+else
+  echo "Fernet key exists."
+fi
+
 # Check if the database exists and initialize it if not
 if [ ! -f "${AIRFLOW_HOME}/airflow.db" ]; then
   airflow initdb

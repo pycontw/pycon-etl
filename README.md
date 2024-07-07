@@ -71,6 +71,8 @@ make deploy-dev
 make down-dev
 ```
 
+> Difference between production and dev/test compose files is dev/test compose file use local build image, and production compose file use the image from docker hub.
+
 ### Local environment with Docker (Windows)
 
 Same as above, bit do not use Windows Powershell; please use Command Prompt instead.

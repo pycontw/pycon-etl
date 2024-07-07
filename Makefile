@@ -19,8 +19,17 @@ coverage:
 deps:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes
 
-deploy:
-	docker-compose -f ./docker/docker-compose.yml up -d
+build-dev:
+	docker-compose -f ./docker-compose-dev.yml build
 
-down:
-	docker-compose -f ./docker/docker-compose.yml down
+deploy-dev:
+	docker-compose -f ./docker-compose-dev.yml up -d
+
+down-dev:
+	docker-compose -f ./docker-compose-dev.yml down
+
+deploy-prod:
+	docker-compose -f ./docker-compose.yml up -d
+
+down-prod:
+	docker-compose -f ./docker-compose.yml down

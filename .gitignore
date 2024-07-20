@@ -1,4 +1,5 @@
 # project stuff
+.env.production
 .env.staging
 env
 env.sh

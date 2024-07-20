@@ -10,6 +10,8 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from ods.survey_cake.udfs.survey_cake_csv_uploader import SurveyCakeCSVUploader
 
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
+
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
     "depends_on_past": False,
@@ -27,7 +29,8 @@ dag = DAG(
 )
 with dag:
     if bool(os.getenv("AIRFLOW_TEST_MODE")):
-        FILENAMES: Dict[str, Dict] = {"fixtures/data_questionnaire.csv": {}}
+        filepath = Path(AIRFLOW_HOME) / "dags/fixtures/data_questionnaire.csv"
+        FILENAMES: Dict[str, Dict] = {str(filepath): {}}
     else:
         FILENAMES = {
             "data_questionnaire.csv": {

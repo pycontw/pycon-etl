@@ -16,9 +16,6 @@ test:
 coverage:
 	PYTHONPATH=./dags $(VENV_PREFIX) pytest --cov=dags tests
 
-deps:
-	poetry export -f requirements.txt -o requirements.txt --without-hashes
-
 build-dev:
 	docker-compose -f ./docker-compose-dev.yml build
 

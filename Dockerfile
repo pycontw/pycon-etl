@@ -21,15 +21,14 @@ RUN chmod +x /entrypoint.sh
 
 USER airflow
 
-# on AIRFLOW_HOME: /opt/airflow
+COPY ./requirements.txt ${AIRFLOW_HOME}/requirements.txt
+COPY ./constraints-3.8.txt ${AIRFLOW_HOME}/constraints-3.8.txt
 
-COPY ./requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r ${AIRFLOW_HOME}/requirements.txt --constraint constraints-3.8.txt
 
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir --no-deps -r requirements.txt
+COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
-COPY airflow.cfg airflow.cfg
-
-COPY dags dags
+COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
 
 ENTRYPOINT ["/entrypoint.sh"]

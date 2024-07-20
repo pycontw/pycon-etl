@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 Set up the Authentication for GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
     * After running `gcloud auth application-default login`, you will get a credentials.json file located at `$HOME/.config/gcloud/application_default_credentials.json`. Run `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-    * service-account.json: Please contact @david30907d via email, Telegram, or Discord. You do not need this json file if you are running the sandbox staging instance for development.
+    * service-account.json: Please contact @david30907d via email or Discord. You do not need this json file if you are running the sandbox staging instance for development.
 
 ## Running the Project
 

@@ -24,8 +24,7 @@ USER airflow
 COPY ./requirements.txt ${AIRFLOW_HOME}/requirements.txt
 COPY ./constraints-3.8.txt ${AIRFLOW_HOME}/constraints-3.8.txt
 
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r ${AIRFLOW_HOME}/requirements.txt --constraint constraints-3.8.txt
+RUN pip install --no-cache-dir -r ${AIRFLOW_HOME}/requirements.txt --constraint constraints-3.8.txt
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 

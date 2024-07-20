@@ -10,11 +10,10 @@ fi
 
 # Create Fernet key if not exists
 if [ -z "${AIRFLOW__CORE__FERNET_KEY}" ]; then
-  echo "Fernet key not set"
-  echo "Please use the following command to generate"
-  echo "And set the key to AIRFLOW__CORE__FERNET_KEY environment variable"
-  echo ">> python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
-  exit 1
+  echo "Fernet key not set. Generating a new one."
+  export AIRFLOW__CORE__FERNET_KEY=$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+  echo "Fernet key generated and set."
+  echo "[WARNING] Please save the AIRFLOW__CORE__FERNET_KEY for future use."
 else
   echo "Fernet key exists."
 fi

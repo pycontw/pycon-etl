@@ -13,23 +13,27 @@ Using Airflow to implement our ETL pipelines
 - [BigQuery (Optional)](#bigquery-optional)
 - [Run](#run)
   - [Local environment with Docker](#local-environment-with-docker)
-  - [Local environment with Docker (Windows)](#local-environment-with-docker-windows)
   - [Production](#production)
 - [Contact](#contact)
 
 ## Prerequisites
 
-* [Python 3.8+](https://www.python.org/downloads/release/python-3811/)
-* [Poetry](https://python-poetry.org/docs/#installation)
-* [Docker](https://docs.docker.com/get-docker/)
-* [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
+- [Python 3.8+](https://www.python.org/downloads/release/python-3811/)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
+- [Poetry](https://python-poetry.org/docs/#installation) (Optional, only for creating virtual environment when developing)
 
 ## Install
 
 Install local environment for development:
 
 ```bash
+# use poetry to create a virtual environment
 poetry install
+
+# or use pip install on user existed python environment
+# if your got any airflow error, check constraints-3.8.txt and re-install airflow dependencies
+pip install -r requirements.txt
 ```
 
 ## Configuration
@@ -72,10 +76,6 @@ make down-dev
 ```
 
 > Difference between production and dev/test compose files is dev/test compose file use local build image, and production compose file use the image from docker hub.
-
-### Local environment with Docker (Windows)
-
-Same as above, bit do not use Windows Powershell; please use Command Prompt instead.
 
 ### Production
 

@@ -10,9 +10,11 @@ fi
 
 # Create Fernet key if not exists
 if [ -z "${AIRFLOW__CORE__FERNET_KEY}" ]; then
-  echo "Fernet key not set. Generating a new one."
-  export AIRFLOW__CORE__FERNET_KEY=$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
-  echo "Fernet key generated and set."
+  echo "Fernet key not set"
+  echo "Please use the following command to generate"
+  echo "And set the key to AIRFLOW__CORE__FERNET_KEY environment variable"
+  echo ">> python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
+  exit 1
 else
   echo "Fernet key exists."
 fi
@@ -23,6 +25,12 @@ if [ ! -f "${AIRFLOW_HOME}/airflow.db" ]; then
   echo 'Database initialized'
 else
   echo 'Database existed'
+fi
+
+# Check if the GCP service account is provided
+if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
+  echo "No GCP service account provided, set to default path"
+  export GOOGLE_APPLICATION_CREDENTIALS="${AIRFLOW_HOME}/service-account.json"
 fi
 
 # Check if the command is provided

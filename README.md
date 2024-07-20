@@ -68,6 +68,9 @@ dev/test environment:
 # build the dev/test local image
 make build-dev
 
+# first time setup, create airflow db volume
+docker volume create --name=airflow-db-volume
+
 # start dev/test services
 make deploy-dev
 

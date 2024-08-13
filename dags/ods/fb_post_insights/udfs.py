@@ -42,9 +42,12 @@ def save_fb_posts_and_insights() -> None:
         new_posts = [
             post
             for post in posts
-            if datetime.strptime(post["created_time"], '%Y-%m-%dT%H:%M:%S%z').timestamp() > last_post["created_at"].timestamp()
+            if datetime.strptime(
+                post["created_time"], "%Y-%m-%dT%H:%M:%S%z"
+            ).timestamp()
+            > last_post["created_at"].timestamp()
         ]
-        
+
     if not dump_posts_to_bigquery(
         [
             {
@@ -64,7 +67,7 @@ def save_fb_posts_and_insights() -> None:
                 "query_time": datetime.now().timestamp(),
                 "comments": post["comments"]["summary"]["total_count"],
                 "reactions": post["reactions"]["summary"]["total_count"],
-                "share": post.get("shares", {}).get("count", 0)
+                "share": post.get("shares", {}).get("count", 0),
             }
             for post in posts
         ]
@@ -91,15 +94,13 @@ def query_last_post() -> Optional[dict]:
 def request_posts_data() -> List[dict]:
     url = "https://graph.facebook.com/v20.0/160712400714277/feed/"
     # 160712400714277 is PyConTW's fb id
-    access_token = Variable.get("FB_ACCESS_KEY")  
-    headers = {
-        "Content-Type": "application/json"
-    }
+    access_token = Variable.get("FB_ACCESS_KEY")
+    headers = {"Content-Type": "application/json"}
     params = {
-        'fields': 'id,created_time,message,comments.summary(true),reactions.summary(true),shares',
-        'access_token': access_token
+        "fields": "id,created_time,message,comments.summary(true),reactions.summary(true),shares",
+        "access_token": access_token,
     }
-    response = requests.get(url, headers=headers, params=params)  
+    response = requests.get(url, headers=headers, params=params)
     if response.ok:
         return response.json()["data"]
     raise RuntimeError(f"Failed to fetch posts data: {response.text}")
@@ -162,4 +163,8 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
 
 
 def convert_fb_time(time_string: str) -> str:
-    return datetime.strptime(time_string, '%Y-%m-%dT%H:%M:%S%z').strftime('%Y-%m-%d %H:%M:%S%z').replace('+0000', 'UTC')
+    return (
+        datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S%z")
+        .strftime("%Y-%m-%d %H:%M:%S%z")
+        .replace("+0000", "UTC")
+    )

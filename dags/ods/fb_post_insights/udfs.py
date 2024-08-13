@@ -33,7 +33,7 @@ def create_table_if_needed() -> None:
 
 
 def save_fb_posts_and_insights() -> None:
-    posts = request_posts_data()['data']
+    posts = request_posts_data()
 
     last_post = query_last_post()
     if last_post is None:
@@ -43,7 +43,8 @@ def save_fb_posts_and_insights() -> None:
             post
             for post in posts
             if datetime.strptime(post["created_time"], '%Y-%m-%dT%H:%M:%S%z').timestamp() > last_post["created_at"].timestamp()
-
+        ]
+        
     if not dump_posts_to_bigquery(
         [
             {
@@ -160,5 +161,5 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
         return False
 
 
-def convert_fb_time(time_string: str) -> Optional[datetime]:
+def convert_fb_time(time_string: str) -> str:
     return datetime.strptime(time_string, '%Y-%m-%dT%H:%M:%S%z').strftime('%Y-%m-%d %H:%M:%S%z').replace('+0000', 'UTC')

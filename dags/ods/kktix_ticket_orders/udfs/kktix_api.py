@@ -121,6 +121,9 @@ def _get_attendee_infos(
     """
     get attendee infos, e.g. email, phonenumber, name and etc
     """
+    print(
+        f"Fetching attendee infos between {timestamp} and {timestamp + SCHEDULE_INTERVAL_SECONDS}"
+    )
     attendee_infos = []
     for attendee_id in attendee_ids:
         attendee_info = HTTP_HOOK.run_with_advanced_retry(

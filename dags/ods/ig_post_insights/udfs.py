@@ -166,7 +166,6 @@ def dump_posts_to_bigquery(posts: List[dict]) -> bool:
         write_disposition="WRITE_APPEND",
     )
     try:
-        # print(posts)
         job = client.load_table_from_json(
             posts, "pycontw-225217.ods.ods_pycontw_ig_posts", job_config=job_config,
         )

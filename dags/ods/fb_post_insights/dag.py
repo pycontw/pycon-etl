@@ -13,7 +13,7 @@ DEFAULT_ARGS = {
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "TWITTER_POST_INSIGHTS_V1",
+    "FB_POST_INSIGHTS_V1",
     default_args=DEFAULT_ARGS,
     schedule_interval="5 8 * * *",
     max_active_runs=1,

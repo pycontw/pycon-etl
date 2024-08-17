@@ -56,14 +56,11 @@ def save_posts_and_insights() -> None:
 
     last_post = query_last_post()
     print(last_post)
-    if last_post is None:
-        new_posts = posts
-    else:
-        new_posts = [
-            post
-            for post in posts
-            if post["timestamp"] > last_post["created_at"].timestamp()
-        ]
+    new_posts = [
+        post
+        for post in posts
+        if post["timestamp"] > last_post["created_at"].timestamp()
+    ] if last_post else posts
 
     if not dump_posts_to_bigquery(
         [

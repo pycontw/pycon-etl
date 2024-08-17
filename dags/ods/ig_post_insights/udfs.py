@@ -115,10 +115,9 @@ def request_posts_data() -> List[dict]:
     response = requests.get(
         media_list_url, headers=headers, params=querystring, timeout=180
     )
-    if response.ok:
-        media_list = response.json()["data"]
-    else:
-        raise RuntimeError(f"Failed to fetch posts data: {response.text}")
+    if not response.ok:
+       raise RuntimeError(f"Failed to fetch posts data: {response.text}")
+    media_list = response.json()["data"] 
 
     media_insight_list = []
 

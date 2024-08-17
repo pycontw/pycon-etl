@@ -211,9 +211,6 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
 def test_main():
     create_table_if_needed()
 
-    # posts = request_posts_data()
-    # for item in posts:
-    #     print(item)
 
     save_posts_and_insights()
 

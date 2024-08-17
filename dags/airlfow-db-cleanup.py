@@ -13,17 +13,8 @@ airflow trigger_dag --conf '[curly-braces]"maxDBEntryAgeInDays":30[curly-braces]
 import airflow
 from airflow import settings
 from airflow.configuration import conf
-from airflow.models import (
-    DAG,
-    DagModel,
-    DagRun,
-    DagTag,
-    Log,
-    SlaMiss,
-    TaskInstance,
-    Variable,
-    XCom,
-)
+from airflow.models import (DAG, DagModel, DagRun, DagTag, Log, SlaMiss,
+                            TaskInstance, Variable, XCom)
 
 try:
     from airflow.jobs import BaseJob

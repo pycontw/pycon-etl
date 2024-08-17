@@ -119,8 +119,8 @@ def request_posts_data() -> List[dict]:
         media_list_url, headers=headers, params=querystring, timeout=180
     )
     if not response.ok:
-       raise RuntimeError(f"Failed to fetch posts data: {response.text}")
-    media_list = response.json()["data"] 
+        raise RuntimeError(f"Failed to fetch posts data: {response.text}")
+    media_list = response.json()["data"]
 
     media_insight_list = []
 
@@ -135,7 +135,7 @@ def request_posts_data() -> List[dict]:
         )
         if not response.ok:
             raise RuntimeError(f"Failed to fetch posts data: {response.text}")
-            
+
         media_insight = {}
         media_res: dict = response.json()
         # Error handling, the response may not include the required fields, media id: 17889558458829258, no "caption"
@@ -212,7 +212,6 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
 
 def test_main():
     create_table_if_needed()
-
 
     save_posts_and_insights()
 

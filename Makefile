@@ -1,20 +1,18 @@
-VENV_PREFIX=poetry run
-
 lint:
-	$(VENV_PREFIX) black . --check
-	$(VENV_PREFIX) isort --check-only .
-	$(VENV_PREFIX) flake8 .
-	$(VENV_PREFIX) mypy dags/ tests/
+	black . --check
+	isort --check-only .
+	flake8 .
+	mypy dags/ tests/
 
 format:
-	$(VENV_PREFIX) black .
-	$(VENV_PREFIX) isort .
+	black .
+	isort .
 
 test:
-	PYTHONPATH=./dags $(VENV_PREFIX) pytest
+	PYTHONPATH=./dags pytest
 
 coverage:
-	PYTHONPATH=./dags $(VENV_PREFIX) pytest --cov=dags tests
+	PYTHONPATH=./dags pytest --cov=dags tests
 
 build-dev:
 	docker-compose -f ./docker-compose-dev.yml build

@@ -9,14 +9,3 @@ pydantic<2
 pygsheets
 requests
 searchconsole
-StrEnum
-
-# Dev dependencies
-bandit
-black
-flake8
-isort
-mypy
-pytest
-pytest-cov
-safety

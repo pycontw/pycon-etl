@@ -16,7 +16,7 @@
 
 3. Make your changes.
 
-    > **NOTICE:** We are still using Airflow v1, so please read the official document [Apache Airflow v1.10.13 Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.13/) to ensure your changes are compatible with our current version.
+    > **NOTICE:** We are still using Airflow v1, so please read the official document [Apache Airflow v1.10.15 Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/) to ensure your changes are compatible with our current version.
 
     If your task uses an external service, add the connection and variable in the Airflow UI.
 
@@ -51,7 +51,7 @@ Airflow dependencies are managed by `requirements.txt` and `constraints-3.8.txt`
 
 Please add or update dependencies in `requirements.txt`. Do not modify `constraints-3.8.txt` unless Airflow is updated.
 
-For more information, refer to the [Airflow Installation Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.13/installation.html).
+For more information, refer to the [Airflow Installation Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/installation.html).
 
 ## Code Convention
 

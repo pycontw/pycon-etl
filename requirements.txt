@@ -1,5 +1,5 @@
 # Please use pip to manage airflow dependencies.
-apache-airflow==1.10.13
+apache-airflow==1.10.15
 
 # Editable install with no version specified.
 google-cloud-bigquery

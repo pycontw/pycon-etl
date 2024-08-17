@@ -21,8 +21,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -U poetry==1.6.1
-          poetry install
+          pip install -r requirements.txt -r requirements-dev.txt -c constraints-3.8.txt
+          pip install black==19.10b0 click==7.1.2
 
       - name: Run linters
         run: make lint

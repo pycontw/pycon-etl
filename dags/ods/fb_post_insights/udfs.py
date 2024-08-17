@@ -53,7 +53,7 @@ def save_fb_posts_and_insights() -> None:
             {
                 "id": post["id"],
                 "created_at": convert_fb_time(post["created_time"]),
-                "message": post["message"],
+                "message": post.get("message", "No message found"),
             }
             for post in new_posts
         ]

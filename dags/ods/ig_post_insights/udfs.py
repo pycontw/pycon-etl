@@ -55,11 +55,15 @@ def save_posts_and_insights() -> None:
     posts = request_posts_data()
 
     last_post = query_last_post()
-    new_posts = [
-        post
-        for post in posts
-        if post["timestamp"] > last_post["created_at"].timestamp()
-    ] if last_post else posts
+    new_posts = (
+        [
+            post
+            for post in posts
+            if post["timestamp"] > last_post["created_at"].timestamp()
+        ]
+        if last_post
+        else posts
+    )
 
     if not dump_posts_to_bigquery(
         [

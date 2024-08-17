@@ -55,7 +55,6 @@ def save_posts_and_insights() -> None:
     posts = request_posts_data()
 
     last_post = query_last_post()
-    print(last_post)
     new_posts = [
         post
         for post in posts
@@ -195,7 +194,6 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
         write_disposition="WRITE_APPEND",
     )
     try:
-        print(posts)
         job = client.load_table_from_json(
             posts,
             "pycontw-225217.ods.ods_pycontw_ig_posts_insights",

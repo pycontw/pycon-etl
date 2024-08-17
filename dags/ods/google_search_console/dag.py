@@ -5,8 +5,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from ods.google_search_console.udfs.google_search import \
-    GoogleSearchConsoleReporter
+from ods.google_search_console.udfs.google_search import GoogleSearchConsoleReporter
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",

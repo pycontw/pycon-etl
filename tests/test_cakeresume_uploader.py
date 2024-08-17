@@ -1,8 +1,7 @@
 import csv
 from pathlib import Path
 
-from contrib.survey_cake.udfs.survey_cake_csv_uploader import \
-    SurveyCakeCSVUploader
+from contrib.survey_cake.udfs.survey_cake_csv_uploader import SurveyCakeCSVUploader
 
 
 def test_cakeresume_uploader() -> None:

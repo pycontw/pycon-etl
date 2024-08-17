@@ -4,8 +4,10 @@ from typing import List
 
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs.bigquery_loader import TABLE
-from ods.kktix_ticket_orders.udfs.kktix_api import (_get_attendance_book_id,
-                                                    _get_attendee_ids)
+from ods.kktix_ticket_orders.udfs.kktix_api import (
+    _get_attendance_book_id,
+    _get_attendee_ids,
+)
 
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 

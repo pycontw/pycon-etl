@@ -1,10 +1,11 @@
 """
 A crawler which would crawl the openings
 """
+from __future__ import annotations
+
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -30,7 +31,7 @@ dag = DAG(
 with dag:
     if bool(os.getenv("AIRFLOW_TEST_MODE")):
         filepath = Path(AIRFLOW_HOME) / "dags/fixtures/data_questionnaire.csv"
-        FILENAMES: Dict[str, Dict] = {str(filepath): {}}
+        FILENAMES: dict[str, dict] = {str(filepath): {}}
     else:
         FILENAMES = {
             "data_questionnaire.csv": {

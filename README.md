@@ -21,20 +21,51 @@ Using Airflow to implement our ETL pipelines.
 - [Python 3.8+](https://www.python.org/downloads/release/python-3811/)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
-- [Poetry](https://python-poetry.org/docs/#installation) (Optional, only for creating virtual environments during development)
+- [venv](https://docs.python.org/3/library/venv.html)
 
 ## Installation
 
-Install the local environment for development:
+There are several tools available to create a virtual environment in Python.
 
-```bash
-# Use poetry to create a virtual environment
-poetry install
+Below are the steps to manage a virtual environment using `venv`:
 
-# Or use pip to install in your existing Python environment
-# If you encounter any Airflow errors, check constraints-3.8.txt and reinstall Airflow dependencies
-pip install -r requirements.txt
-```
+1. Create a Virtual Environment
+
+    To create a virtual environment, run the following command:
+
+    ```bash
+    python -m venv venv
+    ```
+
+    In this example, `venv` is the name of the virtual environment directory, but you can replace it with any name you prefer.
+
+2. Activate the Virtual Environment
+
+    After creating the virtual environment, activate it using the following command:
+
+    ```bash
+    source venv/bin/activate
+    ```
+
+3. Install Dependencies
+
+    After activating the virtual environment, you can install the required dependencies:
+
+    ```bash
+    # Install airflow and dev dependencies
+    pip install -r requirements.txt -r requirements-dev.txt -c constraints-3.8.txt
+
+    # black is conflict with click, so install it separately
+    pip install black==19.10b0 click==7.1.2
+    ```
+
+4. Deactivate the Virtual Environment
+
+    When you're done working in the virtual environment, you can deactivate it with:
+
+    ```bash
+    deactivate
+    ```
 
 ## Configuration
 

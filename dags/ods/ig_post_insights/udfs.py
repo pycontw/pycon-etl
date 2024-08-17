@@ -130,23 +130,23 @@ def request_posts_data() -> List[dict]:
         response = requests.get(
             media_insight_url, headers=headers, params=querystring, timeout=180
         )
-        if response.ok:
-            media_insight = {}
-            media_res: dict = response.json()
-            # Error handling, the response may not include the required fields, media id: 17889558458829258, no "caption"
-            media_insight["id"] = media_res.get("id", "0")
-            media_insight["timestamp"] = datetime.strptime(
-                media_res.get("timestamp", "0"), "%Y-%m-%dT%H:%M:%S%z"
-            ).timestamp()
-            media_insight["caption"] = media_res.get("caption", "No Content")
-            media_insight["comments_count"] = media_res.get("comments_count", "0")
-            media_insight["like_count"] = media_res.get("like_count", "0")
-            media_insight["media_type"] = media_res.get("media_type", "No Content")
-
-            # print(media_insight)
-            media_insight_list.append(media_insight)
-        else:
+        if not response.ok:
             raise RuntimeError(f"Failed to fetch posts data: {response.text}")
+            
+        media_insight = {}
+        media_res: dict = response.json()
+        # Error handling, the response may not include the required fields, media id: 17889558458829258, no "caption"
+        media_insight["id"] = media_res.get("id", "0")
+        media_insight["timestamp"] = datetime.strptime(
+            media_res.get("timestamp", "0"), "%Y-%m-%dT%H:%M:%S%z"
+        ).timestamp()
+        media_insight["caption"] = media_res.get("caption", "No Content")
+        media_insight["comments_count"] = media_res.get("comments_count", "0")
+        media_insight["like_count"] = media_res.get("like_count", "0")
+        media_insight["media_type"] = media_res.get("media_type", "No Content")
+
+        # print(media_insight)
+        media_insight_list.append(media_insight)
 
     return media_insight_list
 

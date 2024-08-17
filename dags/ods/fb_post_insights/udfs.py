@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def create_table_if_needed() -> None:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     post_sql = """
-    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_new` (
+    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts` (
         id STRING,
         created_at TIMESTAMP,
         message STRING
@@ -21,7 +21,7 @@ def create_table_if_needed() -> None:
     """
     client.query(post_sql)
     insights_sql = """
-    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_insights_new` (
+    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_insights` (
         post_id STRING,
         query_time TIMESTAMP,
         comments INTEGER,
@@ -81,7 +81,7 @@ def query_last_post() -> Optional[dict]:
     SELECT
         created_at
     FROM
-        `pycontw-225217.ods.ods_pycontw_fb_posts_new`
+        `pycontw-225217.ods.ods_pycontw_fb_posts`
     ORDER BY
         created_at DESC
     LIMIT 1
@@ -122,7 +122,9 @@ def dump_posts_to_bigquery(posts: List[dict]) -> bool:
     )
     try:
         job = client.load_table_from_json(
-            posts, "pycontw-225217.ods.ods_pycontw_fb_posts_new", job_config=job_config,
+            posts,
+            "pycontw-225217.ods.ods_pycontw_fb_posts",
+            job_config=job_config,
         )
         job.result()
         return True
@@ -150,7 +152,7 @@ def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
     try:
         job = client.load_table_from_json(
             posts,
-            "pycontw-225217.ods.ods_pycontw_fb_posts_insights_new",
+            "pycontw-225217.ods.ods_pycontw_fb_posts_insights",
             job_config=job_config,
         )
         job.result()

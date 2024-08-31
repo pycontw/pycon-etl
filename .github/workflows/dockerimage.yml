@@ -27,7 +27,7 @@ jobs:
         docker build -t ${RC_NAME}:test --cache-from ${RC_NAME}:cache -f Dockerfile.test .
     - name: Run test
       run: |
-        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/fixtures:/usr/local/airflow/fixtures ${RC_NAME}:test webserver
+        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/opt/airflow/dags -v $(pwd)/fixtures:/opt/airflow/fixtures ${RC_NAME}:test webserver
         sleep 10
     - name: Push cache to Google Container Registry
       if: success()

@@ -2,7 +2,7 @@ version: '3.4'
 
 x-docker-common: &docker-common
   env_file: .env.production
-  image: davidtnfsh/pycon_etl:prod
+  image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:lastest
   volumes:
     - ./service-account.json:/opt/airflow/service-account.json
     - airflow-db-volume:/opt/airflow/

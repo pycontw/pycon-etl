@@ -1,10 +1,13 @@
 import heapq
 import os
+from pathlib import Path
 
 import requests
 import searchconsole
 
 TOPK = 5
+
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 
 class GoogleSearchConsoleReporter(object):
@@ -27,9 +30,15 @@ class GoogleSearchConsoleReporter(object):
         self._send_report(report_msg)
 
     def _get_report(self):
+        client_config_path = (
+            Path(AIRFLOW_HOME) / "dags/client_secret_google_search_console.json"
+        )
+        credentials_path = (
+            Path(AIRFLOW_HOME)
+            / "dags/client_secret_google_search_console_serialized.json"
+        )
         account = searchconsole.authenticate(
-            client_config="/usr/local/airflow/dags/client_secret_google_search_console.json",
-            credentials="/usr/local/airflow/dags/client_secret_google_search_console_serialized.json",
+            client_config=client_config_path, credentials=credentials_path,
         )
         webproperty = account["https://tw.pycon.org/"]
         return webproperty.query.range("today", days=-7).dimension("query").get()

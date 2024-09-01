@@ -1,0 +1,32 @@
+version: '3.4'
+
+x-docker-common: &docker-common
+  env_file: .env.production
+  image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:lastest
+  volumes:
+    - ./service-account.json:/opt/airflow/service-account.json
+    - airflow-db-volume:/opt/airflow/
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+
+services:
+  airflow:
+    <<: *docker-common
+    container_name: airflow
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  scheduler:
+    <<: *docker-common
+    container_name: scheduler
+    depends_on:
+      - airflow
+    command: scheduler
+
+volumes:
+  airflow-db-volume:
+    external: true

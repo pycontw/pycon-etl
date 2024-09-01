@@ -10,13 +10,13 @@ from ods.kktix_ticket_orders.udfs import kktix_refund
 DEFAULT_ARGS = {
     "owner": "henry410213028@gmail.com",
     "depends_on_past": False,
-    "start_date": datetime(2023, 4, 10, 4),
+    "start_date": datetime(2024, 6, 18, 0),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "KKTIX_TICKET_REFUND_V2",
+    "KKTIX_TICKET_REFUND_V3",
     default_args=DEFAULT_ARGS,
     schedule_interval="50 23 * * *",  # At 23:50 (everyday)
     max_active_runs=1,

@@ -14,8 +14,8 @@
 
 ```bash
 # Start production services
-make deploy-prod
+docker-compose -f ./docker-compose.yml up
 
 # Stop production services
-# make down-prod
+# docker-compose -f ./docker-compose.yml down
 ```

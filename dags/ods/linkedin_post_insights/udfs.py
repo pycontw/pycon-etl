@@ -139,7 +139,7 @@ def request_posts_data() -> List[dict]:
 
     media_insight_list = []
     media_res_list = response.json()["data"]
-    # format handling, the response may not include the required fields, media id: 17889558458829258, no "caption"
+    # format handling, the response may not include the required fields
     for media_res in media_res_list:
         media_insight = {}
         media_insight["urn"] = media_res.get("urn", "0")

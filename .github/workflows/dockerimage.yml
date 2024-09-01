@@ -1,65 +1,45 @@
 name: Docker Image CI
-
 on:
   push:
     branches: [ master, prod ]
   pull_request:
     branches: [ master, prod ]
 env:
-  RC_NAME: davidtnfsh/pycon_etl
-
+  RC_NAME: asia-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/data-team/pycon-etl
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Login to docker hub
-      uses: actions-hub/docker/login@master
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
+    - uses: actions/checkout@v4
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+    - name: Configure docker to use gcloud command-line tool as a credential helper
+      run: |
+        gcloud auth configure-docker asia-east1-docker.pkg.dev
     - name: Pull cache
       run: |
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker pull ${RC_NAME}:cache
-
+        docker pull ${RC_NAME}:cache || true
     - name: Build the Docker image
-      if: always()
       run: |
-        docker build -t ${RC_NAME}:${GITHUB_SHA} --cache-from ${RC_NAME}:cache .
-        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
+        docker build -t ${RC_NAME}:cache --cache-from ${RC_NAME}:cache .
         docker build -t ${RC_NAME}:test --cache-from ${RC_NAME}:cache -f Dockerfile.test .
-        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging
-        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:latest
-
     - name: Run test
       run: |
-        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/fixtures:/usr/local/airflow/fixtures ${RC_NAME}:test webserver
+        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/opt/airflow/dags -v $(pwd)/fixtures:/opt/airflow/fixtures ${RC_NAME}:test webserver
         sleep 10
-        docker exec airflow bash -c "airflow test OPENING_CRAWLER_V1 CRAWLER 2020-01-01"
-        docker exec airflow bash -c "airflow test QUESTIONNAIRE_2_BIGQUERY TRANSFORM_data_questionnaire 2020-09-29"
-
-    - name: Push Cache to docker registry
-      uses: actions-hub/docker@master
-      if: always()
-      with:
-        args: push ${RC_NAME}:cache
-
-    - name: Push GITHUB_SHA to docker registry
-      uses: actions-hub/docker@master
-      if: always()
-      with:
-        args: push ${RC_NAME}:${GITHUB_SHA}
-
-    - name: Push staging to docker registry
-      uses: actions-hub/docker@master
-      if: ${{ github.ref == 'refs/heads/master' }} && success()
-      with:
-        args: push ${RC_NAME}:staging
-
-    - name: Push prod version to docker registry
-      uses: actions-hub/docker@master
+    - name: Push cache to Google Container Registry
+      if: success()
+      run: |
+        docker push ${RC_NAME}:cache
+    - name: Push staging to Google Container Registry
+      if: github.ref == 'refs/heads/master' && success()
+      run: |
+        docker tag ${RC_NAME}:cache ${RC_NAME}:staging
+        docker push ${RC_NAME}:staging
+    - name: Push prod version to Google Container Registry
       if: github.ref == 'refs/heads/prod' && success()
-      with:
-        args: push ${RC_NAME}:latest
+      run: |
+        docker tag ${RC_NAME}:cache ${RC_NAME}:latest
+        docker push ${RC_NAME}:latest

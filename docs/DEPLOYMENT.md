@@ -8,7 +8,7 @@
 
 2. Pull the latest codebase to this server: `git pull`
 
-3. Add credentials to the `.env` file (only needs to be done once).
+3. Add credentials to the `.env.production` file (only needs to be done once).
 
 4. Start the services:
 

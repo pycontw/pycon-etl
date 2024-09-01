@@ -1,14 +1,17 @@
 """
 A crawler which would crawl the openings
 """
+from __future__ import annotations
+
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from ods.survey_cake.udfs.survey_cake_csv_uploader import SurveyCakeCSVUploader
+
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
@@ -27,7 +30,8 @@ dag = DAG(
 )
 with dag:
     if bool(os.getenv("AIRFLOW_TEST_MODE")):
-        FILENAMES: Dict[str, Dict] = {"fixtures/data_questionnaire.csv": {}}
+        filepath = Path(AIRFLOW_HOME) / "dags/fixtures/data_questionnaire.csv"
+        FILENAMES: dict[str, dict] = {str(filepath): {}}
     else:
         FILENAMES = {
             "data_questionnaire.csv": {

@@ -1,0 +1,36 @@
+version: '3.4'
+
+x-docker-common: &docker-common
+  env_file: .env.staging
+  image: pycon-etl
+  build:
+    context: .
+    dockerfile: Dockerfile.test
+  volumes:
+    - airflow-db-volume:/opt/airflow/
+    # you can comment out the following line if you don't have service-account.json
+    - ./service-account.json:/opt/airflow/service-account.json
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+
+services:
+  airflow:
+    <<: *docker-common
+    container_name: airflow
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  scheduler:
+    <<: *docker-common
+    container_name: scheduler
+    depends_on:
+      - airflow
+    command: scheduler
+
+volumes:
+  airflow-db-volume:
+    external: true

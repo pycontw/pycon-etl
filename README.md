@@ -99,9 +99,6 @@ For development/testing:
 # Build the local dev/test image
 make build-dev
 
-# Create the Airflow DB volume during the first setup
-docker volume create --name=airflow-db-volume
-
 # Start dev/test services
 make deploy-dev
 

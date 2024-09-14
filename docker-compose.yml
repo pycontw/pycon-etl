@@ -5,7 +5,7 @@ x-docker-common: &docker-common
   image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
   volumes:
     - ./service-account.json:/opt/airflow/service-account.json
-    - airflow-db-volume:/opt/airflow/
+    - ./airflow.db:/opt/airflow/airflow.db
   restart: unless-stopped
   logging:
     driver: json-file
@@ -26,7 +26,3 @@ services:
     depends_on:
       - airflow
     command: scheduler
-
-volumes:
-  airflow-db-volume:
-    external: true

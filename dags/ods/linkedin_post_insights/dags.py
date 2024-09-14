@@ -13,9 +13,9 @@ DEFAULT_ARGS = {
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 dag = DAG(
-    "LINKEDIN_POST_INSIGHTS_V1",
+    "LINKEDIN_POST_INSIGHTS_V2",
     default_args=DEFAULT_ARGS,
-    schedule_interval="5 8 * * *",
+    schedule_interval="5 8 */2 * *",
     max_active_runs=1,
     catchup=False,
 )

@@ -7,7 +7,7 @@ x-docker-common: &docker-common
     context: .
     dockerfile: Dockerfile.test
   volumes:
-    - airflow-db-volume:/opt/airflow/
+    - ./airflow.db:/opt/airflow/airflow.db
     # you can comment out the following line if you don't have service-account.json
     - ./service-account.json:/opt/airflow/service-account.json
   restart: unless-stopped
@@ -30,7 +30,3 @@ services:
     depends_on:
       - airflow
     command: scheduler
-
-volumes:
-  airflow-db-volume:
-    external: true

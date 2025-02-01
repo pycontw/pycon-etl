@@ -70,8 +70,9 @@ Below are the steps to create a virtual environment using [uv]:
 ### BigQuery (Optional)
 
 Set up the Authentication for GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
-    *After running `gcloud auth application-default login`, you will get a credentials.json file located at `$HOME/.config/gcloud/application_default_credentials.json`. Run `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-    * service-account.json: Please contact @david30907d via email or Discord. You do not need this json file if you are running the sandbox staging instance for development.
+
+- After running `gcloud auth application-default login`, you will get a credentials.json file located at `$HOME/.config/gcloud/application_default_credentials.json`. Run `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
+- service-account.json: Please contact @david30907d via email or Discord. You do not need this json file if you are running the sandbox staging instance for development.
 
 ## Running the Project
 
@@ -96,7 +97,7 @@ make down-dev
 
 > The difference between production and dev/test compose files is that the dev/test compose file uses a locally built image, while the production compose file uses the image from Docker Hub.
 
-If you are a authorized maintainer, you can pull the image from the GCP Artifact Registry.
+If you are an authorized maintainer, you can pull the image from the GCP Artifact Registry.
 
 Docker client must be configured to use the GCP Artifact Registry.
 

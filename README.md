@@ -36,7 +36,7 @@ Below are the steps to create a virtual environment using [uv]:
     ```bash
     uv sync
     ```
-    
+
     By default, [uv] sets up the virtual environment in `.venv`
 
 2. Activate the Virtual Environment

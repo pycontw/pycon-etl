@@ -8,7 +8,8 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=0
 
-RUN apt-get update && apt-get install -y gcc --no-install-recommends
+RUN apt-get update && \
+    apt-get install -y gcc libc6-dev --no-install-recommends
 
 WORKDIR /app
 

@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def kktix_api_data():
     return [
         {

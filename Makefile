@@ -1,12 +1,11 @@
 lint:
-	uv run black . --check
-	uv run isort --check-only .
-	uv run flake8 .
+	uv run ruff check .
+	uv run ruff format .
 	uv run mypy dags/ tests/
 
 format:
-	uv run black .
-	uv run isort .
+	uv run ruff check . --fix
+	uv run ruff format .
 
 test:
 	PYTHONPATH=./dags uv run pytest

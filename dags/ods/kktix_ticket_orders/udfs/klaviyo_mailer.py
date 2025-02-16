@@ -68,7 +68,7 @@ def main(
     assert new_members
 
     # create a new compaign and send mail immediately
-    campaign_suffix = "{:%Y-%m-%d_%H:%M:%S}".format(datetime.now())
+    campaign_suffix = f"{datetime.now():%Y-%m-%d_%H:%M:%S}"
     response = _klaviyo_clone_campaign(
         campaign_id,
         name=f"{campaign_name}_{campaign_suffix}",

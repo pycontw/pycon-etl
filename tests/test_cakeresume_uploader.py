@@ -17,7 +17,7 @@ def test_cakeresume_uploader() -> None:
         SURVEY_CAKE_CSV_UPLOADER = SurveyCakeCSVUploader(year=2146, filename=filename)
         SURVEY_CAKE_CSV_UPLOADER.transform()
     with open(
-        Path("tests/data_questionnaire_dimension.csv"), "r"
+        Path("tests/data_questionnaire_dimension.csv")
     ) as data_questionnaire_dimension:
         rows = csv.reader(data_questionnaire_dimension)
         header = next(iter(rows))
@@ -26,7 +26,7 @@ def test_cakeresume_uploader() -> None:
                 raise AssertionError("wrong header!")
 
     with open(
-        Path("tests/data_questionnaire_facttable.csv"), "r"
+        Path("tests/data_questionnaire_facttable.csv")
     ) as data_questionnaire_facttable:
         rows = csv.reader(data_questionnaire_facttable)
         header = next(iter(rows))

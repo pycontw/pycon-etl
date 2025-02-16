@@ -10,7 +10,7 @@ TOPK = 5
 AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 
-class GoogleSearchConsoleReporter(object):
+class GoogleSearchConsoleReporter:
     def __init__(self):
         self.top_k_ctr = []
         self.top_k_position = []

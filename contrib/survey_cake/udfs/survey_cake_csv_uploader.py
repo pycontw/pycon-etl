@@ -80,7 +80,7 @@ class SurveyCakeCSVUploader:
                 if column not in self.USELESS_COLUMNS
             ]
 
-        with open(Path(self.filename), "r", encoding="utf-8-sig") as csvfile:
+        with open(Path(self.filename), encoding="utf-8-sig") as csvfile:
             rows = csv.reader(csvfile)
             # skip header
             header = [column.strip() for column in next(iter(rows))]

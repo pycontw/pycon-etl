@@ -7,7 +7,8 @@ assignees: ""
 ---
 
 ## Type
-* [ ] Conent inaccurate
+
+* [ ] Content inaccurate
 * [ ] Content missing
 * [ ] Typo
 

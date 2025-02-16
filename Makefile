@@ -1,18 +1,18 @@
 lint:
-	black . --check
-	isort --check-only .
-	flake8 .
-	mypy dags/ tests/
+	uv run black . --check
+	uv run isort --check-only .
+	uv run flake8 .
+	uv run mypy dags/ tests/
 
 format:
-	black .
-	isort .
+	uv run black .
+	uv run isort .
 
 test:
-	PYTHONPATH=./dags pytest
+	PYTHONPATH=./dags uv run pytest
 
 coverage:
-	PYTHONPATH=./dags pytest --cov=dags tests
+	PYTHONPATH=./dags uv run pytest --cov=dags tests
 
 build-dev:
 	docker-compose -f ./docker-compose-dev.yml build

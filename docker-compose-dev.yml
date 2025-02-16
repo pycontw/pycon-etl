@@ -1,5 +1,3 @@
-version: '3.4'
-
 x-docker-common: &docker-common
   env_file: .env.staging
   image: pycon-etl

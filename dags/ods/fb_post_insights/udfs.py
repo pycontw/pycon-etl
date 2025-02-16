@@ -122,7 +122,9 @@ def dump_posts_to_bigquery(posts: List[dict]) -> bool:
     )
     try:
         job = client.load_table_from_json(
-            posts, "pycontw-225217.ods.ods_pycontw_fb_posts", job_config=job_config,
+            posts,
+            "pycontw-225217.ods.ods_pycontw_fb_posts",
+            job_config=job_config,
         )
         job.result()
         return True

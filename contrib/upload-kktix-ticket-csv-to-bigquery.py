@@ -208,7 +208,11 @@ def upload_dataframe_to_bigquery(
         df["vat_number"] = df["vat_number"].astype("string")
     # dump the csv into bigquery
 
-    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
+    job = client.load_table_from_dataframe(
+        df,
+        table_ref,
+        job_config=job_config,
+    )
     job.result()
 
     logging.info(
@@ -364,7 +368,9 @@ def main():
     )
 
     parser.add_argument(
-        "csv_file", type=str, help="Ticket CSV file",
+        "csv_file",
+        type=str,
+        help="Ticket CSV file",
     )
 
     parser.add_argument("-p", "--project-id", help="BigQuery project ID")
@@ -503,7 +509,9 @@ class Test2020Ticket(unittest.TestCase):
         self.assertEqual("Regular 原價", self.sanitized_df_corporate["ticket_type"][1])
 
     def test_column_content_individual(self):
-        self.assertEqual("Discount 優惠價", self.sanitized_df_individual["ticket_type"][1])
+        self.assertEqual(
+            "Discount 優惠價", self.sanitized_df_individual["ticket_type"][1]
+        )
 
     def test_column_content_reserved(self):
         self.assertEqual(
@@ -617,7 +625,9 @@ class Test2019Ticket(unittest.TestCase):
         self.assertEqual("Regular 原價", self.sanitized_df_corporate["ticket_type"][1])
 
     def test_column_content_individual(self):
-        self.assertEqual("Discount 優惠價", self.sanitized_df_individual["ticket_type"][1])
+        self.assertEqual(
+            "Discount 優惠價", self.sanitized_df_individual["ticket_type"][1]
+        )
 
     def test_column_content_reserved(self):
         self.assertEqual("Invited 邀請票", self.sanitized_df_reserved["ticket_type"][1])
@@ -734,7 +744,9 @@ class Test2018Ticket(unittest.TestCase):
         )
 
     def test_column_content_reserved(self):
-        self.assertEqual("Sponsor 贊助夥伴", self.sanitized_df_reserved["ticket_type"][1])
+        self.assertEqual(
+            "Sponsor 贊助夥伴", self.sanitized_df_reserved["ticket_type"][1]
+        )
 
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")

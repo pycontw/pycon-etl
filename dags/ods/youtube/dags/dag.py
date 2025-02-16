@@ -1,6 +1,7 @@
 """
 Save view, like count these kind of metrics into BigQuery
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG

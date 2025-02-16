@@ -2,6 +2,7 @@
 load user's name, email etc into gather town whitelist
 please refer to this document for details: https://hackmd.io/PM_sWO5USo6dxMqT1uCrCQ?view
 """
+
 import requests
 import tenacity
 from airflow.hooks.http_hook import HttpHook

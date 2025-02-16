@@ -1,6 +1,7 @@
 """
 send daily ordering metrics to discord channel
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -24,7 +25,8 @@ dag = DAG(
 )
 with dag:
     SEND_MSG_TO_DISCORD = PythonOperator(
-        task_id="LOAD_TO_DISCORD", python_callable=udf.main,
+        task_id="LOAD_TO_DISCORD",
+        python_callable=udf.main,
     )
 
 if __name__ == "__main__":

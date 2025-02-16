@@ -7,6 +7,7 @@ Requirements:
 2. Create a template [campaign](https://www.klaviyo.com/campaigns) and set the previous List as target recipients list
 
 """
+
 from datetime import datetime
 from typing import List
 
@@ -24,7 +25,10 @@ RETRY_ARGS = dict(
 
 
 def main(
-    list_id: str, campaign_id: str, campaign_name: str, datas: List[dict],
+    list_id: str,
+    campaign_id: str,
+    campaign_name: str,
+    datas: List[dict],
 ):
     """
     Args:
@@ -66,7 +70,9 @@ def main(
     # create a new compaign and send mail immediately
     campaign_suffix = "{:%Y-%m-%d_%H:%M:%S}".format(datetime.now())
     response = _klaviyo_clone_campaign(
-        campaign_id, name=f"{campaign_name}_{campaign_suffix}", list_id=list_id,
+        campaign_id,
+        name=f"{campaign_name}_{campaign_suffix}",
+        list_id=list_id,
     )
     new_campaign_id = response["id"]
     _klaviyo_send_campaign(new_campaign_id)

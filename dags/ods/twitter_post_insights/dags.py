@@ -21,7 +21,8 @@ dag = DAG(
 )
 with dag:
     CREATE_TABLE_IF_NEEDED = PythonOperator(
-        task_id="CREATE_TABLE_IF_NEEDED", python_callable=udfs.create_table_if_needed,
+        task_id="CREATE_TABLE_IF_NEEDED",
+        python_callable=udfs.create_table_if_needed,
     )
 
     SAVE_TWITTER_POSTS_AND_INSIGHTS = PythonOperator(

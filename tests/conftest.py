@@ -34,7 +34,10 @@ def kktix_api_data():
                         "Address / 收件地址  Ex: No. 128, Sec. 2, Academia Rd., Nangang Dist., Taipei City 115201, Taiwan (R.O.C.) / 115台北市南港區研究院路二段128號",
                         "新竹市北區天府路一段162號4樓之3",
                     ],
-                    ["Size of T-shirt / T恤尺寸", "M / 胸寬(F.W.): 49cm / 衣長(C.L.): 70cm"],
+                    [
+                        "Size of T-shirt / T恤尺寸",
+                        "M / 胸寬(F.W.): 49cm / 衣長(C.L.): 70cm",
+                    ],
                     ["Come From / 國家或地區", "Taiwan 台灣"],
                     ["Age range / 年齡區間", "36 - 45"],
                     [
@@ -50,7 +53,10 @@ def kktix_api_data():
                         "Area of Interest / 興趣領域",
                         "Web Development, DevOps, Engineering & Mathematics",
                     ],
-                    ["Have you ever attended PyCon TW？/ 是否曾參加 PyCon TW？", "5-7 times"],
+                    [
+                        "Have you ever attended PyCon TW？/ 是否曾參加 PyCon TW？",
+                        "5-7 times",
+                    ],
                     [
                         "Would you like to receive an email from sponsors？/ 是否願意收到贊助商轉發 Email 訊息？",
                         "Yes",

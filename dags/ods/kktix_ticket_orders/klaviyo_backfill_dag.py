@@ -1,6 +1,7 @@
 """
 Ingest KKTIX's daily data and load them to Mailer
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG

@@ -1,6 +1,7 @@
 """
 Update KKTIX's data if attendee has been refunded
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -24,7 +25,8 @@ dag = DAG(
 )
 with dag:
     UPDATE_REFUNDED_ATTENDEE_IDS = PythonOperator(
-        task_id="UPDATE_REFUNDED_ATTENDEE_IDS", python_callable=kktix_refund.main,
+        task_id="UPDATE_REFUNDED_ATTENDEE_IDS",
+        python_callable=kktix_refund.main,
     )
 
     UPDATE_REFUNDED_ATTENDEE_IDS

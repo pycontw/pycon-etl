@@ -38,7 +38,10 @@ def _load_to_bigquery(payload: List[Dict]) -> None:
     load data to BigQuery's `TABLE`
     """
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-    df = pd.DataFrame(payload, columns=["id", "name", "attendee_info"],)
+    df = pd.DataFrame(
+        payload,
+        columns=["id", "name", "attendee_info"],
+    )
     # for now, these attendees haven't refunded our ticket, yet...
     # we don't know if they would refund down the road
     df["refunded"] = [False] * len(payload)

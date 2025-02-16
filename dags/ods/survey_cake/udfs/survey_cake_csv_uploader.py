@@ -45,7 +45,7 @@ class SurveyCakeCSVUploader:
                     writer.writerow((question_id, question, self.year))
 
         filepath = Path(AIRFLOW_HOME) / "dags" / self.filename
-        with open(filepath, "r", encoding="utf-8-sig") as csvfile:
+        with open(filepath, encoding="utf-8-sig") as csvfile:
             rows = csv.reader(csvfile)
             # skip header
             header = next(iter(rows))

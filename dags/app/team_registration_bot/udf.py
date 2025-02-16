@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Dict, Text
+from typing import Dict
 
 from airflow.models import Variable
 from app import discord
@@ -68,7 +68,7 @@ ticket_price = {
 }
 
 
-def _compose_discord_msg(payload) -> Text:
+def _compose_discord_msg(payload) -> str:
     msg = f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
     total = 0
     total_income = 0
@@ -76,7 +76,7 @@ def _compose_discord_msg(payload) -> Text:
         msg += f"  * 票種：{ticket_name}\t{counts}張\n"
         total += counts
         total_income += ticket_price.get(ticket_name, 0) * counts
-    total_income = "{:,}".format(total_income)
+    total_income = f"{total_income:,}"
     msg += f"dashboard: https://metabase.pycon.tw/question/142?year={YEAR}\n"
     msg += f"總共賣出 {total} 張喔～ (總收入 TWD${total_income})"
     return msg

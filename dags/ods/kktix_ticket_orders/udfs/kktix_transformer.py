@@ -35,7 +35,7 @@ def _extract_sensitive_unhashed_raw_data(event_raw_data_array: List) -> List[Dic
     for event in event_raw_data_array:
         attendee_info = event["attendee_info"]
         payload = {}
-        for (key, value) in attendee_info["data"]:
+        for key, value in attendee_info["data"]:
             if key in SENSITIVE_KEY_NAME_SET:
                 payload[key] = value
         sensitive_unhashed_raw_data_array.append(payload)

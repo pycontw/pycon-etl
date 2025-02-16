@@ -28,9 +28,7 @@ def main() -> None:
             "instructions"
         ][1]["entries"][0]["content"]["itemContent"]["tweet_results"]["result"][
             "legacy"
-        ][
-            "full_text"
-        ]
+        ]["full_text"]
         rest_id_in_DB = Variable.get(variable_key)
         if rest_id_in_DB < rest_id:
             # Create a session

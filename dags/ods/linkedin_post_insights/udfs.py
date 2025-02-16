@@ -123,7 +123,6 @@ def query_last_post() -> Optional[dict]:
 
 
 def request_posts_data() -> List[dict]:
-
     # Define the request options
     # url = 'https://linkedin-data-api.p.rapidapi.com/get-profile-posts' # for user
     url = "https://linkedin-data-api.p.rapidapi.com/get-company-posts"

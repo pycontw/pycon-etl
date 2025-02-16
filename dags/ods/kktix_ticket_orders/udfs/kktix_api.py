@@ -27,7 +27,10 @@ def main(**context):
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
-    event_raw_data_array = _extract(year=year, timestamp=timestamp,)
+    event_raw_data_array = _extract(
+        year=year,
+        timestamp=timestamp,
+    )
     transformed_event_raw_data_array = kktix_transformer.transform(
         copy.deepcopy(event_raw_data_array)
     )

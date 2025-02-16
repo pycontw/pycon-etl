@@ -1,6 +1,7 @@
 """
 Send Google Search Report to Discord
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -25,7 +26,8 @@ dag = DAG(
 GOOGLE_SEARCH_REPORTER = GoogleSearchConsoleReporter()
 with dag:
     GET_AND_SEND_REPORT = PythonOperator(
-        task_id="GET_AND_SEND_REPORT", python_callable=GOOGLE_SEARCH_REPORTER.main,
+        task_id="GET_AND_SEND_REPORT",
+        python_callable=GOOGLE_SEARCH_REPORTER.main,
     )
 
 if __name__ == "__main__":

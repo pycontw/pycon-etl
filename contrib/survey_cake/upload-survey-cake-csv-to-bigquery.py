@@ -1,6 +1,7 @@
 """
 A crawler which would crawl the openings
 """
+
 import argparse
 
 from udfs.survey_cake_csv_uploader import SurveyCakeCSVUploader

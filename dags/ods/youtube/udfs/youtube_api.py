@@ -127,7 +127,7 @@ def save_video_data_2_bq(**context):
                     datetime.strptime(
                         response_json["items"][0]["publishedAt"], "%Y-%m-%dT%H:%M:%SZ"
                     ),
-                    f'https://www.youtube.com/watch?v={response_json["items"][0]["id"]}',
+                    f"https://www.youtube.com/watch?v={response_json['items'][0]['id']}",
                 )
             )
         return result

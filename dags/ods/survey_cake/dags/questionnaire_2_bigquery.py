@@ -1,6 +1,7 @@
 """
 A crawler which would crawl the openings
 """
+
 from __future__ import annotations
 
 import os

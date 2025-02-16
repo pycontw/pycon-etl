@@ -125,7 +125,7 @@ def request_posts_data() -> List[dict]:
     media_insight_list = []
 
     for media in media_list:
-        media_insight_url = f'https://graph.facebook.com/v20.0/{media["id"]}'
+        media_insight_url = f"https://graph.facebook.com/v20.0/{media['id']}"
         querystring = {
             "access_token": Variable.get("IG_ACCESS_TOKEN"),
             "fields": "id,media_type,caption,timestamp,comments_count,like_count",
@@ -170,7 +170,9 @@ def dump_posts_to_bigquery(posts: List[dict]) -> bool:
     )
     try:
         job = client.load_table_from_json(
-            posts, "pycontw-225217.ods.ods_pycontw_ig_posts", job_config=job_config,
+            posts,
+            "pycontw-225217.ods.ods_pycontw_ig_posts",
+            job_config=job_config,
         )
         job.result()
         return True

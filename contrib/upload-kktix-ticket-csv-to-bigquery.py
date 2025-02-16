@@ -465,9 +465,15 @@ class Test2020Ticket(unittest.TestCase):
         assert 20 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        assert len(self.sanitized_df_corporate.columns) == len(CANONICAL_COLUMN_NAMES_2020_CORE) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE)
-        assert len(self.sanitized_df_individual.columns) == len(CANONICAL_COLUMN_NAMES_2020_CORE) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL)
-        assert len(self.sanitized_df_reserved.columns) == len(CANONICAL_COLUMN_NAMES_2020_CORE) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED)
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -505,22 +511,34 @@ class Test2020Ticket(unittest.TestCase):
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        assert "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512" == string_hashed
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
+        )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        assert "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131" == self.sanitized_df_corporate["email"][1]
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
+        )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131" == self.sanitized_df_individual["email"][1]
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_individual["email"][1]
+        )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "fc5008329367fe025e138088e9ae5b316d91e8c1939158133f6d2bc937003877" == self.sanitized_df_individual["email"][1]
+        assert (
+            "fc5008329367fe025e138088e9ae5b316d91e8c1939158133f6d2bc937003877"
+            == self.sanitized_df_individual["email"][1]
+        )
 
 
 class Test2019Ticket(unittest.TestCase):
@@ -553,9 +571,15 @@ class Test2019Ticket(unittest.TestCase):
         assert 18 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        assert len(self.sanitized_df_corporate.columns) == len(CANONICAL_COLUMN_NAMES_2019_CORE) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE)
-        assert len(self.sanitized_df_individual.columns) == len(CANONICAL_COLUMN_NAMES_2019_CORE) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL)
-        assert len(self.sanitized_df_reserved.columns) == len(CANONICAL_COLUMN_NAMES_2019_CORE) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED)
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -593,22 +617,34 @@ class Test2019Ticket(unittest.TestCase):
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        assert "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512" == string_hashed
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
+        )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        assert "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131" == self.sanitized_df_corporate["email"][1]
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
+        )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5" == self.sanitized_df_individual["email"][1]
+        assert (
+            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5"
+            == self.sanitized_df_individual["email"][1]
+        )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737" == self.sanitized_df_individual["email"][1]
+        assert (
+            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737"
+            == self.sanitized_df_individual["email"][1]
+        )
 
 
 class Test2018Ticket(unittest.TestCase):
@@ -641,9 +677,15 @@ class Test2018Ticket(unittest.TestCase):
         assert 20 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        assert len(self.sanitized_df_corporate.columns) == len(CANONICAL_COLUMN_NAMES_2018_CORE) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE)
-        assert len(self.sanitized_df_individual.columns) == len(CANONICAL_COLUMN_NAMES_2018_CORE) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL)
-        assert len(self.sanitized_df_reserved.columns) == len(CANONICAL_COLUMN_NAMES_2018_CORE) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED)
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -673,7 +715,10 @@ class Test2018Ticket(unittest.TestCase):
         assert "Regular 原價" == self.sanitized_df_corporate["ticket_type"][1]
 
     def test_column_content_individual(self):
-        assert "EarlyBird, Discount 優惠價" == self.sanitized_df_individual["ticket_type"][1]
+        assert (
+            "EarlyBird, Discount 優惠價"
+            == self.sanitized_df_individual["ticket_type"][1]
+        )
 
     def test_column_content_reserved(self):
         assert "Sponsor 贊助夥伴" == self.sanitized_df_reserved["ticket_type"][1]
@@ -681,22 +726,34 @@ class Test2018Ticket(unittest.TestCase):
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        assert "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512" == string_hashed
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
+        )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        assert "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131" == self.sanitized_df_corporate["email"][1]
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
+        )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5" == self.sanitized_df_individual["email"][1]
+        assert (
+            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5"
+            == self.sanitized_df_individual["email"][1]
+        )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        assert "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737" == self.sanitized_df_individual["email"][1]
+        assert (
+            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737"
+            == self.sanitized_df_individual["email"][1]
+        )
 
 
 if __name__ == "__main__":

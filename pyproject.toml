@@ -18,7 +18,15 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["bandit", "ruff", "mypy", "pytest", "pytest-cov", "safety"]
+dev = [
+    "bandit",
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "coverage[toml]",
+    "safety",
+]
 
 
 [tool.ruff]

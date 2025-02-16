@@ -18,38 +18,28 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "bandit",
-    "black",
-    "flake8",
-    "isort",
-    "mypy",
-    "pytest",
-    "pytest-cov",
-    "safety",
+dev = ["bandit", "ruff", "mypy", "pytest", "pytest-cov", "safety"]
+
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+extend-select = [
+    "I",     # Missing required import (auto-fixable)
+    "UP",    # Pyupgrade
+    "PT",    # flake8-pytest-style rules
+    "TID25", # flake8-tidy-imports rules
 ]
 
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+ignore = ["E501", "D1", "D415"]
 
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["tests"]
 
-[tool.isort]
-profile = "black"
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 
 [tool.coverage]

@@ -21,45 +21,33 @@ Using Airflow to implement our ETL pipelines.
 - [Python 3.8+](https://www.python.org/downloads/release/python-3811/)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
-- [venv](https://docs.python.org/3/library/venv.html)
+- [uv]
 
 ## Installation
 
-There are several tools available to create a virtual environment in Python.
+We use [uv] to manage dependencies and virtual environment.
 
-Below are the steps to manage a virtual environment using `venv`:
+Below are the steps to create a virtual environment using [uv]:
 
-1. Create a Virtual Environment
+1. Create a Virtual Environment with Dependencies Installed
 
     To create a virtual environment, run the following command:
 
     ```bash
-    python -m venv venv
+    uv sync
     ```
 
-    In this example, `venv` is the name of the virtual environment directory, but you can replace it with any name you prefer.
+    By default, [uv] sets up the virtual environment in `.venv`
 
 2. Activate the Virtual Environment
 
     After creating the virtual environment, activate it using the following command:
 
     ```bash
-    source venv/bin/activate
+    source .venv/bin/activate
     ```
 
-3. Install Dependencies
-
-    After activating the virtual environment, you can install the required dependencies:
-
-    ```bash
-    # Install airflow and dev dependencies
-    pip install -r requirements.txt -r requirements-dev.txt -c constraints-3.8.txt
-
-    # black is conflict with click, so install it separately
-    pip install black==19.10b0 click==7.1.2
-    ```
-
-4. Deactivate the Virtual Environment
+3. Deactivate the Virtual Environment
 
     When you're done working in the virtual environment, you can deactivate it with:
 
@@ -82,8 +70,9 @@ Below are the steps to manage a virtual environment using `venv`:
 ### BigQuery (Optional)
 
 Set up the Authentication for GCP: <https://googleapis.dev/python/google-api-core/latest/auth.html>
-    *After running `gcloud auth application-default login`, you will get a credentials.json file located at `$HOME/.config/gcloud/application_default_credentials.json`. Run `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
-    * service-account.json: Please contact @david30907d via email or Discord. You do not need this json file if you are running the sandbox staging instance for development.
+
+- After running `gcloud auth application-default login`, you will get a credentials.json file located at `$HOME/.config/gcloud/application_default_credentials.json`. Run `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/keyfile.json"` if you have it.
+- service-account.json: Please contact @david30907d via email or Discord. You do not need this json file if you are running the sandbox staging instance for development.
 
 ## Running the Project
 
@@ -108,7 +97,7 @@ make down-dev
 
 > The difference between production and dev/test compose files is that the dev/test compose file uses a locally built image, while the production compose file uses the image from Docker Hub.
 
-If you are a authorized maintainer, you can pull the image from the GCP Artifact Registry.
+If you are an authorized maintainer, you can pull the image from the GCP Artifact Registry.
 
 Docker client must be configured to use the GCP Artifact Registry.
 
@@ -136,3 +125,5 @@ Please check the [Production Deployment Guide](./docs/DEPLOYMENT.md).
 ## Contact
 
 [PyCon TW Volunteer Data Team - Discord](https://discord.com/channels/752904426057892052/900721883383758879)
+
+[uv]: https://docs.astral.sh/uv/

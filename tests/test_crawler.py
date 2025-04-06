@@ -1,6 +1,7 @@
 """
 test crawler
 """
+
 from dags.ods.opening_crawler.udfs.crawlers import CakeResumeCrawler
 
 

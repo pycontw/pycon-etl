@@ -13,5 +13,6 @@ RETRY_ARGS = dict(
 @tenacity.retry(**RETRY_ARGS)
 def send_webhook_message(webhook_url: str, username: str, msg: str) -> None:
     session.post(
-        webhook_url, json={"username": username, "content": msg},
+        webhook_url,
+        json={"username": username, "content": msg},
     )

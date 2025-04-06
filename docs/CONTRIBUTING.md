@@ -45,13 +45,7 @@ Please use [GitLab Flow](https://about.gitlab.com/topics/version-control/what-is
 
 ## Dependency Management
 
-Airflow dependencies are managed by `requirements.txt` and `constraints-3.8.txt` via `pip`. It is not recommended to use `poetry` or other tools.
-
-`constraints-3.8.txt` is used to pin the version of the Airflow dependencies, and `requirements.txt` is used to install user-defined dependencies.
-
-Please add or update dependencies in `requirements.txt`. Do not modify `constraints-3.8.txt` unless Airflow is updated.
-
-For more information, refer to the [Airflow Installation Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/installation.html).
+Airflow dependencies are managed by [uv]. For more information, refer to the [Airflow Installation Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/installation.html).
 
 ## Code Convention
 
@@ -77,3 +71,5 @@ It is recommended to use [Commitizen](https://commitizen-tools.github.io/commiti
 ### CI/CD
 
 Please check the [.github/workflows](.github/workflows) directory for details.
+
+[uv]: https://docs.astral.sh/uv/

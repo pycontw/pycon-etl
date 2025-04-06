@@ -32,7 +32,11 @@ def load(event_raw_data_array: List) -> None:
         return
 
     datas = [
-        {"email": item["聯絡人 Email"], "name": item["聯絡人 姓名"], "qrcode": item["qrcode"]}
+        {
+            "email": item["聯絡人 Email"],
+            "name": item["聯絡人 姓名"],
+            "qrcode": item["qrcode"],
+        }
         for item in _load_raw_data(event_raw_data_array)
     ]
     if not datas:
@@ -40,5 +44,8 @@ def load(event_raw_data_array: List) -> None:
         return
 
     klaviyo_mailer.main(
-        list_id=list_id, campaign_id=campaign_id, campaign_name="隨買即用", datas=datas,
+        list_id=list_id,
+        campaign_id=campaign_id,
+        campaign_name="隨買即用",
+        datas=datas,
     )

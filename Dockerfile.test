@@ -1,7 +1,30 @@
 ARG AIRFLOW_VERSION=1.10.15
 ARG PYTHON_VERSION=3.8
+ARG PLATFORM=linux/amd64
 
-FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}
+FROM --platform=${PLATFORM} ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
+
+RUN apt-get update && \
+    apt-get install -y gcc libc6-dev --no-install-recommends
+
+WORKDIR /app
+
+COPY ./pyproject.toml .
+COPY ./uv.lock .
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --group dev
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --group dev
+
+FROM --platform=${PLATFORM} apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}
 
 USER root
 
@@ -21,14 +44,10 @@ RUN chmod +x /entrypoint.sh
 
 USER airflow
 
-COPY ./requirements.txt ${AIRFLOW_HOME}/requirements.txt
-COPY ./requirements-dev.txt ${AIRFLOW_HOME}/requirements-dev.txt
-COPY ./constraints-3.8.txt ${AIRFLOW_HOME}/constraints-3.8.txt
-
-RUN pip install --no-cache-dir -r ${AIRFLOW_HOME}/requirements.txt -r ${AIRFLOW_HOME}/requirements-dev.txt --constraint constraints-3.8.txt
+COPY --from=builder --chown=airflow:airflow /app /app
+ENV PATH="/app/.venv/bin:$PATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
-
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
 
 ENV AIRFLOW_TEST_MODE=True

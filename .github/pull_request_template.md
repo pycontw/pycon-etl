@@ -13,9 +13,10 @@
 ## Description
 <!--Describe what the change is**-->
 
-## Checklist:
+## Checklist
+
 - [ ] Add test cases to all the changes you introduce
-- [ ] Run `poetry run pytest` locally to ensure all linter checks pass
+- [ ] Run `make lint` and `make test` locally to ensure all linter checks and testing pass
 - [ ] Update the documentation if necessary
 
 ## Steps to Test This Pull Request

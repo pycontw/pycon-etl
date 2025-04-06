@@ -1,6 +1,7 @@
 """
 A crawler which would crawl the openings
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG

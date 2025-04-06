@@ -1,6 +1,7 @@
 """
 Ingest KKTIX's data and load them to BigQuery every 5mins
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG

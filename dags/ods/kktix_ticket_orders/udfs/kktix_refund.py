@@ -68,7 +68,7 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: List[int]) -> None:
       refunded=TRUE
     WHERE
       CAST(REPLACE(JSON_EXTRACT(ATTENDEE_INFO,
-          '$.id'), '"', '') AS INT64) in ({','.join(str(i) for i in refunded_attendee_ids)})
+          '$.id'), '"', '') AS INT64) in ({",".join(str(i) for i in refunded_attendee_ids)})
     """
     )
     result = query_job.result()

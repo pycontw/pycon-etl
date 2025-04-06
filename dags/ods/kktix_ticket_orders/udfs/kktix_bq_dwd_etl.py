@@ -278,7 +278,11 @@ def upload_dataframe_to_bigquery(
         df["vat_number"] = df["vat_number"].astype("string")
     # dump the csv into bigquery
 
-    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
+    job = client.load_table_from_dataframe(
+        df,
+        table_ref,
+        job_config=job_config,
+    )
     job.result()
 
     logging.info(
@@ -561,7 +565,6 @@ def load_to_df_from_list(
 
 
 def main():
-
     # Set the default project ID and dataset ID
     project_id = "pycontw-225217"
     dataset_id = "ods"

@@ -10,7 +10,7 @@ TOPK = 5
 AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 
-class GoogleSearchConsoleReporter(object):
+class GoogleSearchConsoleReporter:
     def __init__(self):
         self.top_k_ctr = []
         self.top_k_position = []
@@ -38,7 +38,8 @@ class GoogleSearchConsoleReporter(object):
             / "dags/client_secret_google_search_console_serialized.json"
         )
         account = searchconsole.authenticate(
-            client_config=client_config_path, credentials=credentials_path,
+            client_config=client_config_path,
+            credentials=credentials_path,
         )
         webproperty = account["https://tw.pycon.org/"]
         return webproperty.query.range("today", days=-7).dimension("query").get()

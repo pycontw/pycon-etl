@@ -208,7 +208,11 @@ def upload_dataframe_to_bigquery(
         df["vat_number"] = df["vat_number"].astype("string")
     # dump the csv into bigquery
 
-    job = client.load_table_from_dataframe(df, table_ref, job_config=job_config,)
+    job = client.load_table_from_dataframe(
+        df,
+        table_ref,
+        job_config=job_config,
+    )
     job.result()
 
     logging.info(
@@ -364,7 +368,9 @@ def main():
     )
 
     parser.add_argument(
-        "csv_file", type=str, help="Ticket CSV file",
+        "csv_file",
+        type=str,
+        help="Ticket CSV file",
     )
 
     parser.add_argument("-p", "--project-id", help="BigQuery project ID")
@@ -425,8 +431,8 @@ class TestCrossYear(unittest.TestCase):
 
         set_core = CANONICAL_COLUMN_NAMES_CORE
 
-        self.assertFalse(set_intersection_cross_year.difference(set_core))
-        self.assertFalse(set_core.difference(set_intersection_cross_year))
+        assert not set_intersection_cross_year.difference(set_core)
+        assert not set_core.difference(set_intersection_cross_year)
 
 
 class Test2020Ticket(unittest.TestCase):
@@ -446,34 +452,28 @@ class Test2020Ticket(unittest.TestCase):
     def compare_column_set(self, set_actual, set_expected):
         set_union = set_actual.union(set_expected)
 
-        self.assertFalse(set_union.difference(set_actual))
-        self.assertFalse(set_union.difference(set_expected))
+        assert not set_union.difference(set_actual)
+        assert not set_union.difference(set_expected)
 
     def test_column_number_corporate(self):
-        self.assertEqual(28, len(self.sanitized_df_corporate.columns))
+        assert 28 == len(self.sanitized_df_corporate.columns)
 
     def test_column_number_individual(self):
-        self.assertEqual(25, len(self.sanitized_df_individual.columns))
+        assert 25 == len(self.sanitized_df_individual.columns)
 
     def test_column_number_reserved(self):
-        self.assertEqual(20, len(self.sanitized_df_reserved.columns))
+        assert 20 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        self.assertEqual(
-            len(self.sanitized_df_corporate.columns),
-            len(CANONICAL_COLUMN_NAMES_2020_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_individual.columns),
-            len(CANONICAL_COLUMN_NAMES_2020_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_reserved.columns),
-            len(CANONICAL_COLUMN_NAMES_2020_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED),
-        )
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2020_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -500,46 +500,44 @@ class Test2020Ticket(unittest.TestCase):
         )
 
     def test_column_content_corporate(self):
-        self.assertEqual("Regular 原價", self.sanitized_df_corporate["ticket_type"][1])
+        assert "Regular 原價" == self.sanitized_df_corporate["ticket_type"][1]
 
     def test_column_content_individual(self):
-        self.assertEqual("Discount 優惠價", self.sanitized_df_individual["ticket_type"][1])
+        assert "Discount 優惠價" == self.sanitized_df_individual["ticket_type"][1]
 
     def test_column_content_reserved(self):
-        self.assertEqual(
-            "Contributor 貢獻者票", self.sanitized_df_reserved["ticket_type"][1]
-        )
+        assert "Contributor 貢獻者票" == self.sanitized_df_reserved["ticket_type"][1]
 
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        self.assertEqual(
-            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512",
-            string_hashed,
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
         )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        self.assertEqual(
-            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131",
-            self.sanitized_df_corporate["email"][1],
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
         )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_individual["email"][1]
         )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "fc5008329367fe025e138088e9ae5b316d91e8c1939158133f6d2bc937003877",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "fc5008329367fe025e138088e9ae5b316d91e8c1939158133f6d2bc937003877"
+            == self.sanitized_df_individual["email"][1]
         )
 
 
@@ -560,34 +558,28 @@ class Test2019Ticket(unittest.TestCase):
     def compare_column_set(self, set_actual, set_expected):
         set_union = set_actual.union(set_expected)
 
-        self.assertFalse(set_union.difference(set_actual))
-        self.assertFalse(set_union.difference(set_expected))
+        assert not set_union.difference(set_actual)
+        assert not set_union.difference(set_expected)
 
     def test_column_number_corporate(self):
-        self.assertEqual(20, len(self.sanitized_df_corporate.columns))
+        assert 20 == len(self.sanitized_df_corporate.columns)
 
     def test_column_number_individual(self):
-        self.assertEqual(17, len(self.sanitized_df_individual.columns))
+        assert 17 == len(self.sanitized_df_individual.columns)
 
     def test_column_number_reserved(self):
-        self.assertEqual(18, len(self.sanitized_df_reserved.columns))
+        assert 18 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        self.assertEqual(
-            len(self.sanitized_df_corporate.columns),
-            len(CANONICAL_COLUMN_NAMES_2019_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_individual.columns),
-            len(CANONICAL_COLUMN_NAMES_2019_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_reserved.columns),
-            len(CANONICAL_COLUMN_NAMES_2019_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED),
-        )
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2019_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -614,44 +606,44 @@ class Test2019Ticket(unittest.TestCase):
         )
 
     def test_column_content(self):
-        self.assertEqual("Regular 原價", self.sanitized_df_corporate["ticket_type"][1])
+        assert "Regular 原價" == self.sanitized_df_corporate["ticket_type"][1]
 
     def test_column_content_individual(self):
-        self.assertEqual("Discount 優惠價", self.sanitized_df_individual["ticket_type"][1])
+        assert "Discount 優惠價" == self.sanitized_df_individual["ticket_type"][1]
 
     def test_column_content_reserved(self):
-        self.assertEqual("Invited 邀請票", self.sanitized_df_reserved["ticket_type"][1])
+        assert "Invited 邀請票" == self.sanitized_df_reserved["ticket_type"][1]
 
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        self.assertEqual(
-            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512",
-            string_hashed,
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
         )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        self.assertEqual(
-            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131",
-            self.sanitized_df_corporate["email"][1],
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
         )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5"
+            == self.sanitized_df_individual["email"][1]
         )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737"
+            == self.sanitized_df_individual["email"][1]
         )
 
 
@@ -672,34 +664,28 @@ class Test2018Ticket(unittest.TestCase):
     def compare_column_set(self, set_actual, set_expected):
         set_union = set_actual.union(set_expected)
 
-        self.assertFalse(set_union.difference(set_actual))
-        self.assertFalse(set_union.difference(set_expected))
+        assert not set_union.difference(set_actual)
+        assert not set_union.difference(set_expected)
 
     def test_column_number_corporate(self):
-        self.assertEqual(20, len(self.sanitized_df_corporate.columns))
+        assert 20 == len(self.sanitized_df_corporate.columns)
 
     def test_column_number_individual(self):
-        self.assertEqual(18, len(self.sanitized_df_individual.columns))
+        assert 18 == len(self.sanitized_df_individual.columns)
 
     def test_column_number_reserved(self):
-        self.assertEqual(20, len(self.sanitized_df_reserved.columns))
+        assert 20 == len(self.sanitized_df_reserved.columns)
 
     def test_column_title_content_all(self):
-        self.assertEqual(
-            len(self.sanitized_df_corporate.columns),
-            len(CANONICAL_COLUMN_NAMES_2018_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_individual.columns),
-            len(CANONICAL_COLUMN_NAMES_2018_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL),
-        )
-        self.assertEqual(
-            len(self.sanitized_df_reserved.columns),
-            len(CANONICAL_COLUMN_NAMES_2018_CORE)
-            + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED),
-        )
+        assert len(self.sanitized_df_corporate.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE)
+        assert len(self.sanitized_df_individual.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL)
+        assert len(self.sanitized_df_reserved.columns) == len(
+            CANONICAL_COLUMN_NAMES_2018_CORE
+        ) + len(CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED)
 
     def test_column_title_content_corporate(self):
         self.compare_column_set(
@@ -726,46 +712,47 @@ class Test2018Ticket(unittest.TestCase):
         )
 
     def test_column_content_corporate(self):
-        self.assertEqual("Regular 原價", self.sanitized_df_corporate["ticket_type"][1])
+        assert "Regular 原價" == self.sanitized_df_corporate["ticket_type"][1]
 
     def test_column_content_individual(self):
-        self.assertEqual(
-            "EarlyBird, Discount 優惠價", self.sanitized_df_individual["ticket_type"][1]
+        assert (
+            "EarlyBird, Discount 優惠價"
+            == self.sanitized_df_individual["ticket_type"][1]
         )
 
     def test_column_content_reserved(self):
-        self.assertEqual("Sponsor 贊助夥伴", self.sanitized_df_reserved["ticket_type"][1])
+        assert "Sponsor 贊助夥伴" == self.sanitized_df_reserved["ticket_type"][1]
 
     def test_hash(self):
         string_hashed = hash_string("1234567890-=qwertyuiop[]")
 
-        self.assertEqual(
-            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512",
-            string_hashed,
+        assert (
+            "aefefa43927b374a9af62ab60e4512e86f974364919d1b09d0013254c667e512"
+            == string_hashed
         )
 
     def test_hash_email_corporate(self):
         hash_privacy_info(self.sanitized_df_corporate)
 
-        self.assertEqual(
-            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131",
-            self.sanitized_df_corporate["email"][1],
+        assert (
+            "7fcedd1de57031e2ae316754ff211088a1b08c4a9112676478ac5a6bf0f95131"
+            == self.sanitized_df_corporate["email"][1]
         )
 
     def test_hash_email_individual(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "6f197622cc2f46bf56f961489d98e67a116fa058126578a5f37bcb5b16c719e5"
+            == self.sanitized_df_individual["email"][1]
         )
 
     def test_hash_email_reserved(self):
         hash_privacy_info(self.sanitized_df_individual)
 
-        self.assertEqual(
-            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737",
-            self.sanitized_df_individual["email"][1],
+        assert (
+            "15e5151c59563f8e6159239048ea2dba1e3554684ef813916129e0981fd82737"
+            == self.sanitized_df_individual["email"][1]
         )
 
 

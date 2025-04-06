@@ -27,7 +27,10 @@ def main(**context):
     ts_datetime_obj = parse(context["ts"])
     year = ts_datetime_obj.year
     timestamp = ts_datetime_obj.timestamp()
-    event_raw_data_array = _extract(year=year, timestamp=timestamp,)
+    event_raw_data_array = _extract(
+        year=year,
+        timestamp=timestamp,
+    )
     transformed_event_raw_data_array = kktix_transformer.transform(
         copy.deepcopy(event_raw_data_array)
     )
@@ -47,11 +50,11 @@ def _extract(year: int, timestamp: float) -> List[Dict]:
     2. right now schedule_interval_seconds is a hardcoded value!
     """
     event_raw_data_array: List[Dict] = []
-    condition_filter_callback = (
-        lambda event: str(year) in event["name"]
-        and "registration" in event["name"].lower()
-    )
-    event_metadatas = get_event_metadatas(condition_filter_callback)
+
+    def _condition_filter_callback(event):
+        return str(year) in event["name"] and "registration" in event["name"].lower()
+
+    event_metadatas = get_event_metadatas(_condition_filter_callback)
     for event_metadata in event_metadatas:
         event_id = event_metadata["id"]
         for attendee_info in get_attendee_infos(event_id, timestamp):

@@ -10,6 +10,7 @@ airflow trigger_dag --conf '[curly-braces]"maxDBEntryAgeInDays":30[curly-braces]
     maxDBEntryAgeInDays:<INT> - Optional
 
 """
+
 import airflow
 from airflow import settings
 from airflow.configuration import conf
@@ -293,7 +294,6 @@ print_configuration = PythonOperator(
 
 
 def cleanup_function(**context):
-
     logging.info("Retrieving max_execution_date from XCom")
     max_date = context["ti"].xcom_pull(
         task_ids=print_configuration.task_id, key="max_date"
@@ -328,7 +328,6 @@ def cleanup_function(**context):
         logging.info("INITIAL QUERY : " + str(query))
 
         if keep_last:
-
             subquery = session.query(func.max(DagRun.execution_date))
             # workaround for MySQL "table specified twice" issue
             # https://github.com/teamclairvoyant/airflow-maintenance-dags/issues/41
@@ -350,7 +349,9 @@ def cleanup_function(**context):
             )
 
         else:
-            query = query.filter(age_check_column <= max_date,)
+            query = query.filter(
+                age_check_column <= max_date,
+            )
 
         if PRINT_DELETES:
             entries_to_delete = query.all()
@@ -408,7 +409,6 @@ def cleanup_function(**context):
 
 
 for db_object in DATABASE_OBJECTS:
-
     cleanup_op = PythonOperator(
         task_id="cleanup_" + str(db_object["airflow_db_model"].__name__),
         python_callable=cleanup_function,

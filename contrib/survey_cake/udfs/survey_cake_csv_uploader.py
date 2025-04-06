@@ -7,7 +7,14 @@ from google.cloud import bigquery
 
 
 class SurveyCakeCSVUploader:
-    USELESS_COLUMNS = {"額滿結束註記", "使用者紀錄", "會員時間", "會員編號", "自訂ID", "備註"}
+    USELESS_COLUMNS = {
+        "額滿結束註記",
+        "使用者紀錄",
+        "會員時間",
+        "會員編號",
+        "自訂ID",
+        "備註",
+    }
 
     def __init__(self, year: int, filename: str):
         self._year = year
@@ -73,7 +80,7 @@ class SurveyCakeCSVUploader:
                 if column not in self.USELESS_COLUMNS
             ]
 
-        with open(Path(self.filename), "r", encoding="utf-8-sig") as csvfile:
+        with open(Path(self.filename), encoding="utf-8-sig") as csvfile:
             rows = csv.reader(csvfile)
             # skip header
             header = [column.strip() for column in next(iter(rows))]
@@ -139,9 +146,9 @@ class SurveyCakeCSVUploader:
             if column in self.USELESS_COLUMNS:
                 continue
             if column in self.existing_question_and_id_dict:
-                question_id_dim_table[
-                    self.existing_question_and_id_dict[column]
-                ] = column
+                question_id_dim_table[self.existing_question_and_id_dict[column]] = (
+                    column
+                )
             else:
                 question_id_dim_table[float(index)] = column
         return question_id_dim_table

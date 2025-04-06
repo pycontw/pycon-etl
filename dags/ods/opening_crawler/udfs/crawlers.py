@@ -1,6 +1,7 @@
 """
 Crawler of openings
 """
+
 from abc import ABC, abstractclassmethod
 
 

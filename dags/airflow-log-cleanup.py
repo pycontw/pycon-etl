@@ -6,6 +6,7 @@ airflow trigger_dag --conf '[curly-braces]"maxLogAgeInDays":30[curly-braces]' ai
 --conf options:
     maxLogAgeInDays:<INT> - Optional
 """
+
 import logging
 import os
 from datetime import timedelta
@@ -237,9 +238,7 @@ fi
 )
 
 for log_cleanup_id in range(1, NUMBER_OF_WORKERS + 1):
-
     for dir_id, directory in enumerate(DIRECTORIES_TO_DELETE):
-
         log_cleanup_op = BashOperator(
             task_id="log_cleanup_worker_num_"
             + str(log_cleanup_id)

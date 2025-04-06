@@ -1,5 +1,3 @@
-version: '3.4'
-
 x-docker-common: &docker-common
   env_file: .env.production
   image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest

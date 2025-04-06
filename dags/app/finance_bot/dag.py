@@ -1,6 +1,7 @@
 """
 Send Google Search Report to Discord
 """
+
 from datetime import datetime, timedelta
 
 from airflow import DAG

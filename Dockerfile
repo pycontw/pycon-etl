@@ -1,6 +1,6 @@
-ARG AIRFLOW_VERSION=1.10.15
-ARG PYTHON_VERSION=3.8
-ARG PLATFORM=linux/amd64
+ARG AIRFLOW_VERSION=2.6.3
+ARG PYTHON_VERSION=3.10
+ARG PLATFORM=linux
 
 FROM --platform=${PLATFORM} ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder
 
@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
 
-FROM --platform=${PLATFORM} apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}
+FROM --platform=${PLATFORM} apache/airflow:slim-${AIRFLOW_VERSION}-python${PYTHON_VERSION}
 
 USER root
 

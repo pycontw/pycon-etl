@@ -5,7 +5,7 @@ x-docker-common: &docker-common
     context: .
     dockerfile: Dockerfile.test
   volumes:
-    - ./airflow.db:/opt/airflow/airflow.db
+    - ./sqlite:/opt/airflow/sqlite
     # you can comment out the following line if you don't have service-account.json
     - ./service-account.json:/opt/airflow/service-account.json
   restart: unless-stopped

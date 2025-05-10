@@ -19,7 +19,7 @@ else
 fi
 
 # Check if the database exists and initialize it if not
-if [ ! -f "${AIRFLOW_HOME}/airflow.db" ]; then
+if [ ! -f "${AIRFLOW_HOME}/sqlite/airflow.db" ]; then
     airflow db init
     echo 'Database initialized'
 else

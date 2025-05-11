@@ -3,8 +3,8 @@ from collections.abc import Callable
 
 import requests
 import tenacity
-from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
+from airflow.providers.http.hooks.http import HttpHook
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 

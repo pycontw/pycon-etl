@@ -1,8 +1,6 @@
 import os
 from datetime import datetime
 
-from airflow.models import Variable
-from app import discord
 from google.cloud import bigquery
 
 YEAR = datetime.now().year
@@ -10,17 +8,6 @@ YEAR = datetime.now().year
 TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attendeeId_datetime"
 
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-
-
-def main() -> None:
-    statistics = _get_statistics_from_bigquery()
-    msg = _compose_discord_msg(statistics)
-    kwargs = {
-        "webhook_url": Variable.get("discord_webhook_registration_endpoint"),
-        "username": "KKTIX order report",
-        "msg": msg,
-    }
-    discord.send_webhook_message(**kwargs)
 
 
 def _get_statistics_from_bigquery() -> dict:

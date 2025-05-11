@@ -4,9 +4,9 @@ Send Google Search Report to Discord
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from app.channel_reminder import udf
+from airflow.decorators import dag, task
+from airflow.models import Variable
+from app import discord
 
 DEFAULT_ARGS = {
     "owner": "davidtnfsh",
@@ -16,17 +16,31 @@ DEFAULT_ARGS = {
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord",
 }
-dag = DAG(
-    "DISCORD_CHORES_REMINDER",
+
+
+@dag(
     default_args=DEFAULT_ARGS,
     schedule_interval="@yearly",
     max_active_runs=1,
     catchup=False,
 )
-with dag:
-    REMINDER_OF_THIS_TEAM = PythonOperator(
-        task_id="KLAIVYO_REMINDER", python_callable=udf.main
-    )
+def DISCORD_CHORES_REMINDER():
+    @task
+    def REMINDER_OF_THIS_TEAM():
+        kwargs = {
+            "webhook_url": Variable.get("DISCORD_CHORES_REMINDER_WEBHOOK"),
+            "username": "Data Team Airflow reminder",
+            "msg": (
+                "<@&790739794148982796> <@&755827317904769184> <@&791157626099859487>\n",
+                "記得大會結束後，要有一個人負責去取消 Klaviyo 的訂閱，不然我們每個月會一直繳 $NTD2000 喔！",
+            ),
+        }
+        discord.send_webhook_message(**kwargs)
+
+    REMINDER_OF_THIS_TEAM()
+
+
+dag_obj = DISCORD_CHORES_REMINDER()
 
 if __name__ == "__main__":
-    dag.cli()
+    dag_obj.test()

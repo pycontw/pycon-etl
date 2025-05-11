@@ -4,9 +4,16 @@ Send Google Search Report to Discord
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from app.finance_bot import udf
+from airflow.decorators import dag, task
+from airflow.models import Variable
+from app import discord
+from app.finance_bot.udf import (
+    df_difference,
+    read_bigquery_to_df,
+    read_google_xls_to_df,
+    refine_diff_df_to_string,
+    write_to_bigquery,
+)
 
 DEFAULT_ARGS = {
     "owner": "qchwan",
@@ -16,17 +23,38 @@ DEFAULT_ARGS = {
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord",
 }
-dag = DAG(
-    "DISCORD_FINANCE_REMINDER",
+
+
+@dag(
     default_args=DEFAULT_ARGS,
     schedule_interval="@daily",
     max_active_runs=1,
     catchup=False,
 )
-with dag:
-    REMINDER_OF_THIS_TEAM = PythonOperator(
-        task_id="FINANCE_REMINDER", python_callable=udf.main
-    )
+def DISCORD_FINANCE_REMINDER():
+    @task
+    def REMINDER_OF_THIS_TEAM():
+        # read xls from google doc to df.
+        df_xls = read_google_xls_to_df()
+        # read bigquery to df.
+        df_bigquery = read_bigquery_to_df()
+        # check difference between 2 df
+        df_diff = df_difference(df_xls, df_bigquery)
+        # link to bigquery and write xls file
+        write_to_bigquery(df_diff)
+        # push to discord
+        kwargs = {
+            "webhook_url": Variable.get("discord_data_stratagy_webhook"),
+            "username": "財務機器人",
+            "msg": refine_diff_df_to_string(df_diff),
+        }
+        if kwargs["msg"] != "no data":
+            discord.send_webhook_message(**kwargs)
+
+    REMINDER_OF_THIS_TEAM()
+
+
+dag_obj = DISCORD_FINANCE_REMINDER()
 
 if __name__ == "__main__":
-    dag.cli()
+    dag_obj.test()

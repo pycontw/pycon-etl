@@ -5,29 +5,9 @@ import pandas as pd
 import pygsheets
 import requests
 from airflow.models import Variable
-from app import discord
 from google.cloud import bigquery
 
 session = requests.session()
-
-
-def main() -> None:
-    # read xls from google doc to df.
-    df_xls = read_google_xls_to_df()
-    # read bigquery to df.
-    df_bigquery = read_bigquery_to_df()
-    # check difference between 2 df
-    df_diff = df_difference(df_xls, df_bigquery)
-    # link to bigquery and write xls file
-    write_to_bigquery(df_diff)
-    # push to discord
-    kwargs = {
-        "webhook_url": Variable.get("discord_data_stratagy_webhook"),
-        "username": "財務機器人",
-        "msg": refine_diff_df_to_string(df_diff),
-    }
-    if kwargs["msg"] != "no data":
-        discord.send_webhook_message(**kwargs)
 
 
 def df_difference(df_xls, df_bigquery) -> pd.DataFrame:

@@ -4,8 +4,7 @@ Update KKTIX's data if attendee has been refunded
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.decorators import dag, task
 from ods.kktix_ticket_orders.udfs import kktix_refund
 
 DEFAULT_ARGS = {
@@ -16,20 +15,23 @@ DEFAULT_ARGS = {
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
-dag = DAG(
-    "KKTIX_TICKET_REFUND_V3",
+
+
+@dag(
     default_args=DEFAULT_ARGS,
     schedule_interval="50 23 * * *",  # At 23:50 (everyday)
     max_active_runs=1,
     catchup=True,
 )
-with dag:
-    UPDATE_REFUNDED_ATTENDEE_IDS = PythonOperator(
-        task_id="UPDATE_REFUNDED_ATTENDEE_IDS",
-        python_callable=kktix_refund.main,
-    )
+def KKTIX_TICKET_REFUND_V3():
+    @task
+    def UPDATE_REFUNDED_ATTENDEE_IDS():
+        kktix_refund.main()
 
-    UPDATE_REFUNDED_ATTENDEE_IDS
+    UPDATE_REFUNDED_ATTENDEE_IDS()
+
+
+dag_obj = KKTIX_TICKET_REFUND_V3()
 
 if __name__ == "__main__":
-    dag.cli()
+    dag_obj.test()

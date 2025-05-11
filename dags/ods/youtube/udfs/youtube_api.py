@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 from airflow import macros
-from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
+from airflow.providers.http.hooks.http import HttpHook
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
 

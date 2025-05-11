@@ -33,7 +33,7 @@ import os
 from datetime import datetime, timedelta
 
 import dateutil.parser
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from sqlalchemy import and_, func
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import load_only

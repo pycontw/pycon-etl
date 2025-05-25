@@ -1,6 +1,5 @@
 import os
 from collections import defaultdict
-from typing import List
 
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs.bigquery_loader import TABLE
@@ -18,14 +17,14 @@ def main() -> None:
         _mark_tickets_as_refunded(refunded_attendee_ids)
 
 
-def _check_if_refunded_ticket_exists() -> List[int]:
+def _check_if_refunded_ticket_exists() -> list[int]:
     """
     1. iterate through all unrefunded tickets
     2. build up a hash map
     3. get the latest attendance book
     4. compare the difference, the diff would be refunded attendee ids
     """
-    refunded_attendee_ids: List[int] = []
+    refunded_attendee_ids: list[int] = []
     query_job = CLIENT.query(
         f"""
             SELECT
@@ -56,7 +55,7 @@ def _check_if_refunded_ticket_exists() -> List[int]:
     return refunded_attendee_ids
 
 
-def _mark_tickets_as_refunded(refunded_attendee_ids: List[int]) -> None:
+def _mark_tickets_as_refunded(refunded_attendee_ids: list[int]) -> None:
     """
     set these attendee info to refunded=true, if we cannot find its attendee_info right now by using KKTIX's API!
     """

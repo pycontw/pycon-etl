@@ -5,7 +5,6 @@ import json
 import logging
 import re
 from datetime import datetime
-from typing import Dict, Set, Tuple
 
 import numpy as np
 import pandas as pd
@@ -71,7 +70,7 @@ CANONICAL_COLUMN_NAMES_2020_EXTRA_INDIVIDUAL = {
     "how_did_you_know_pycon_tw",
 }
 
-CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED: Set = set()
+CANONICAL_COLUMN_NAMES_2020_EXTRA_RESERVED: set = set()
 
 
 CANONICAL_COLUMN_NAMES_2019_CORE = {
@@ -100,7 +99,7 @@ CANONICAL_COLUMN_NAMES_2019_EXTRA_CORPORATE = {
     "unified_business_no",
 }
 
-CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL: Set = set()
+CANONICAL_COLUMN_NAMES_2019_EXTRA_INDIVIDUAL: set = set()
 
 CANONICAL_COLUMN_NAMES_2019_EXTRA_RESERVED = {
     "invoice_policy",
@@ -133,7 +132,7 @@ CANONICAL_COLUMN_NAMES_2018_EXTRA_CORPORATE = {
     "unified_business_no",
 }
 
-CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL: Set = set()
+CANONICAL_COLUMN_NAMES_2018_EXTRA_INDIVIDUAL: set = set()
 
 CANONICAL_COLUMN_NAMES_2018_EXTRA_RESERVED = {
     "invoiced_company_name",
@@ -327,7 +326,7 @@ def get_reformatted_style_columns(columns: dict) -> dict:
 
 def find_reformat_none_unique(columns: dict) -> list:
     # reverse key-value of original dict to be value-key of reverse_dict
-    reverse_dict: Dict = {}
+    reverse_dict: dict = {}
 
     for key, value in columns.items():
         reverse_dict.setdefault(value, set()).add(key)
@@ -506,7 +505,7 @@ def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame:
 
 def load_to_df_from_list(
     results, source="dag", update_after_ts=0
-) -> Tuple[DataFrame, DataFrame]:
+) -> tuple[DataFrame, DataFrame]:
     # Use DataFrame for table transform operations
     df = pd.DataFrame()
     attendee_info_str = "attendee_info"

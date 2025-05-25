@@ -1,7 +1,6 @@
 import logging
 import os
 from datetime import datetime
-from typing import List, Optional
 
 import requests
 from airflow.models import Variable
@@ -76,7 +75,7 @@ def save_twitter_posts_and_insights() -> None:
         raise RuntimeError("Failed to dump posts insights to BigQuery")
 
 
-def query_last_post() -> Optional[dict]:
+def query_last_post() -> dict | None:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     sql = """
     SELECT
@@ -92,7 +91,7 @@ def query_last_post() -> Optional[dict]:
     return data[0] if data else None
 
 
-def request_posts_data() -> List[dict]:
+def request_posts_data() -> list[dict]:
     url = "https://twitter154.p.rapidapi.com/user/tweets"
     # 499339900 is PyConTW's twitter id
     querystring = {
@@ -112,7 +111,7 @@ def request_posts_data() -> List[dict]:
     raise RuntimeError(f"Failed to fetch posts data: {response.text}")
 
 
-def dump_posts_to_bigquery(posts: List[dict]) -> bool:
+def dump_posts_to_bigquery(posts: list[dict]) -> bool:
     if not posts:
         logger.info("No posts to dump!")
         return True
@@ -139,7 +138,7 @@ def dump_posts_to_bigquery(posts: List[dict]) -> bool:
         return False
 
 
-def dump_posts_insights_to_bigquery(posts: List[dict]) -> bool:
+def dump_posts_insights_to_bigquery(posts: list[dict]) -> bool:
     if not posts:
         logger.info("No post insights to dump!")
         return True

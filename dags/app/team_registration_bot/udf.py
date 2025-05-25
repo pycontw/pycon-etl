@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Dict
 
 from airflow.models import Variable
 from app import discord
@@ -24,7 +23,7 @@ def main() -> None:
     discord.send_webhook_message(**kwargs)
 
 
-def _get_statistics_from_bigquery() -> Dict:
+def _get_statistics_from_bigquery() -> dict:
     query_job = CLIENT.query(
         f"""
         WITH UNIQUE_RECORDS AS (

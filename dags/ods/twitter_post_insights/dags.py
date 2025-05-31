@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task
-from ods.twitter_post_insights import udfs
+from utils.posts_insights.twitter import TwitterPostsInsightsParser
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
@@ -22,11 +22,11 @@ DEFAULT_ARGS = {
 def TWITTER_POST_INSIGHTS_V1():
     @task
     def CREATE_TABLE_IF_NEEDED():
-        udfs.create_table_if_needed()
+        TwitterPostsInsightsParser().create_tables_if_not_exists()
 
     @task
     def SAVE_TWITTER_POSTS_AND_INSIGHTS():
-        udfs.save_twitter_posts_and_insights()
+        TwitterPostsInsightsParser().save_posts_and_insights()
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_TWITTER_POSTS_AND_INSIGHTS()
 

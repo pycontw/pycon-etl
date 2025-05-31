@@ -1,15 +1,7 @@
-import os
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task
-from google.cloud import bigquery
-from ods.fb_post_insights.udfs import (
-    convert_fb_time,
-    dump_posts_insights_to_bigquery,
-    dump_posts_to_bigquery,
-    query_last_post,
-    request_posts_data,
-)
+from utils.posts_insights.facebook import FacebookPostsInsightsParser
 
 DEFAULT_ARGS = {
     "owner": "CHWan",
@@ -30,71 +22,11 @@ DEFAULT_ARGS = {
 def FB_POST_INSIGHTS_V1():
     @task
     def CREATE_TABLE_IF_NEEDED():
-        create_post_table_sql = """
-        CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts` (
-            id STRING,
-            created_at TIMESTAMP,
-            message STRING
-        )
-        """
-        create_insights_table_sql = """
-        CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_insights` (
-            post_id STRING,
-            query_time TIMESTAMP,
-            comments INTEGER,
-            reactions INTEGER,
-            share INTEGER
-        )
-        """
-
-        bg_project = os.getenv("BIGQUERY_PROJECT")
-        client = bigquery.Client(project=bg_project)
-        client.query(create_post_table_sql)
-        client.query(create_insights_table_sql)
+        FacebookPostsInsightsParser().create_tables_if_not_exists()
 
     @task
     def SAVE_FB_POSTS_AND_INSIGHTS():
-        posts = request_posts_data()
-
-        last_post = query_last_post()
-        new_posts = (
-            [
-                post
-                for post in posts
-                if datetime.strptime(
-                    post["created_time"], "%Y-%m-%dT%H:%M:%S%z"
-                ).timestamp()
-                > last_post["created_at"].timestamp()
-            ]
-            if last_post is not None
-            else posts
-        )
-
-        if not dump_posts_to_bigquery(
-            [
-                {
-                    "id": post["id"],
-                    "created_at": convert_fb_time(post["created_time"]),
-                    "message": post.get("message", "No message found"),
-                }
-                for post in new_posts
-            ]
-        ):
-            raise RuntimeError("Failed to dump posts to BigQuery")
-
-        if not dump_posts_insights_to_bigquery(
-            [
-                {
-                    "post_id": post["id"],
-                    "query_time": datetime.now().timestamp(),
-                    "comments": post["comments"]["summary"]["total_count"],
-                    "reactions": post["reactions"]["summary"]["total_count"],
-                    "share": post.get("shares", {}).get("count", 0),
-                }
-                for post in posts
-            ]
-        ):
-            raise RuntimeError("Failed to dump posts insights to BigQuery")
+        FacebookPostsInsightsParser().save_posts_and_insights()
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_FB_POSTS_AND_INSIGHTS()
 

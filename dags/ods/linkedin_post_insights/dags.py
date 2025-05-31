@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task
-from ods.linkedin_post_insights import udfs
+from utils.posts_insights.linkedin import LinkedinPostsInsightsParser
 
 DEFAULT_ARGS = {
     "owner": "Angus Yang",
@@ -22,11 +22,11 @@ DEFAULT_ARGS = {
 def LINKEDIN_POST_INSIGHTS_V2():
     @task
     def CREATE_TABLE_IF_NEEDED():
-        udfs.create_table_if_needed()
+        LinkedinPostsInsightsParser().create_tables_if_not_exists()
 
     @task
     def SAVE_LINKEDIN_POSTS_AND_INSIGHTS():
-        udfs.save_posts_and_insights()
+        LinkedinPostsInsightsParser().save_posts_and_insights()
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_LINKEDIN_POSTS_AND_INSIGHTS()
 

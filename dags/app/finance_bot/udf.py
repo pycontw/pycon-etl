@@ -3,39 +3,34 @@ import os
 import numpy as np
 import pandas as pd
 import pygsheets
-import requests
 from airflow.models import Variable
 from google.cloud import bigquery
 
-session = requests.session()
 
-
-def df_difference(df_xls, df_bigquery) -> pd.DataFrame:
+def df_difference(df_xls: pd.DataFrame, df_bigquery: pd.DataFrame) -> pd.DataFrame:
     merged = pd.merge(df_xls, df_bigquery, how="outer", indicator=True)
     return merged[merged["_merge"] == "left_only"].drop("_merge", axis=1)
 
 
 def read_bigquery_to_df() -> pd.DataFrame:
     client = bigquery.Client()
-    query = """
-    SELECT *
-    FROM `pycontw-225217.ods.pycontw_finance`
-    """
+    query = "SELECT * FROM `pycontw-225217.ods.pycontw_finance`"
     query_job = client.query(query)
     results = query_job.result()
     schema = results.schema
     column_names = [field.name for field in schema]
     data = [list(row.values()) for row in results]
     df = pd.DataFrame(data=data, columns=column_names)
-
     return df
 
 
 def read_google_xls_to_df() -> pd.DataFrame:
-    gc = pygsheets.authorize(service_file=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-    sheet = gc.open_by_url(Variable.get("finance_xls_path"))
-    wks = sheet.sheet1
-    df = wks.get_as_df(include_tailing_empty=False)
+    service_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    finance_xls_path = Variable.get("finance_xls_path")
+
+    gc = pygsheets.authorize(service_file=service_file)
+    sheet = gc.open_by_url(finance_xls_path)
+    df = sheet.sheet1.get_as_df(include_tailing_empty=False)
     df.replace("", np.nan, inplace=True)
     df.dropna(inplace=True)
     df = df.astype(str)
@@ -58,24 +53,27 @@ def write_to_bigquery(df) -> None:
     client = bigquery.Client(project=project_id)
     table = client.dataset(dataset_id).table(table_id)
     schema = [
-        bigquery.SchemaField("Reason", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("Price", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("Remarks", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("Team_name", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("Details", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("To_who", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("Yes_or_No", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField(field_name, "STRING", mode="REQUIRED")
+        for field_name in [
+            "Reason",
+            "Price",
+            "Remarks",
+            "Team_name",
+            "Details",
+            "To_who",
+            "Yes_or_No",
+        ]
     ]
     job_config = bigquery.LoadJobConfig(schema=schema)
     job = client.load_table_from_dataframe(df, table, job_config=job_config)
     job.result()
 
 
-def refine_diff_df_to_string(df) -> str:
-    msg = ""
+def refine_diff_df_to_string(df: pd.DataFrame) -> str:
     if df.empty:
         return "no data"
-    else:
-        for row in df.itertuples(index=False):
-            msg += f"{row[0]}, 花費: {row[1]}, {row[3]}, {row[4]}\n"
-        return msg
+
+    return "\n".join(
+        f"{row[0]}, 花費: {row[1]}, {row[3]}, {row[4]}"
+        for row in df.itertuples(index=False)
+    )

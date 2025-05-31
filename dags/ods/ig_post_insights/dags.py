@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task
-from ods.ig_post_insights import udfs
+from utils.posts_insights.instagram import InstagramPostsInsightsParser
 
 DEFAULT_ARGS = {
     "owner": "Angus Yang",
@@ -22,13 +22,13 @@ DEFAULT_ARGS = {
 def IG_POST_INSIGHTS_V1():
     @task
     def CREATE_TABLE_IF_NEEDED():
-        udfs.create_table_if_needed()
+        InstagramPostsInsightsParser().create_tables_if_not_exists()
 
     @task
-    def SAVE_TWITTER_POSTS_AND_INSIGHTS():
-        udfs.save_posts_and_insights()
+    def SAVE_IG_POSTS_AND_INSIGHTS():
+        InstagramPostsInsightsParser().save_posts_and_insights()
 
-    CREATE_TABLE_IF_NEEDED() >> SAVE_TWITTER_POSTS_AND_INSIGHTS()
+    CREATE_TABLE_IF_NEEDED() >> SAVE_IG_POSTS_AND_INSIGHTS()
 
 
 dag_obj = IG_POST_INSIGHTS_V1()

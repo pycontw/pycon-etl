@@ -28,7 +28,10 @@ from __future__ import annotations
 
 import sqlalchemy as sa
 from airflow.migrations.db_types import TIMESTAMP, StringID
-from airflow.migrations.utils import get_mssql_table_constraints
+from airflow.migrations.utils import (
+    _sqlite_guarded_drop_constraint,
+    get_mssql_table_constraints,
+)
 from alembic import op
 from sqlalchemy.sql import and_, column, select, table
 
@@ -274,12 +277,17 @@ def upgrade():
 
     with op.batch_alter_table("task_instance", schema=None) as batch_op:
         if dialect_name != "postgresql":
-            # TODO: Is this right for non-postgres?
             if dialect_name == "mssql":
                 constraints = get_mssql_table_constraints(conn, "task_instance")
                 pk, _ = constraints["PRIMARY KEY"].popitem()
                 batch_op.drop_constraint(pk, type_="primary")
-            # batch_op.drop_constraint("task_instance_pkey", type_="primary")
+            else:
+                _sqlite_guarded_drop_constraint(
+                    table="task_instance",
+                    key="task_instance_pkey",
+                    type_="primary",
+                    op=op,
+                )
             batch_op.drop_index("ti_dag_date")
             batch_op.drop_index("ti_state_lkp")
             batch_op.drop_column("execution_date")

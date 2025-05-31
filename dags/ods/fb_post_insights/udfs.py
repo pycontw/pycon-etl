@@ -113,9 +113,12 @@ def dump_posts_to_bigquery(posts: list[dict]) -> bool:
     client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     job_config = bigquery.LoadJobConfig(
         schema=[
-            bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
-            bigquery.SchemaField("created_at", "TIMESTAMP", mode="REQUIRED"),
-            bigquery.SchemaField("message", "STRING", mode="REQUIRED"),
+            bigquery.SchemaField(field_name, field_type, mode="REQUIRED")
+            for field_name, field_type in [
+                ("id", "STRING"),
+                ("created_at", "TIMESTAMP"),
+                ("message", "STRING"),
+            ]
         ],
         write_disposition="WRITE_APPEND",
     )
@@ -128,6 +131,7 @@ def dump_posts_to_bigquery(posts: list[dict]) -> bool:
         job.result()
         return True
     except Exception as e:
+        # TODO: catch with more specific exception
         logger.error(f"Failed to dump posts to BigQuery: {e}", exc_info=True)
         return False
 

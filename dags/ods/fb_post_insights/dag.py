@@ -30,16 +30,14 @@ DEFAULT_ARGS = {
 def FB_POST_INSIGHTS_V1():
     @task
     def CREATE_TABLE_IF_NEEDED():
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
-        post_sql = """
+        create_post_table_sql = """
         CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts` (
             id STRING,
             created_at TIMESTAMP,
             message STRING
         )
         """
-        client.query(post_sql)
-        insights_sql = """
+        create_insights_table_sql = """
         CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_insights` (
             post_id STRING,
             query_time TIMESTAMP,
@@ -48,17 +46,19 @@ def FB_POST_INSIGHTS_V1():
             share INTEGER
         )
         """
-        client.query(insights_sql)
+
+        bg_project = os.getenv("BIGQUERY_PROJECT")
+        client = bigquery.Client(project=bg_project)
+        client.query(create_post_table_sql)
+        client.query(create_insights_table_sql)
 
     @task
     def SAVE_FB_POSTS_AND_INSIGHTS():
         posts = request_posts_data()
 
         last_post = query_last_post()
-        if last_post is None:
-            new_posts = posts
-        else:
-            new_posts = [
+        new_posts = (
+            [
                 post
                 for post in posts
                 if datetime.strptime(
@@ -66,6 +66,9 @@ def FB_POST_INSIGHTS_V1():
                 ).timestamp()
                 > last_post["created_at"].timestamp()
             ]
+            if last_post is not None
+            else posts
+        )
 
         if not dump_posts_to_bigquery(
             [

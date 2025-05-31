@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 def create_table_if_needed() -> None:
-    client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
     post_sql = """
     CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_linkedin_posts` (
         id STRING,
@@ -18,7 +17,6 @@ def create_table_if_needed() -> None:
         message STRING
     )
     """
-    client.query(post_sql)
     insights_sql = """
     CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_linkedin_posts_insights` (
         post_id STRING,
@@ -30,6 +28,8 @@ def create_table_if_needed() -> None:
         views INTEGER
     )
     """
+    client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+    client.query(post_sql)
     client.query(insights_sql)
 
     # Example output from the Rapid API, not all fields will exists for a specific post

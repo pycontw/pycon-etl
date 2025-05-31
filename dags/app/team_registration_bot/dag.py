@@ -31,14 +31,13 @@ DEFAULT_ARGS = {
 def KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION():
     @task
     def LOAD_TO_DISCORD():
+        webhook_url = Variable.get("discord_webhook_registration_endpoint")
         statistics = _get_statistics_from_bigquery()
-        msg = _compose_discord_msg(statistics)
-        kwargs = {
-            "webhook_url": Variable.get("discord_webhook_registration_endpoint"),
-            "username": "KKTIX order report",
-            "msg": msg,
-        }
-        discord.send_webhook_message(**kwargs)
+        discord.send_webhook_message(
+            webhook_url=webhook_url,
+            usernmae="KKTIX order report",
+            msg=_compose_discord_msg(statistics),
+        )
 
     LOAD_TO_DISCORD()
 

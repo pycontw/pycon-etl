@@ -28,15 +28,18 @@ DEFAULT_ARGS = {
 def DISCORD_PROPOSAL_REMINDER_v3():
     @task
     def SEND_PROPOSAL_SUMMARY():
+        webhook_url = Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK")
+
         summary = get_proposal_summary()
         n_talk = summary["num_proposed_talk"]
         n_tutorial = summary["num_proposed_tutorial"]
-        kwargs = {
-            "webhook_url": Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK"),
-            "username": "Program talk reminder",
-            "msg": f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}",
-        }
-        discord.send_webhook_message(**kwargs)
+        msg = f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}"
+
+        discord.send_webhook_message(
+            webhook_url=webhook_url,
+            username="Program talk reminder",
+            msg=msg,
+        )
 
     SEND_PROPOSAL_SUMMARY()
 

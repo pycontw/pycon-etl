@@ -18,6 +18,8 @@ DEFAULT_ARGS = {
     "retry_delay": timedelta(minutes=5),
 }
 
+# TODO: remove db access for airflow 3 upgrade
+
 
 @dag(
     "TWITTER_POST_NOTIFICATION_BOT_V2",

@@ -63,12 +63,10 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
         ]
 
     def _dump_posts_to_bigquery(self, posts: list[dict]) -> None:
-        if not posts:
-            logger.info("No posts to dump!")
-            return
-
-        job_config = bigquery.LoadJobConfig(
-            schema=[
+        self._dump_to_bigquery(
+            posts=posts,
+            dump_type="posts",
+            bq_schema_fields=[
                 bigquery.SchemaField(field_name, field_type, mode="REQUIRED")
                 for field_name, field_type in [
                     ("id", "STRING"),
@@ -76,18 +74,7 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
                     ("message", "STRING"),
                 ]
             ],
-            write_disposition="WRITE_APPEND",
         )
-        try:
-            job = self.bq_client.load_table_from_json(
-                posts,
-                "pycontw-225217.ods.ods_pycontw_fb_posts",
-                job_config=job_config,
-            )
-            job.result()
-        except Exception:
-            logger.exception("Failed to dump posts to BigQuery: ")
-            raise RuntimeError("Failed to dump posts to BigQuery")
 
     def _process_posts_insights(self, posts: list[dict]) -> list[dict]:
         return [
@@ -102,30 +89,17 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
         ]
 
     def _dump_posts_insights_to_bigquery(self, posts: list[dict]) -> None:
-        if not posts:
-            logger.info("No post insights to dump!")
-            return
-
-        job_config = bigquery.LoadJobConfig(
-            schema=[
+        self._dump_to_bigquery(
+            posts=posts,
+            dump_type="posts insights",
+            bq_schema_fields=[
                 bigquery.SchemaField("post_id", "STRING", mode="REQUIRED"),
                 bigquery.SchemaField("query_time", "TIMESTAMP", mode="REQUIRED"),
                 bigquery.SchemaField("comments", "INTEGER", mode="NULLABLE"),
                 bigquery.SchemaField("reactions", "INTEGER", mode="NULLABLE"),
                 bigquery.SchemaField("share", "INTEGER", mode="NULLABLE"),
             ],
-            write_disposition="WRITE_APPEND",
         )
-        try:
-            job = self.bq_client.load_table_from_json(
-                posts,
-                "pycontw-225217.ods.ods_pycontw_fb_posts_insights",
-                job_config=job_config,
-            )
-            job.result()
-        except Exception:
-            logger.exception("Failed to dump posts insights to BigQuery: ")
-            raise RuntimeError("Failed to dump posts insights to BigQuery")
 
 
 def convert_fb_time(time_string: str) -> str:

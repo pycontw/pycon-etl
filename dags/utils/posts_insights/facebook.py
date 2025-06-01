@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 
 import requests
@@ -68,7 +67,6 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             logger.info("No posts to dump!")
             return
 
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
         job_config = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField(field_name, field_type, mode="REQUIRED")
@@ -81,7 +79,7 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             write_disposition="WRITE_APPEND",
         )
         try:
-            job = client.load_table_from_json(
+            job = self.bq_client.load_table_from_json(
                 posts,
                 "pycontw-225217.ods.ods_pycontw_fb_posts",
                 job_config=job_config,
@@ -89,7 +87,7 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             job.result()
         except Exception:
             logger.exception("Failed to dump posts to BigQuery: ")
-            raise RuntimeError("Failed to dump posts insights to BigQuery")
+            raise RuntimeError("Failed to dump posts to BigQuery")
 
     def _process_posts_insights(self, posts: list[dict]) -> list[dict]:
         return [
@@ -108,7 +106,6 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             logger.info("No post insights to dump!")
             return
 
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
         job_config = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField("post_id", "STRING", mode="REQUIRED"),
@@ -120,7 +117,7 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             write_disposition="WRITE_APPEND",
         )
         try:
-            job = client.load_table_from_json(
+            job = self.bq_client.load_table_from_json(
                 posts,
                 "pycontw-225217.ods.ods_pycontw_fb_posts_insights",
                 job_config=job_config,
@@ -128,7 +125,7 @@ class FacebookPostsInsightsParser(BasePostsInsightsParser):
             job.result()
         except Exception:
             logger.exception("Failed to dump posts insights to BigQuery: ")
-            raise RuntimeError("Failed to dump posts to BigQuery")
+            raise RuntimeError("Failed to dump posts insights to BigQuery")
 
 
 def convert_fb_time(time_string: str) -> str:

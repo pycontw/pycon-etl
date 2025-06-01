@@ -1,6 +1,7 @@
 import logging
 import os
 from abc import ABC, abstractmethod
+from functools import cached_property
 
 from google.cloud import bigquery
 
@@ -35,15 +36,18 @@ class BasePostsInsightsParser(ABC):
     CREATE_POSTS_TABLE_SQL: str = ""
     CREATE_INSIGHTS_TABLE_SQL: str = ""
 
+    @cached_property
+    def bq_client(self) -> bigquery.Client:
+        return bigquery.Client(project=os.getenv("BIGQUERY_PROJECT", ""))
+
     def create_tables_if_not_exists(self) -> None:
         if not self.CREATE_POSTS_TABLE_SQL and not self.CREATE_INSIGHTS_TABLE_SQL:
             raise ValueError(
                 "Both the SQLs to create table for posts and insights must be set"
             )
 
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT", ""))
         for sql in [self.CREATE_POSTS_TABLE_SQL, self.CREATE_INSIGHTS_TABLE_SQL]:
-            client.query(sql)
+            self.bq_client.query(sql)
 
     def save_posts_and_insights(self) -> None:
         posts = self._request_posts_data()
@@ -65,7 +69,6 @@ class BasePostsInsightsParser(ABC):
     def _filter_new_posts(self, posts: list[dict], last_post: dict) -> list[dict]: ...
 
     def _query_last_post(self) -> dict | None:
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
         sql = f"""
         SELECT
             created_at
@@ -75,7 +78,7 @@ class BasePostsInsightsParser(ABC):
             created_at DESC
         LIMIT 1
         """
-        result = client.query(sql)
+        result = self.bq_client.query(sql)
         data = list(result)
         return data[0] if data else None
 
@@ -87,7 +90,6 @@ class BasePostsInsightsParser(ABC):
             logger.info("No posts to dump!")
             return
 
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
         job_config = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
@@ -97,7 +99,7 @@ class BasePostsInsightsParser(ABC):
             write_disposition="WRITE_APPEND",
         )
         try:
-            job = client.load_table_from_json(
+            job = self.bq_client.load_table_from_json(
                 posts,
                 f"pycontw-225217.ods.{self.POST_TABLE_NAME}",
                 job_config=job_config,
@@ -115,7 +117,6 @@ class BasePostsInsightsParser(ABC):
             logger.info("No post insights to dump!")
             return
 
-        client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
         job_config = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField("post_id", "STRING", mode="REQUIRED"),
@@ -129,7 +130,7 @@ class BasePostsInsightsParser(ABC):
             write_disposition="WRITE_APPEND",
         )
         try:
-            job = client.load_table_from_json(
+            job = self.bq_client.load_table_from_json(
                 posts,
                 f"pycontw-225217.ods.{self.INSIGHT_TABLE_NAME}",
                 job_config=job_config,

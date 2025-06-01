@@ -8,7 +8,6 @@ x-docker-common: &docker-common
     - ./sqlite:/opt/airflow/sqlite
     # you can comment out the following line if you don't have service-account.json
     - ./service-account.json:/opt/airflow/service-account.json
-  restart: unless-stopped
   logging:
     driver: json-file
     options:
@@ -28,6 +27,9 @@ services:
       retries: 5
       start_period: 30s
     restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
 
   scheduler:
     <<: *docker-common
@@ -35,4 +37,19 @@ services:
     command: scheduler
     restart: always
     depends_on:
-      - airflow
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *docker-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        if [[ -n "$${_AIRFLOW_DB_MIGRATE=}" ]]; then
+            airflow db migrate || true
+        fi
+        exit 0
+    restart: "no"
+    environment:
+      _AIRFLOW_DB_MIGRATE: 'false'

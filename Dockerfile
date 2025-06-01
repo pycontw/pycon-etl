@@ -29,16 +29,6 @@ FROM --platform=${PLATFORM} apache/airflow:slim-${AIRFLOW_VERSION}-python${PYTHO
 
 USER root
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29 \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends git \
-    # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy
-    # 2. libglib2.0-0 libsm6 libxext6 libxrender-dev libgl1-mesa-dev are required by opencv
-    # 3. git is required by pip install git+https
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh

@@ -10,7 +10,7 @@ RETRY_ARGS = dict(
 )
 
 
-@tenacity.retry(**RETRY_ARGS)
+@tenacity.retry(**RETRY_ARGS)  # type: ignore[call-overload]
 def send_webhook_message(webhook_url: str, username: str, msg: str) -> None:
     session.post(
         webhook_url,

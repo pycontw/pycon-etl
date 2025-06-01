@@ -13,11 +13,11 @@ SELECT
 FROM
   `{TABLE}`
 """  # nosec
-AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME", "")
 
 
 def create_table_if_needed() -> None:
-    client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+    client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT", ""))
     sql_filepath = (
         Path(AIRFLOW_HOME) / "dags/ods/kktix_ticket_orders/sqls/create_table.sql"
     )

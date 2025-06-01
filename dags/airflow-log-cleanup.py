@@ -85,7 +85,8 @@ dag = DAG(
     schedule_interval=SCHEDULE_INTERVAL,
     start_date=START_DATE,
     tags=["teamclairvoyant", "airflow-maintenance-dags"],
-    template_undefined=jinja2.Undefined,
+    # TODO: the whole dag will be re-written at a later point. ignore the type for now
+    template_undefined=jinja2.Undefined,  # type: ignore[arg-type]
 )
 if hasattr(dag, "doc_md"):
     dag.doc_md = __doc__

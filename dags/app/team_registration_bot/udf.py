@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 from google.cloud import bigquery
+from google.cloud.bigquery.table import RowIterator
 
 YEAR = datetime.now().year
 
@@ -10,7 +11,7 @@ TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attend
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
-def _get_statistics_from_bigquery() -> dict:
+def _get_statistics_from_bigquery() -> RowIterator:
     query_job = CLIENT.query(
         f"""
         WITH UNIQUE_RECORDS AS (

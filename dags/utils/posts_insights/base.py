@@ -2,6 +2,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from functools import cached_property
+from typing import Literal
 
 from google.cloud import bigquery
 
@@ -86,39 +87,24 @@ class BasePostsInsightsParser(ABC):
     def _process_posts(self, posts: list[dict]) -> list[dict]: ...
 
     def _dump_posts_to_bigquery(self, posts: list[dict]) -> None:
-        if not posts:
-            logger.info("No posts to dump!")
-            return
-
-        job_config = bigquery.LoadJobConfig(
-            schema=[
+        self._dump_to_bigquery(
+            posts=posts,
+            dump_type="posts",
+            bq_schema_fields=[
                 bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
                 bigquery.SchemaField("created_at", "TIMESTAMP", mode="REQUIRED"),
                 bigquery.SchemaField("message", "STRING", mode="REQUIRED"),
             ],
-            write_disposition="WRITE_APPEND",
         )
-        try:
-            job = self.bq_client.load_table_from_json(
-                posts,
-                f"pycontw-225217.ods.{self.POST_TABLE_NAME}",
-                job_config=job_config,
-            )
-            job.result()
-        except Exception:
-            logger.exception("Failed to dump posts to BigQuery: ")
-            raise RuntimeError("Failed to dump posts insights to BigQuery")
 
     @abstractmethod
     def _process_posts_insights(self, posts: list[dict]) -> list[dict]: ...
 
     def _dump_posts_insights_to_bigquery(self, posts: list[dict]) -> None:
-        if not posts:
-            logger.info("No post insights to dump!")
-            return
-
-        job_config = bigquery.LoadJobConfig(
-            schema=[
+        self._dump_to_bigquery(
+            posts=posts,
+            dump_type="posts insights",
+            bq_schema_fields=[
                 bigquery.SchemaField("post_id", "STRING", mode="REQUIRED"),
                 bigquery.SchemaField("query_time", "TIMESTAMP", mode="REQUIRED"),
                 bigquery.SchemaField("period", "STRING", mode="REQUIRED"),
@@ -127,6 +113,21 @@ class BasePostsInsightsParser(ABC):
                 bigquery.SchemaField("retweet", "INTEGER", mode="NULLABLE"),
                 bigquery.SchemaField("views", "INTEGER", mode="NULLABLE"),
             ],
+        )
+
+    def _dump_to_bigquery(
+        self,
+        *,
+        posts: list[dict],
+        dump_type: Literal["posts insights", "posts"],
+        bq_schema_fields: list[bigquery.SchemaField],
+    ) -> None:
+        if not posts:
+            logger.info(f"No {dump_type} to dump!")
+            return
+
+        job_config = bigquery.LoadJobConfig(
+            schema=bq_schema_fields,
             write_disposition="WRITE_APPEND",
         )
         try:
@@ -137,5 +138,5 @@ class BasePostsInsightsParser(ABC):
             )
             job.result()
         except Exception:
-            logger.exception("Failed to dump posts insights to BigQuery: ")
-            raise RuntimeError("Failed to dump posts insights to BigQuery")
+            logger.exception(f"Failed to dump {dump_type} to BigQuery: ")
+            raise RuntimeError(f"Failed to dump {dump_type} to BigQuery")

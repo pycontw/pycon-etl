@@ -50,6 +50,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+# TODO: remove this and the patch files once upgrade to 2.11.1
+COPY --chown=airflow:root patch /app/.venv/lib/python3.10/site-packages/airflow/migrations
 
 ENV AIRFLOW_TEST_MODE=True
 

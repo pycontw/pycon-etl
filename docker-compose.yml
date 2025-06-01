@@ -31,6 +31,21 @@ services:
   scheduler:
     <<: *docker-common
     container_name: scheduler
-    depends_on:
-      - airflow
     command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *docker-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        if [[ -n "$${_AIRFLOW_DB_MIGRATE=}" ]]; then
+            airflow db migrate || true
+        fi
+        exit 0
+    restart: "no"
+    environment:
+      _AIRFLOW_DB_MIGRATE: 'false'

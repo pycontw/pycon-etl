@@ -8,6 +8,7 @@ dependencies = [
     # Please use pip to manage airflow dependencies.
     "apache-airflow==2.11.0",
     # Editable install with no version specified.
+    "apache-airflow-providers-http",
     "google-cloud-bigquery",
     "pandas",
     "pyarrow",

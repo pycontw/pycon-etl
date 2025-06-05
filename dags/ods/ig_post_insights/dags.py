@@ -18,7 +18,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="5 8 * * *",
+    schedule="5 8 * * *",
     max_active_runs=1,
     catchup=False,
 )

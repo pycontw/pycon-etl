@@ -24,7 +24,7 @@ DEFAULT_ARGS = {
 @dag(
     "TWITTER_POST_NOTIFICATION_BOT_V2",
     default_args=DEFAULT_ARGS,
-    schedule_interval="@daily",
+    schedule="@daily",
     max_active_runs=1,
     catchup=False,
 )

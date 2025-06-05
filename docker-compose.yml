@@ -11,12 +11,12 @@ x-docker-common: &docker-common
       max-size: 10m
 
 services:
-  airflow:
+  airflow-api-server:
     <<: *docker-common
-    container_name: airflow
+    container_name: airflow-api-server
     ports:
       - "8080:8080"
-    command: webserver
+    command: api-server
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -28,10 +28,20 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  scheduler:
+  airflow-dag-processor:
     <<: *docker-common
-    container_name: scheduler
+    container_name: airflow-dag-processor
+    command: dag-processor
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *docker-common
+    container_name: airflow-scheduler
     command: scheduler
+    restart: always
     depends_on:
       airflow-init:
         condition: service_completed_successfully

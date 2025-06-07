@@ -36,6 +36,7 @@ docs = [
 
 [tool.ruff]
 line-length = 88
+exclude = ["patch"]
 
 [tool.ruff.lint]
 extend-select = [

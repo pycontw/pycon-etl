@@ -4,9 +4,8 @@ Update KKTIX's data if attendee has been refunded
 
 from datetime import datetime, timedelta
 
+from airflow.sdk import dag, task
 from ods.kktix_ticket_orders.udfs import kktix_refund
-from airflow.sdk import dag
-from airflow.sdk import task
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",

@@ -4,9 +4,8 @@ Save view, like count these kind of metrics into BigQuery
 
 from datetime import datetime, timedelta
 
+from airflow.sdk import dag, task
 from ods.youtube.udfs import youtube_api
-from airflow.sdk import dag
-from airflow.sdk import task
 
 DEFAULT_ARGS = {
     "owner": "David Jr.",

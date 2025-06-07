@@ -5,9 +5,9 @@ from pathlib import Path
 import pandas as pd
 from airflow import macros
 from airflow.providers.http.hooks.http import HttpHook
+from airflow.sdk import Variable
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
-from airflow.sdk import Variable
 
 # channel id of YouTube is public to everyone, so it's okay to commit this ID into git
 CHANNEL_ID = "UCHLnNgRnfGYDzPCCH8qGbQw"

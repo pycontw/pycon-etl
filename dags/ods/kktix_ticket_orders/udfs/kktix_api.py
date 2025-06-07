@@ -4,9 +4,9 @@ from collections.abc import Callable
 import requests
 import tenacity
 from airflow.providers.http.hooks.http import HttpHook
+from airflow.sdk import Variable
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
-from airflow.sdk import Variable
 
 SCHEDULE_INTERVAL_SECONDS: int = 3600
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")

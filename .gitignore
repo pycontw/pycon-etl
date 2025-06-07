@@ -106,6 +106,8 @@ target/
 
 # mkdocs
 site
--h
-logs
+
+# airflow
+sqlite/
+logs/
 simple_auth_manager_passwords.json.generated

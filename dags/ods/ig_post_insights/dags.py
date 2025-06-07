@@ -1,11 +1,11 @@
 """
 Scrape Instagram posts and insights data, save to BigQuery
 """
+
 from datetime import datetime, timedelta
 
+from airflow.sdk import dag, task
 from utils.posts_insights.instagram import InstagramPostsInsightsParser
-from airflow.sdk import dag
-from airflow.sdk import task
 
 DEFAULT_ARGS = {
     "owner": "Angus Yang",

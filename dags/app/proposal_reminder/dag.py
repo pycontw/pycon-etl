@@ -4,11 +4,9 @@ Send Proposal Summary to Discord
 
 from datetime import datetime, timedelta
 
+from airflow.sdk import Variable, dag, task
 from app import discord
 from app.proposal_reminder.udf import get_proposal_summary
-from airflow.sdk import dag
-from airflow.sdk import task
-from airflow.sdk import Variable
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",

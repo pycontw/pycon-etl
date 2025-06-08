@@ -8,7 +8,7 @@ from airflow.decorators import dag, task
 from ods.kktix_ticket_orders.udfs import kktix_refund
 
 DEFAULT_ARGS = {
-    "owner": "henry410213028@gmail.com",
+    "owner": "Henry Lee",
     "depends_on_past": False,
     "start_date": datetime(2024, 6, 18, 0),
     "retries": 2,

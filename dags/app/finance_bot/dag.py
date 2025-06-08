@@ -16,7 +16,7 @@ from app.finance_bot.udf import (
 )
 
 DEFAULT_ARGS = {
-    "owner": "qchwan",
+    "owner": "CHWan",
     "depends_on_past": False,
     "start_date": datetime(2023, 8, 27),
     "retries": 2,

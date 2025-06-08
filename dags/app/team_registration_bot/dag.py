@@ -13,7 +13,7 @@ from app.team_registration_bot.udf import (
 )
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh@gmail.com",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2022, 7, 4),
     "retries": 2,

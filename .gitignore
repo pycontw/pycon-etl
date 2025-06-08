@@ -103,3 +103,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# airflow sqlite db
+sqlite/
+site

@@ -2,8 +2,8 @@ x-docker-common: &docker-common
   env_file: .env.production
   image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
   volumes:
+    - ./sqlite:/opt/airflow/sqlite
     - ./service-account.json:/opt/airflow/service-account.json
-    - ./airflow.db:/opt/airflow/airflow.db
   restart: unless-stopped
   logging:
     driver: json-file
@@ -17,10 +17,35 @@ services:
     ports:
       - "8080:8080"
     command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
 
   scheduler:
     <<: *docker-common
     container_name: scheduler
-    depends_on:
-      - airflow
     command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *docker-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        if [[ -n "$${_AIRFLOW_DB_MIGRATE=}" ]]; then
+            airflow db migrate || true
+        fi
+        exit 0
+    restart: "no"
+    environment:
+      _AIRFLOW_DB_MIGRATE: 'false'

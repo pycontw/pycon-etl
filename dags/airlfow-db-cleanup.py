@@ -26,17 +26,14 @@ from airflow.models import (
     XCom,
 )
 
-try:
-    from airflow.jobs import BaseJob
-except Exception as e:
-    from airflow.jobs.base_job import BaseJob
+from airflow.jobs.job import Job
 
 import logging
 import os
 from datetime import datetime, timedelta
 
 import dateutil.parser
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from sqlalchemy import and_, func
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import load_only
@@ -80,8 +77,8 @@ except AttributeError:
 # want to skip.
 DATABASE_OBJECTS = [
     {
-        "airflow_db_model": BaseJob,
-        "age_check_column": BaseJob.latest_heartbeat,
+        "airflow_db_model": Job,
+        "age_check_column": Job.latest_heartbeat,
         "keep_last": False,
         "keep_last_filters": None,
         "keep_last_group_by": None,

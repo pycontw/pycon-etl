@@ -1,7 +1,6 @@
 import collections
 import json
 import os
-from typing import Dict, List
 
 import pandas as pd
 from google.cloud import bigquery
@@ -17,7 +16,7 @@ SCHEMA = [
 JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
 
 
-def load(event_raw_data_array: List):
+def load(event_raw_data_array: list):
     """
     load data into bigquery!
     """
@@ -33,7 +32,7 @@ def load(event_raw_data_array: List):
     _load_to_bigquery_dwd(payload)
 
 
-def _load_to_bigquery(payload: List[Dict]) -> None:
+def _load_to_bigquery(payload: list[dict]) -> None:
     """
     load data to BigQuery's `TABLE`
     """
@@ -49,7 +48,7 @@ def _load_to_bigquery(payload: List[Dict]) -> None:
     job.result()
 
 
-def _load_to_bigquery_dwd(payload: List[Dict]) -> None:
+def _load_to_bigquery_dwd(payload: list[dict]) -> None:
     """
     load data to BigQuery's `TABLE`
     """
@@ -73,7 +72,7 @@ def _load_to_bigquery_dwd(payload: List[Dict]) -> None:
             )
 
 
-def _sanitize_payload(event_raw_data) -> Dict:
+def _sanitize_payload(event_raw_data) -> dict:
     """
     BigQuery has some constraints for nested data type
     So we put out sanitization/data cleansing logic here!

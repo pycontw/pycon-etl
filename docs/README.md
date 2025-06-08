@@ -18,7 +18,7 @@ Using Airflow to implement our ETL pipelines.
 
 ## Prerequisites
 
-- [Python 3.8+](https://www.python.org/downloads/release/python-3811/)
+- [Python 3.10](https://www.python.org/downloads/release/python-31018/)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
 - [uv]
@@ -76,9 +76,9 @@ Set up the Authentication for GCP: <https://googleapis.dev/python/google-api-cor
 
 ## Running the Project
 
-If you are a developer 👨‍💻, please check the [Contributing Guide](./docs/CONTRIBUTING.md).
+If you are a developer 👨‍💻, please check the [Contributing Guide](./CONTRIBUTING.md).
 
-If you are a maintainer 👨‍🔧, please check the [Maintenance Guide](./docs/MAINTENANCE.md).
+If you are a maintainer 👨‍🔧, please check the [Maintenance Guide](./MAINTENANCE.md).
 
 ### Local Environment with Docker
 
@@ -120,7 +120,7 @@ There are several tags available:
 
 ### Production
 
-Please check the [Production Deployment Guide](./docs/DEPLOYMENT.md).
+Please check the [Production Deployment Guide](./DEPLOYMENT.md).
 
 ## Contact
 

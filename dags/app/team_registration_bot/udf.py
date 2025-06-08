@@ -1,10 +1,8 @@
 import os
 from datetime import datetime
-from typing import Dict
 
-from airflow.models import Variable
-from app import discord
 from google.cloud import bigquery
+from google.cloud.bigquery.table import RowIterator
 
 YEAR = datetime.now().year
 
@@ -13,18 +11,7 @@ TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attend
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
-def main() -> None:
-    statistics = _get_statistics_from_bigquery()
-    msg = _compose_discord_msg(statistics)
-    kwargs = {
-        "webhook_url": Variable.get("discord_webhook_registration_endpoint"),
-        "username": "KKTIX order report",
-        "msg": msg,
-    }
-    discord.send_webhook_message(**kwargs)
-
-
-def _get_statistics_from_bigquery() -> Dict:
+def _get_statistics_from_bigquery() -> RowIterator:
     query_job = CLIENT.query(
         f"""
         WITH UNIQUE_RECORDS AS (
@@ -51,7 +38,7 @@ def _get_statistics_from_bigquery() -> Dict:
     return result
 
 
-ticket_price = {
+ticket_price: dict[str, int] = {
     # please update the price for target year
     "企業票 - 一般階段 / Corporate - Regular Stage": 5800,
     "企業票 - 晚鳥階段 / Corporate - Final Stage": 6500,
@@ -69,14 +56,18 @@ ticket_price = {
 
 
 def _compose_discord_msg(payload) -> str:
-    msg = f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+    msg = (
+        f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，"
+        "售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+    )
     total = 0
     total_income = 0
-    for name, ticket_name, counts in payload:
+    for _, ticket_name, counts in payload:
         msg += f"  * 票種：{ticket_name}\t{counts}張\n"
         total += counts
         total_income += ticket_price.get(ticket_name, 0) * counts
-    total_income = f"{total_income:,}"
-    msg += f"dashboard: https://metabase.pycon.tw/question/142?year={YEAR}\n"
-    msg += f"總共賣出 {total} 張喔～ (總收入 TWD${total_income})"
+    msg = (
+        f"{msg}dashboard: https://metabase.pycon.tw/question/142?year={YEAR}\n"
+        f"總共賣出 {total} 張喔～ (總收入 TWD${total_income:,})"
+    )
     return msg

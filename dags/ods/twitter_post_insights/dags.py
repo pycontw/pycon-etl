@@ -1,8 +1,10 @@
+"""
+Scrape X (Twitter) posts and insights data, save to BigQuery
+"""
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from ods.twitter_post_insights import udfs
+from airflow.decorators import dag, task
+from utils.posts_insights.twitter import TwitterPostsInsightsParser
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
@@ -12,26 +14,27 @@ DEFAULT_ARGS = {
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
-dag = DAG(
-    "TWITTER_POST_INSIGHTS_V1",
+
+
+@dag(
     default_args=DEFAULT_ARGS,
     schedule_interval="5 8 * * *",
     max_active_runs=1,
     catchup=False,
 )
-with dag:
-    CREATE_TABLE_IF_NEEDED = PythonOperator(
-        task_id="CREATE_TABLE_IF_NEEDED",
-        python_callable=udfs.create_table_if_needed,
-    )
+def TWITTER_POST_INSIGHTS_V1():
+    @task
+    def CREATE_TABLE_IF_NEEDED():
+        TwitterPostsInsightsParser().create_tables_if_not_exists()
 
-    SAVE_TWITTER_POSTS_AND_INSIGHTS = PythonOperator(
-        task_id="SAVE_TWITTER_POSTS_AND_INSIGHTS",
-        python_callable=udfs.save_twitter_posts_and_insights,
-    )
+    @task
+    def SAVE_TWITTER_POSTS_AND_INSIGHTS():
+        TwitterPostsInsightsParser().save_posts_and_insights()
 
-    CREATE_TABLE_IF_NEEDED >> SAVE_TWITTER_POSTS_AND_INSIGHTS
+    CREATE_TABLE_IF_NEEDED() >> SAVE_TWITTER_POSTS_AND_INSIGHTS()
 
+
+dag_obj = TWITTER_POST_INSIGHTS_V1()
 
 if __name__ == "__main__":
-    dag.cli()
+    dag_obj.test()

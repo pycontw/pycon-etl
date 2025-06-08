@@ -1,5 +1,4 @@
 import hashlib
-from typing import Dict, List
 
 SENSITIVE_KEY_NAME_SET = {
     "聯絡人 姓名",
@@ -9,7 +8,7 @@ SENSITIVE_KEY_NAME_SET = {
 }
 
 
-def transform(event_raw_data_array: List) -> List[Dict]:
+def transform(event_raw_data_array: list) -> list[dict]:
     """
     de-identify user's email in this block!
     """
@@ -27,7 +26,7 @@ def transform(event_raw_data_array: List) -> List[Dict]:
     return event_raw_data_array
 
 
-def _extract_sensitive_unhashed_raw_data(event_raw_data_array: List) -> List[Dict]:
+def _extract_sensitive_unhashed_raw_data(event_raw_data_array: list) -> list[dict]:
     """
     only keep these data in xcom and pass them to next Airflow task
     """

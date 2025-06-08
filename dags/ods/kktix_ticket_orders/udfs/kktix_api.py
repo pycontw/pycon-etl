@@ -1,10 +1,10 @@
 import copy
-from typing import Callable, Dict, List
+from collections.abc import Callable
 
 import requests
 import tenacity
-from airflow.hooks.http_hook import HttpHook
 from airflow.models import Variable
+from airflow.providers.http.hooks.http import HttpHook
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
 
@@ -43,13 +43,13 @@ def main(**context):
     )
 
 
-def _extract(year: int, timestamp: float) -> List[Dict]:
+def _extract(year: int, timestamp: float) -> list[dict]:
     """
     get data from KKTIX's API
     1. condition_filter_callb: use this callbacl to filter out unwanted event!
     2. right now schedule_interval_seconds is a hardcoded value!
     """
-    event_raw_data_array: List[Dict] = []
+    event_raw_data_array: list[dict] = []
 
     def _condition_filter_callback(event):
         return str(year) in event["name"] and "registration" in event["name"].lower()
@@ -68,7 +68,7 @@ def _extract(year: int, timestamp: float) -> List[Dict]:
     return event_raw_data_array
 
 
-def get_attendee_infos(event_id: int, timestamp: float) -> List:
+def get_attendee_infos(event_id: int, timestamp: float) -> list:
     """
     it's a public wrapper for people to get attendee infos!
     """
@@ -78,7 +78,7 @@ def get_attendee_infos(event_id: int, timestamp: float) -> List:
     return attendee_infos
 
 
-def get_event_metadatas(condition_filter: Callable) -> List[Dict]:
+def get_event_metadatas(condition_filter: Callable) -> list[dict]:
     """
     Fetch all the ongoing events
     """
@@ -86,7 +86,7 @@ def get_event_metadatas(condition_filter: Callable) -> List[Dict]:
         endpoint=f"{Variable.get('kktix_events_endpoint')}?only_not_ended_event=true",
         _retry_args=RETRY_ARGS,
     ).json()
-    event_metadatas: List[dict] = []
+    event_metadatas: list[dict] = []
     for event in event_list_resp["data"]:
         if condition_filter(event):
             event_metadatas.append(event)
@@ -104,7 +104,7 @@ def _get_attendance_book_id(event_id: int) -> int:
     return attendance_books_resp[0]["id"]
 
 
-def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
+def _get_attendee_ids(event_id: int, attendance_book_id: int) -> list[int]:
     """
     get all attendee ids!
     """
@@ -119,8 +119,8 @@ def _get_attendee_ids(event_id: int, attendance_book_id: int) -> List[int]:
 
 
 def _get_attendee_infos(
-    event_id: int, attendee_ids: List[int], timestamp: float
-) -> List:
+    event_id: int, attendee_ids: list[int], timestamp: float
+) -> list:
     """
     get attendee infos, e.g. email, phonenumber, name and etc
     """

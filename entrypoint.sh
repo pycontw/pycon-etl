@@ -18,14 +18,6 @@ else
     echo "Fernet key exists."
 fi
 
-# Check if the database exists and initialize it if not
-if [ ! -f "${AIRFLOW_HOME}/airflow.db" ]; then
-    airflow db init
-    echo 'Database initialized'
-else
-    echo 'Database existed'
-fi
-
 # Check if the GCP service account is provided
 if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
     echo "No GCP service account provided, set to default path"

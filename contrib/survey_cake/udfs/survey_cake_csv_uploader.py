@@ -1,7 +1,6 @@
 import csv
 import os
 from pathlib import Path
-from typing import Dict, List
 
 from google.cloud import bigquery
 
@@ -68,8 +67,8 @@ class SurveyCakeCSVUploader:
                         writer.writerow((question_id, question, self.year))
 
         def _get_question_ids_of_this_year(
-            header: List, question_id_dimension_table: Dict
-        ) -> List:
+            header: list, question_id_dimension_table: dict
+        ) -> list:
             reversed_question_id_dimension_table = {
                 question: question_id
                 for question_id, question in question_id_dimension_table.items()

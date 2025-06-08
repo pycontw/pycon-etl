@@ -1,33 +1,49 @@
 """
-send daily ordering metrics to discord channel
+Send daily ordering metrics to discord channel
 """
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from app.team_registration_bot import udf
+from airflow.decorators import dag, task
+from airflow.models import Variable
+from app import discord
+from app.team_registration_bot.udf import (
+    _compose_discord_msg,
+    _get_statistics_from_bigquery,
+)
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh@gmail.com",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2022, 7, 4),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
-dag = DAG(
-    "KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION",
+
+
+@dag(
     default_args=DEFAULT_ARGS,
     schedule_interval="@daily",
     max_active_runs=1,
     catchup=False,
 )
-with dag:
-    SEND_MSG_TO_DISCORD = PythonOperator(
-        task_id="LOAD_TO_DISCORD",
-        python_callable=udf.main,
-    )
+def KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION():
+    @task
+    def LOAD_TO_DISCORD():
+        webhook_url = Variable.get("discord_webhook_registration_endpoint")
+        statistics = _get_statistics_from_bigquery()
+        discord.send_webhook_message(
+            webhook_url=webhook_url,
+            usernmae="KKTIX order report",
+            msg=_compose_discord_msg(statistics),
+        )
+
+    LOAD_TO_DISCORD()
+
+
+dag_obj = KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION()
+
 
 if __name__ == "__main__":
-    dag.cli()
+    dag_obj.test()

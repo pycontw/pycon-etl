@@ -1,0 +1,10 @@
+site_name: PyCon Taiwan ETL
+theme:
+  name: "material"
+
+nav:
+  - Home: "README.md"
+  - Guide:
+    - Contributing: "CONTRIBUTING.md"
+    - Maintenance: "MAINTENANCE.md"
+    - Deployment: "DEPLOYMENT.md"

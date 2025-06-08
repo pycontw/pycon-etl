@@ -15,16 +15,13 @@ import airflow
 import jinja2
 from airflow.configuration import conf
 from airflow.models import DAG, Variable
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.bash import BashOperator
+from airflow.operators.empty import EmptyOperator
 
 # airflow-log-cleanup
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 START_DATE = airflow.utils.dates.days_ago(1)
-try:
-    BASE_LOG_FOLDER = conf.get("core", "BASE_LOG_FOLDER").rstrip("/")
-except Exception:
-    BASE_LOG_FOLDER = conf.get("logging", "BASE_LOG_FOLDER").rstrip("/")
+BASE_LOG_FOLDER = conf.get("logging", "BASE_LOG_FOLDER").rstrip("/")
 # How often to Run. @daily - Once a day at Midnight
 SCHEDULE_INTERVAL = "@daily"
 # Who is listed as the owner of this DAG in the Airflow Web Server
@@ -88,14 +85,15 @@ dag = DAG(
     schedule_interval=SCHEDULE_INTERVAL,
     start_date=START_DATE,
     tags=["teamclairvoyant", "airflow-maintenance-dags"],
-    template_undefined=jinja2.Undefined,
+    # TODO: the whole dag will be re-written at a later point. ignore the type for now
+    template_undefined=jinja2.Undefined,  # type: ignore[arg-type]
 )
 if hasattr(dag, "doc_md"):
     dag.doc_md = __doc__
 if hasattr(dag, "catchup"):
     dag.catchup = False
 
-start = DummyOperator(task_id="start", dag=dag)
+start = EmptyOperator(task_id="start", dag=dag)
 
 log_cleanup = (
     """

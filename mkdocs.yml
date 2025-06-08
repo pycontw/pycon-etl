@@ -3,7 +3,7 @@ theme:
   name: "material"
 
 nav:
-  - Home: "index.md"
+  - Home: "README.md"
   - Guide:
     - Contributing: "CONTRIBUTING.md"
     - Maintenance: "MAINTENANCE.md"

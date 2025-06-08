@@ -1,5 +1,5 @@
 """
-send daily ordering metrics to discord channel
+Send daily ordering metrics to discord channel
 """
 
 from datetime import datetime, timedelta

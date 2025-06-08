@@ -14,7 +14,6 @@ dependencies = [
     "pyarrow",
     "pygsheets",
     "requests",
-    "searchconsole",
 ]
 
 [dependency-groups]

@@ -1,3 +1,6 @@
+"""
+Scrape X (Twitter) posts and insights data, save to BigQuery
+"""
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task

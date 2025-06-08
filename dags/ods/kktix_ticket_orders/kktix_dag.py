@@ -8,7 +8,7 @@ from airflow.decorators import dag, task
 from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh@gmail.com",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2024, 6, 16, 15),  # 23 (+8)
     "retries": 2,

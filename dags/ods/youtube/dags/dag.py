@@ -8,7 +8,7 @@ from airflow.decorators import dag, task
 from ods.youtube.udfs import youtube_api
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2021, 9, 19),
     "retries": 2,

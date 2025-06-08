@@ -8,7 +8,7 @@ from airflow.decorators import dag, task
 from ods.google_search_console.udfs.google_search import GoogleSearchConsoleReporter
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2020, 12, 9),
     "retries": 2,

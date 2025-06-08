@@ -9,7 +9,7 @@ from airflow.models import Variable
 from app import discord
 
 DEFAULT_ARGS = {
-    "owner": "davidtnfsh",
+    "owner": "David Jr.",
     "depends_on_past": False,
     "start_date": datetime(2022, 9, 15),
     "retries": 2,

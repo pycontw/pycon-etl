@@ -2,12 +2,12 @@ import logging
 from datetime import datetime
 
 import requests
-from airflow.models import Variable
 from utils.posts_insights.base import (
     CREATE_INSIGHT_TABLE_SQL_TEMPLATE,
     CREATE_POST_TABLE_SQL_TEMPLATE,
     BasePostsInsightsParser,
 )
+from airflow.sdk import Variable
 
 logger = logging.getLogger(__name__)
 

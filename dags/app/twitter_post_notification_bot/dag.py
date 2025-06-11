@@ -6,9 +6,10 @@ from datetime import datetime, timedelta
 
 import requests
 from airflow import settings
-from airflow.decorators import dag, task
-from airflow.models import Variable
 from sqlalchemy.orm import sessionmaker
+from airflow.sdk import dag
+from airflow.sdk import task
+from airflow.sdk import Variable
 
 DEFAULT_ARGS = {
     "owner": "David Jr.",

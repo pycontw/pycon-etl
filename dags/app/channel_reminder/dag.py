@@ -4,9 +4,10 @@ Send Google Search Report to Discord
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
-from airflow.models import Variable
 from app import discord
+from airflow.sdk import dag
+from airflow.sdk import task
+from airflow.sdk import Variable
 
 DEFAULT_ARGS = {
     "owner": "David Jr.",

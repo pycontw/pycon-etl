@@ -4,8 +4,9 @@ Ingest KKTIX's data and load them to BigQuery every 5mins
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
 from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
+from airflow.sdk import dag
+from airflow.sdk import task
 
 DEFAULT_ARGS = {
     "owner": "David Jr.",

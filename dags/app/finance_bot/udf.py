@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 import pygsheets
-from airflow.models import Variable
 from google.cloud import bigquery
+from airflow.sdk import Variable
 
 
 def df_difference(df_xls: pd.DataFrame, df_bigquery: pd.DataFrame) -> pd.DataFrame:

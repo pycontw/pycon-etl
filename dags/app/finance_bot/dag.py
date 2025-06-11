@@ -4,8 +4,6 @@ Send Google Search Report to Discord
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
-from airflow.models import Variable
 from app import discord
 from app.finance_bot.udf import (
     df_difference,
@@ -14,6 +12,9 @@ from app.finance_bot.udf import (
     refine_diff_df_to_string,
     write_to_bigquery,
 )
+from airflow.sdk import dag
+from airflow.sdk import task
+from airflow.sdk import Variable
 
 DEFAULT_ARGS = {
     "owner": "CHWan",

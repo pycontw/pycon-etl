@@ -4,7 +4,7 @@ Ingest KKTIX's data and load them to BigQuery every 5mins
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from ods.kktix_ticket_orders.udfs import bigquery_loader, kktix_api
 
 DEFAULT_ARGS = {
@@ -19,7 +19,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="50 * * * *",
+    schedule="50 * * * *",
     max_active_runs=1,
     catchup=True,
 )

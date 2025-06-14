@@ -1,9 +1,10 @@
 """
 Scrape Instagram posts and insights data, save to BigQuery
 """
+
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from utils.posts_insights.instagram import InstagramPostsInsightsParser
 
 DEFAULT_ARGS = {
@@ -18,7 +19,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="5 8 * * *",
+    schedule="5 8 * * *",
     max_active_runs=1,
     catchup=False,
 )

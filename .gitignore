@@ -104,6 +104,10 @@ docs/_build/
 # PyBuilder
 target/
 
-# airflow sqlite db
-sqlite/
+# mkdocs
 site
+
+# airflow
+sqlite/
+logs/
+simple_auth_manager_passwords.json.generated

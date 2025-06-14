@@ -4,7 +4,7 @@ Save view, like count these kind of metrics into BigQuery
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from ods.youtube.udfs import youtube_api
 
 DEFAULT_ARGS = {
@@ -19,7 +19,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="@daily",
+    schedule="@daily",
     max_active_runs=1,
     catchup=False,
 )

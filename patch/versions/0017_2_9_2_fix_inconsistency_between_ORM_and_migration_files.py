@@ -251,7 +251,6 @@ def upgrade():
             )
         """)
         )
-
         headers = (
             "id, dag_id, queued_at, execution_date, start_date, end_date, state, run_id, creating_job_id, "
             "external_trigger, run_type, conf, data_interval_start, data_interval_end, "

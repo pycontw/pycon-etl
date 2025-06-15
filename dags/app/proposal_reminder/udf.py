@@ -1,5 +1,5 @@
 import requests
-from airflow.models import Variable
+from airflow.sdk import Variable
 
 
 def get_proposal_summary() -> dict:

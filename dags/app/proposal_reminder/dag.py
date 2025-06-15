@@ -4,8 +4,7 @@ Send Proposal Summary to Discord
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
-from airflow.models import Variable
+from airflow.sdk import Variable, dag, task
 from app import discord
 from app.proposal_reminder.udf import get_proposal_summary
 
@@ -21,7 +20,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="0 16 * * *",  # At 16:00 (00:00 +8)
+    schedule="0 16 * * *",  # At 16:00 (00:00 +8)
     max_active_runs=1,
     catchup=False,
 )

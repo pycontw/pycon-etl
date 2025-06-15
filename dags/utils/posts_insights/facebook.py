@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 
 import requests
-from airflow.models import Variable
+from airflow.sdk import Variable
 from google.cloud import bigquery
 from utils.posts_insights.base import (
     CREATE_POST_TABLE_SQL_TEMPLATE,

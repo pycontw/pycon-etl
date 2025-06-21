@@ -4,8 +4,7 @@ Send daily ordering metrics to discord channel
 
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
-from airflow.models import Variable
+from airflow.sdk import Variable, dag, task
 from app import discord
 from app.team_registration_bot.udf import (
     _compose_discord_msg,
@@ -24,7 +23,7 @@ DEFAULT_ARGS = {
 
 @dag(
     default_args=DEFAULT_ARGS,
-    schedule_interval="@daily",
+    schedule="@daily",
     max_active_runs=1,
     catchup=False,
 )

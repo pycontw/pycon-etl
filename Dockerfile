@@ -1,4 +1,4 @@
-ARG AIRFLOW_VERSION=2.11.0
+ARG AIRFLOW_VERSION=3.0.2
 ARG PYTHON_VERSION=3.10
 ARG PLATFORM=linux
 
@@ -37,7 +37,9 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
-# TODO: remove this and the patch files once upgrade to 2.11.1
-COPY --chown=airflow:root patch /app/.venv/lib/python3.10/site-packages/airflow/migrations
+# TODO: remove this and the patch files once upgrade to 3.0.3
+COPY --chown=airflow:root patch/utils.py /app/.venv/lib/python3.10/site-packages/airflow/migrations/utils.py
+COPY --chown=airflow:root patch/versions /app/.venv/lib/python3.10/site-packages/airflow/migrations/versions
+COPY --chown=airflow:root patch/serialized_objects.py /app/.venv/lib/python3.10/site-packages/airflow/serialization/serialized_objects.py
 
 ENTRYPOINT ["/entrypoint.sh"]

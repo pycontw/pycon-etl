@@ -1,10 +1,10 @@
 """
 Create bot network traffic
 """
-from datetime import datetime, timedelta
 import logging
-import requests
+from datetime import datetime, timedelta
 
+import requests
 from airflow.sdk import Variable, dag, task
 
 DEFAULT_ARGS = {

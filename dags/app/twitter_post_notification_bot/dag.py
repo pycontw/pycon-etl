@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 
 import requests
 from airflow import settings
-from airflow.decorators import dag, task
-from airflow.models import Variable
+from airflow.sdk import Variable, dag, task
 from sqlalchemy.orm import sessionmaker
 
 DEFAULT_ARGS = {
@@ -24,7 +23,7 @@ DEFAULT_ARGS = {
 @dag(
     "TWITTER_POST_NOTIFICATION_BOT_V2",
     default_args=DEFAULT_ARGS,
-    schedule_interval="@daily",
+    schedule="@daily",
     max_active_runs=1,
     catchup=False,
 )

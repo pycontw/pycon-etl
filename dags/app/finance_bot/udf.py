@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import pygsheets
-from airflow.models import Variable
+from airflow.sdk import Variable
 from google.cloud import bigquery
 
 

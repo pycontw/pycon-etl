@@ -7,6 +7,7 @@ requires-python = ">=3.10,<3.11"
 dependencies = [
     # Please use pip to manage airflow dependencies.
     "apache-airflow==3.0.2",
+    "uvicorn==0.29.0",
     # Editable install with no version specified.
     "apache-airflow-providers-fab",
     "apache-airflow-providers-http",
@@ -195,7 +196,7 @@ constraint-dependencies = [
     "urllib3==2.4.0",
     "uuid6==2024.7.10",
     "uv==0.7.8",
-    "uvicorn==0.34.3",
+    # "uvicorn==0.34.3",
     "uvloop==0.21.0",
     "watchfiles==1.0.5",
     "websockets==14.2",

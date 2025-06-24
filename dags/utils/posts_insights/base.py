@@ -126,6 +126,13 @@ class BasePostsInsightsParser(ABC):
             logger.info(f"No {dump_type} to dump!")
             return
 
+        if dump_type == "posts":
+            target_table = self.POST_TABLE_NAME
+        elif dump_type == "posts insights":
+            target_table = self.INSIGHT_TABLE_NAME
+        else:
+            raise ValueError(f"Unexpected dump_type {dump_type}")
+
         job_config = bigquery.LoadJobConfig(
             schema=bq_schema_fields,
             write_disposition="WRITE_APPEND",
@@ -133,7 +140,7 @@ class BasePostsInsightsParser(ABC):
         try:
             job = self.bq_client.load_table_from_json(
                 posts,
-                f"pycontw-225217.ods.{self.INSIGHT_TABLE_NAME}",
+                f"pycontw-225217.ods.{target_table}",
                 job_config=job_config,
             )
             job.result()

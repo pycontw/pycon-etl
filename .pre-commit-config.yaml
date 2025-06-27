@@ -1,0 +1,25 @@
+default_install_hook_types:
+  - pre-commit
+
+default_stages:
+  - pre-commit
+
+repos:
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+    - id: codespell
+      name: Run codespell to check for common misspellings in files
+      # config section is within pyproject.toml
+      language: python
+      types: [ text ]
+      args:
+
+        - --ignore-words=spelling_wordlist.txt
+        - --write-changes
+      exclude: >
+          (?x)
+          uv.lock$|
+          ^dags/fixtures/data_questionnaire.csv$
+      additional_dependencies:
+        - tomli

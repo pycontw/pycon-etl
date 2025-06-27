@@ -4,10 +4,8 @@ Send Proposal Summary to Discord
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import Variable, dag, task
-
-from dags.app import discord
-from dags.app.proposal_reminder.udf import get_proposal_summary
+from airflow.sdk import Asset, Metadata, Variable, dag, task
+from app.proposal_reminder.udf import get_proposal_summary
 
 DEFAULT_ARGS = {
     "owner": "Henry Lee",
@@ -19,6 +17,9 @@ DEFAULT_ARGS = {
 }
 
 
+cfp_summary_asset = Asset(name="CFP_summary")
+
+
 @dag(
     default_args=DEFAULT_ARGS,
     schedule="0 16 * * *",  # At 16:00 (00:00 +8)
@@ -26,22 +27,22 @@ DEFAULT_ARGS = {
     catchup=False,
 )
 def DISCORD_PROPOSAL_REMINDER_v3():
-    @task
-    def SEND_PROPOSAL_SUMMARY():
-        webhook_url = Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK")
-
+    @task(outlets=[cfp_summary_asset])
+    def fetch_proposal_summary():
         summary = get_proposal_summary()
         n_talk = summary["num_proposed_talk"]
         n_tutorial = summary["num_proposed_tutorial"]
-        msg = f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}"
 
-        discord.send_webhook_message(
-            webhook_url=webhook_url,
-            username="Program talk reminder",
-            msg=msg,
+        yield Metadata(
+            cfp_summary_asset,
+            extra={
+                "webhook_url": Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK"),
+                "username": "Program talk reminder",
+                "content": f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}",
+            },
         )
 
-    SEND_PROPOSAL_SUMMARY()
+    fetch_proposal_summary()
 
 
 dag_obj = DISCORD_PROPOSAL_REMINDER_v3()

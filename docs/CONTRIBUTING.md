@@ -2,74 +2,108 @@
 
 ## How to Contribute to this Project
 
-1. Clone this repository:
+### 1. Clone this repository:
 
-    ```bash
-    git clone https://github.com/pycontw/pycon-etl
-    ```
+```bash
+git clone https://github.com/pycontw/pycon-etl
+```
 
-2. Create a new branch:
+### 2. Create a new branch:
 
-    ```bash
-    git checkout -b <branch-name>
-    ```
+Please checkout your branch from the latest master branch before doing any code change.
 
-3. Make your changes.
+```bash
+# Checkout to the master branch
+git checkout master
 
-    > **NOTICE:** We are still using Airflow v1, so please read the official document [Apache Airflow v1.10.15 Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/) to ensure your changes are compatible with our current version.
+# Ensure that's you're on the latest master branch
+git pull origin master
 
-    If your task uses an external service, add the connection and variable in the Airflow UI.
+# Create a new branch
+git checkout -b <branch-name>
+```
 
-4. Test your changes in your local environment:
+### 3. Make your changes.
 
-    - Ensure the DAG file is loaded successfully.
-    - Verify that the task runs successfully.
-    - Confirm that your code is correctly formatted and linted.
-    - Check that all necessary dependencies are included in `requirements.txt`.
+If your task uses an external service, add the connection and variable in the Airflow UI.
 
-5. Push your branch:
+### 4. Test your changes in your local environment:
 
-    ```bash
-    git push origin <branch-name>
-    ```
+- Ensure that the dag files are loaded successfully.
+- Verify that the tasks run without errors.
+- Confirm that your code is properly formatted and linted. See [Convention](#convention) section for more details.
+- Check that all necessary dependencies are included in the `pyproject.toml` file.
+  - Airflow dependencies are managed by [uv].
+- Ensure that all required documentation is provided.
 
-6. Create a Pull Request (PR).
+### 5. Push your branch:
 
-7. Wait for the review and merge.
+```bash
+git push origin <branch-name>
+```
 
-8. Write any necessary documentation.
+### 6. Create a Pull Request (PR).
 
-## Release Management
+If additional steps are required after merging and deploying (e.g., add new connections or variables), please list them in the PR description.
 
-Please use [GitLab Flow](https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/); otherwise, you cannot pass Docker Hub CI.
+### 7. Wait for the review and merge.
 
-## Dependency Management
+## Convention
 
-Airflow dependencies are managed by [uv]. For more information, refer to the [Airflow Installation Documentation](https://airflow.apache.org/docs/apache-airflow/1.10.15/installation.html).
-
-## Code Convention
-
-### Airflow DAG
-
-- Please refer to [this article](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c) for naming guidelines.
-
-  - Examples:
-    1. `ods/opening_crawler`: Crawlers written by @Rain. These openings can be used for the recruitment board, which was implemented by @tai271828 and @stacy.
-    2. `ods/survey_cake`: A manually triggered uploader that uploads questionnaires to BigQuery. The uploader should be invoked after we receive the SurveyCake questionnaire.
-
+### Airflow Dags
+- Please refer to [「大數據之路：阿里巴巴大數據實戰」 讀書心得](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c) for naming guidelines.
 - Table name convention:
   ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
 
-### Format
-
-Please use `make format` to format your code before committing, otherwise, the CI will fail.
+### Code Formatting
+Please run `make format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
 
 ### Commit Message
-
 It is recommended to use [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
-### CI/CD
+## Release Management (CI/CD)
+We use [Python CI] and [Docker Image CI] to ensure our code quality meets specific standards and that Docker images can be published automatically.
 
-Please check the [.github/workflows](.github/workflows) directory for details.
+When a pull request is created, [Python CI] checks whether the code quality is satisfactory. At the same time, we build a `cache` image using `Dockerfile` and a `test` image with `Dockerfile.test`, which are then pushed to the [GCP Artifact Registry].
+
+After a pull request is merged into the `master` branch, the two image tags mentioned above are created, along with a new `staging` tag for the image generated from `Dockerfile`.
+
+Once we verify that the `staging` image functions correctly, we merge the `master` branch into the `prod` branch through the following commands.
+
+<!--TODO: This is not ideal. The "master" and "prod" branches should be protected and should not allow human pushes. We should create a GitHub action for this..-->
+
+```bash
+git checkout prod
+git pull origin prod
+
+git merge origin/master
+
+git pull origin prod
+```
+
+This triggers the [Docker Image CI] again to update the `cache`, `test`, and `staging` images, as well as to create a `latest` image that we will later use for deploying to our production instance. See the [Deployment Guide](./DEPLOYMENT.md) for the following steps.
+
+```mermaid
+---
+config:
+  theme: 'base'
+  gitGraph:
+    mainBranchName: 'prod'
+    tagLabelFontSize: '25px'
+    branchLabelFontSize: '20px'
+---
+      gitGraph
+        commit id:"latest features" tag:"latest"
+        branch master
+        commit id:"staging features" tag:"staging"
+        checkout prod
+        commit id:"prod config"
+        checkout master
+        branch feature-1
+        commit id: "new features" tag:"cache" tag:"test"
+```
 
 [uv]: https://docs.astral.sh/uv/
+[Python CI]: https://github.com/pycontw/pycon-etl/actions/workflows/python.yml
+[Docker Image CI]: https://github.com/pycontw/pycon-etl/actions/workflows/dockerimage.yml
+[GCP Artifact Registry]: https://cloud.google.com/artifact-registry/

@@ -16,7 +16,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          uv run --group docs mkdocs build
+          make build-docs
       - name: Push doc to Github Page
         uses: peaceiris/actions-gh-pages@v4
         with:

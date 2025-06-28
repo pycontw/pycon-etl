@@ -34,6 +34,7 @@ USER airflow
 
 COPY --from=builder --chown=airflow:airflow /app /app
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags

@@ -14,7 +14,7 @@ finance_report_asset = Asset(
         AssetWatcher(
             name="finance_report_watcher",
             trigger=FinanceReportTrigger(
-                poke_interval=5,  # 60*60*24
+                poke_interval=86400,  # 60*60*24
             ),
         )
     ],

@@ -38,5 +38,6 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+COPY --chown=airflow:root triggers ${AIRFLOW_HOME}/triggers
 
 ENTRYPOINT ["/entrypoint.sh"]

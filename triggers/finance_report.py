@@ -105,9 +105,9 @@ class FinanceReportTrigger(BaseEventTrigger):
     async def run(self) -> AsyncIterator[TriggerEvent]:
         """Loop until the finance report is updated."""
 
+        # TODO: improve it with asycn code
         while True:
             self.log.info("Checking Finance Report")
-            # TODO: improve it with asycn code
             # read xls from google doc to df.
             df_xls = read_google_xls_to_df()
 

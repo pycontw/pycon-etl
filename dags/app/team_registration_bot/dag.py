@@ -5,8 +5,9 @@ Send daily ordering metrics to discord channel
 from datetime import datetime, timedelta
 
 from airflow.sdk import Variable, dag, task
-from app import discord
-from app.team_registration_bot.udf import (
+
+from dags.app import discord
+from dags.app.team_registration_bot.udf import (
     _compose_discord_msg,
     _get_statistics_from_bigquery,
 )

@@ -27,3 +27,9 @@ deploy-prod:
 
 down-prod:
 	docker-compose -f ./docker-compose.yml down
+
+build-docs:
+	uv run --group docs  mkdocs build
+
+serve-docs:
+	uv run --group docs mkdocs serve

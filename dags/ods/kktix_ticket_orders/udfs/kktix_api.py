@@ -46,7 +46,7 @@ def main(**context):
 def _extract(year: int, timestamp: float) -> list[dict]:
     """
     get data from KKTIX's API
-    1. condition_filter_callb: use this callbacl to filter out unwanted event!
+    1. condition_filter_callb: use this callback to filter out unwanted event!
     2. right now schedule_interval_seconds is a hardcoded value!
     """
     event_raw_data_array: list[dict] = []

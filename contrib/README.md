@@ -2,7 +2,7 @@
 
 ## Upload KKTIX
 
-![](../docs/kktix.png)
+![kktix](../docs/images/kktix.png)
 
 1. Navigate to KKTIX's attendees page
 2. Download the CSV

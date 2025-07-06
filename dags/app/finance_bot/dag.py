@@ -5,8 +5,9 @@ Send Google Search Report to Discord
 from datetime import datetime, timedelta
 
 from airflow.sdk import Variable, dag, task
-from app import discord
-from app.finance_bot.udf import (
+
+from dags.app import discord
+from dags.app.finance_bot.udf import (
     df_difference,
     read_bigquery_to_df,
     read_google_xls_to_df,

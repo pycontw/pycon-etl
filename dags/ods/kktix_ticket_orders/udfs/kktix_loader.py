@@ -28,15 +28,26 @@ def load(event_raw_data_array: list):
     for event_raw_data in event_raw_data_array:
         sanitized_event_raw_data = _sanitize_payload(event_raw_data)
         payload.append(sanitized_event_raw_data)
-    _load_to_bigquery(payload)
-    _load_to_bigquery_dwd(payload)
+
+    project_id = os.getenv("BIGQUERY_PROJECT")
+    credential_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    load_to_bigquery(payload, project_id, credential_file)
+    load_to_bigquery_dwd(payload, project_id, credential_file)
 
 
-def _load_to_bigquery(payload: list[dict]) -> None:
+def load_to_bigquery(payload: list[dict], project_id: str, credential_file: str) -> None:
     """
-    load data to BigQuery's `TABLE`
+    Load data to BigQuery's `TABLE`
+
+    Args:
+        payload: List of dictionaries containing the data to load
+        project_id: GCP project ID
+        credential_file: Path to GCP credential JSON file
     """
-    client = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+    client = bigquery.Client.from_service_account_json(
+        credential_file,
+        project=project_id
+    )
     df = pd.DataFrame(
         payload,
         columns=["id", "name", "attendee_info"],
@@ -48,27 +59,47 @@ def _load_to_bigquery(payload: list[dict]) -> None:
     job.result()
 
 
-def _load_to_bigquery_dwd(payload: list[dict]) -> None:
+def load_to_bigquery_dwd(
+    payload: list[dict],
+    project_id: str,
+    credential_file: str,
+    ticket_group: str = None
+) -> None:
     """
-    load data to BigQuery's `TABLE`
-    """
-    # Spilt payload to dict lists by ticket group
-    ticket_groups = ["corporate", "individual", "reserved"]
-    dol = collections.defaultdict(list)
-    for d in payload:
-        for tg in ticket_groups:
-            if tg in d["name"].lower():
-                dol[tg].append(d)
+    Load data to BigQuery's DWD tables
 
-    print(dol[tg])
-    project_id = os.getenv("BIGQUERY_PROJECT")
+    Args:
+        payload: List of dictionaries containing the data to load
+        project_id: GCP project ID
+        credential_file: Path to GCP credential JSON file
+        ticket_group: Type of ticket group (corporate, individual, reserved)
+        year: Year of the event
+    """
+    # Initialize client with credentials
+    client = bigquery.Client.from_service_account_json(
+        credential_file,
+        project=project_id
+    )
+
+    # Split payload to dict lists by ticket group if not specified
+    if ticket_group is None:
+        ticket_groups = ["corporate", "individual", "reserved"]
+        dol = collections.defaultdict(list)
+        for d in payload:
+            for tg in ticket_groups:
+                if tg in d["name"].lower():
+                    dol[tg].append(d)
+    else:
+        dol = {ticket_group: payload}
+        ticket_groups = [ticket_group]
+
     dataset_id = "dwd"
     for tg in ticket_groups:
         if len(dol[tg]) > 0:
             _, sanitized_df = kktix_bq_dwd_etl.load_to_df_from_list(dol[tg])
             table_id = f"kktix_ticket_{tg}_attendees"
             kktix_bq_dwd_etl.upload_dataframe_to_bigquery(
-                sanitized_df, project_id, dataset_id, table_id
+                sanitized_df, project_id, dataset_id, table_id, credential_file
             )
 
 

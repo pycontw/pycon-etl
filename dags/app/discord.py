@@ -14,7 +14,8 @@ finance_report_asset = Asset(
         AssetWatcher(
             name="finance_report_watcher",
             trigger=FinanceReportTrigger(
-                poke_interval=86400,  # 60*60*24
+                # poke_interval=86400,  # 60*60*24
+                poke_interval=5,  # 60*60*24
             ),
         )
     ],
@@ -24,8 +25,8 @@ finance_report_asset = Asset(
 @dag(
     schedule=(
         finance_report_asset
-        | Asset.ref(name="CFP_summary")
-        | Asset.ref(name="kktix_order_report")
+        | Asset(name="proposal_count")
+        | Asset(name="registration_statistics")
     ),
     start_date=datetime(2025, 6, 28),
     catchup=False,
@@ -45,20 +46,22 @@ def discord_message_notification():
     def send_discord_message(**context: Context) -> None:
         triggering_asset_events = context["triggering_asset_events"]
         session = requests.session()
-        for asset_uri, asset_event in triggering_asset_events.items():
+        logger.info(f"Receive asset events {triggering_asset_events}")
+        for asset_uri, asset_events in triggering_asset_events.items():
             logger.info(f"Receive asset event from Asset uri={asset_uri}")
-            if asset_event.extra.get("from_trigger", False):  # type: ignore[attr-defined]
-                details = asset_event.extra["payload"]  # type: ignore[attr-defined]
-            else:
-                details = asset_event.extra  # type: ignore[attr-defined]
+            for asset_event in asset_events:  # type: ignore[attr-defined]
+                if asset_event.extra.get("from_trigger", False):
+                    details = asset_event.extra["payload"]
+                else:
+                    details = asset_event.extra
 
-            session.post(
-                details.get("webhook_url"),
-                json={
-                    "username": details.get("username"),
-                    "content": details.get("content"),
-                },
-            )
+                session.post(
+                    details.get("webhook_url"),
+                    json={
+                        "username": details.get("username"),
+                        "content": details.get("content"),
+                    },
+                )
 
     send_discord_message()
 

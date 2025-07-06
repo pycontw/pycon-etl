@@ -38,6 +38,7 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+COPY --chown=airflow:root triggers ${AIRFLOW_HOME}/triggers
 # TODO: remove this and the patch files once upgrade to 3.0.3
 COPY --chown=airflow:root patch/utils.py /app/.venv/lib/python3.10/site-packages/airflow/migrations/utils.py
 COPY --chown=airflow:root patch/versions /app/.venv/lib/python3.10/site-packages/airflow/migrations/versions

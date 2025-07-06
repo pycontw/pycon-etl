@@ -11,7 +11,7 @@ TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attend
 CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
-def _get_statistics_from_bigquery() -> RowIterator:
+def get_statistics_from_bigquery() -> RowIterator:
     query_job = CLIENT.query(
         f"""
         WITH UNIQUE_RECORDS AS (
@@ -55,10 +55,10 @@ ticket_price: dict[str, int] = {
 }
 
 
-def _compose_discord_msg(payload) -> str:
+def compose_discord_msg(payload) -> str:
     msg = (
         f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，"
-        "售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+        "售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow dag 關掉\n\n"
     )
     total = 0
     total_income = 0

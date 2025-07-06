@@ -125,7 +125,7 @@ class FinanceReportTrigger(BaseEventTrigger):
                 msg = format_diff_df_as_message(df_diff)
                 yield TriggerEvent(
                     {
-                        "webhook_url": Variable.get("discord_data_stratagy_webhook"),
+                        "webhook_endpoint_key": "discord_data_stratagy_webhook",
                         "username": "財務機器人",
                         "content": msg,
                     }

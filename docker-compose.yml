@@ -3,6 +3,7 @@ x-docker-common: &docker-common
   image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
   volumes:
     - ./sqlite:/opt/airflow/sqlite
+    - ./logs:/opt/airflow/logs
     - ./service-account.json:/opt/airflow/service-account.json
   restart: unless-stopped
   environment:

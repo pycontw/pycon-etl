@@ -48,20 +48,30 @@ If additional steps are required after merging and deploying (e.g., add new conn
 
 ### 7. Wait for the review and merge.
 
+## Login to Airflow Web UI
+
+Ask maintainers for your Airflow account and credentials.
+
+<!--TODO: GitHub or Google OAuth login maybe a good way to reduce maintenance overhead, but it requires more setup. -->
+
 ## Convention
 
 ### Airflow Dags
+
 - Please refer to [「大數據之路：阿里巴巴大數據實戰」 讀書心得](https://medium.com/@davidtnfsh/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5-%E8%AE%80%E6%9B%B8%E5%BF%83%E5%BE%97-54e795c2b8c) for naming guidelines.
 - Table name convention:
   ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
 
 ### Code Formatting
+
 Please run `make format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
 
 ### Commit Message
+
 It is recommended to use [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
 ## Release Management (CI/CD)
+
 We use [Python CI] and [Docker Image CI] to ensure our code quality meets specific standards and that Docker images can be published automatically.
 
 When a pull request is created, [Python CI] checks whether the code quality is satisfactory. At the same time, we build a `cache` image using `Dockerfile` and a `test` image with `Dockerfile.test`, which are then pushed to the [GCP Artifact Registry].

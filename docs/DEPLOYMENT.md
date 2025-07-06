@@ -36,7 +36,7 @@ docker-compose -f ./docker-compose.yml up
 ### 5. Check whether the services are up
 
 ```bash
-# For Airflow, the following services should be included: 
+# For Airflow, the following services should be included:
 # * airflow-api-server
 # * airflow-dag-processor
 # * airflow-scheduler
@@ -48,4 +48,5 @@ docker stats
 ```
 
 ### 6. Login to the service
+
 For security reasons, our Airflow instance is not publicly accessible. You will need an authorized GCP account to perform port forwarding for the webserver and an authorized Airflow account to access it.

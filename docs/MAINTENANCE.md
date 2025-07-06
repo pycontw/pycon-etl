@@ -17,10 +17,11 @@ du -a /var/lib/docker/overlay2 | sort -n -r | head -n 20
 ### 2. Show the folder size:
 
 ```bash
-du -hs 
+du -hs
 ```
 
 ### 3. Delete the large folders identified.
+
 ### 4. Check disk space:
 
 ```bash

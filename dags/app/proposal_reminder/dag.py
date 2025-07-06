@@ -2,7 +2,7 @@
 Send Proposal Summary to Discord
 """
 
-from airflow.sdk import Metadata, Variable, asset
+from airflow.sdk import Metadata, asset
 from app.proposal_reminder.udf import get_proposal_summary
 
 # DEFAULT_ARGS = {
@@ -16,11 +16,9 @@ from app.proposal_reminder.udf import get_proposal_summary
 
 
 @asset(
-    name="proposal_count",
-    dag_id="proposal_count",
     schedule="0 16 * * *",  # At 16:00 (00:00 +8)
 )
-def DISCORD_PROPOSAL_REMINDER_v3(self):
+def proposal_count(self):
     summary = get_proposal_summary()
     n_talk = summary["num_proposed_talk"]
     n_tutorial = summary["num_proposed_tutorial"]
@@ -28,7 +26,7 @@ def DISCORD_PROPOSAL_REMINDER_v3(self):
     yield Metadata(
         self,
         extra={
-            "webhook_url": Variable.get("DISCORD_PROGRAM_REMINDER_WEBHOOK"),
+            "webhook_endpoint_key": "DISCORD_PROGRAM_REMINDER_WEBHOOK",
             "username": "Program talk reminder",
             "content": f"目前投稿議程數: {n_talk}; 課程數: {n_tutorial}",
         },

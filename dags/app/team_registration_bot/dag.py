@@ -2,10 +2,10 @@
 Send daily ordering metrics to discord channel
 """
 
-from airflow.sdk import Metadata, Variable, asset
+from airflow.sdk import Metadata, asset
 from app.team_registration_bot.udf import (
-    _compose_discord_msg,
-    _get_statistics_from_bigquery,
+    compose_discord_msg,
+    get_statistics_from_bigquery,
 )
 
 # DEFAULT_ARGS = {
@@ -18,18 +18,15 @@ from app.team_registration_bot.udf import (
 # }
 
 
-@asset(
-    name="registration_statistics",
-    dag_id="registration_statistics",
-    schedule="@daily",
-)
-def KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION(self):
-    statistics = _get_statistics_from_bigquery()
+@asset(schedule="@daily")
+def registration_statistics(self):
+    # KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION
+    statistics = get_statistics_from_bigquery()
     yield Metadata(
         self,
         extra={
-            "webhook_url": Variable.get("discord_webhook_registration_endpoint"),
+            "webhook_endpoint_key": "discord_webhook_registration_endpoint",
             "username": "KKTIX order report",
-            "content": _compose_discord_msg(statistics),
+            "content": compose_discord_msg(statistics),
         },
     )

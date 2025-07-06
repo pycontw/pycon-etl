@@ -5,6 +5,8 @@ x-docker-common: &docker-common
     - ./sqlite:/opt/airflow/sqlite
     - ./service-account.json:/opt/airflow/service-account.json
   restart: unless-stopped
+  environment:
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-api-server:8080/execution/'
   logging:
     driver: json-file
     options:
@@ -82,7 +84,6 @@ services:
         if [[ -n "$${_AIRFLOW_DB_MIGRATE=}" ]]; then
             airflow db migrate || true
         fi
-        exit 0
     restart: "no"
     environment:
       _AIRFLOW_DB_MIGRATE: 'false'

@@ -63,11 +63,13 @@ Ask maintainers for your Airflow account and credentials.
   ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
 
 ### Code Formatting
+<<<<<<< HEAD
 
+=======
+>>>>>>> 745d95a880ccd8ab0c3960252cbd28cd366381c2
 Please run `make format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
 
 ### Commit Message
-
 It is recommended to use [Commitizen](https://commitizen-tools.github.io/commitizen/).
 
 ## Release Management (CI/CD)
@@ -116,4 +118,8 @@ config:
 [uv]: https://docs.astral.sh/uv/
 [Python CI]: https://github.com/pycontw/pycon-etl/actions/workflows/python.yml
 [Docker Image CI]: https://github.com/pycontw/pycon-etl/actions/workflows/dockerimage.yml
+<<<<<<< HEAD
 [GCP Artifact Registry]: https://cloud.google.com/artifact-registry/
+=======
+[GCP Artifact Registry]: https://cloud.google.com/artifact-registry/
+>>>>>>> 745d95a880ccd8ab0c3960252cbd28cd366381c2

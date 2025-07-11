@@ -442,7 +442,7 @@ SCHEMA = [
 JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
 
 
-def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame:
+def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame | None:
     df_dict = pd.DataFrame([json_dict])
 
     # We don't have paid_date column from ATTENDEE_INFO, convert the updated_at timestamp
@@ -451,8 +451,8 @@ def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame:
     if update_after_ts:
         if timestamp < update_after_ts:
             return None
-    # print(timestamp)
-    dt_object = datetime.fromtimestamp(timestamp)
+    # TODO: fix type
+    dt_object = datetime.fromtimestamp(timestamp)  # type: ignore[arg-type]
     transc_date = dt_object.strftime("%Y-%m-%d")
     # print(transc_date)
     df_dict["paid_date"] = transc_date
@@ -528,9 +528,10 @@ def load_to_df_from_list(
     # hash_privacy_info(sanitized_df)
 
     # Group the columns with the same purposes and names
+    # TODO: fix typing
     sanitized_df = (
         sanitized_df.replace("null", np.nan)
-        .groupby(sanitized_df.columns, axis=1, sort=False)
+        .groupby(sanitized_df.columns, axis=1, sort=False)  # type: ignore[call-overload]
         .first()
     )
 

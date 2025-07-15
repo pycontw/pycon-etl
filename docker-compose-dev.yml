@@ -6,7 +6,7 @@ x-docker-common: &docker-common
     dockerfile: Dockerfile.test
   volumes:
     - ./sqlite:/opt/airflow/sqlite
-    - ./logs:/opt/airflow/logs
+    - shared-logs:/opt/airflow/logs
     # you can comment out the following line if you don't have service-account.json
     - ./service-account.json:/opt/airflow/service-account.json
   environment:
@@ -91,3 +91,6 @@ services:
     restart: "no"
     environment:
       _AIRFLOW_DB_MIGRATE: 'false'
+
+volumes:
+  shared-logs:

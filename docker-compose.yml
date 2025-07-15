@@ -3,8 +3,8 @@ x-docker-common: &docker-common
   image: asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
   volumes:
     - ./sqlite:/opt/airflow/sqlite
-    - ./logs:/opt/airflow/logs
     - ./service-account.json:/opt/airflow/service-account.json
+    - shared-logs:/opt/airflow/logs
   restart: unless-stopped
   environment:
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-api-server:8080/execution/'
@@ -88,3 +88,6 @@ services:
     restart: "no"
     environment:
       _AIRFLOW_DB_MIGRATE: 'false'
+
+volumes:
+  shared-logs:

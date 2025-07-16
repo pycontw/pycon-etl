@@ -1,4 +1,4 @@
-ARG AIRFLOW_VERSION=3.0.2
+ARG AIRFLOW_VERSION=3.0.3
 ARG PYTHON_VERSION=3.10
 ARG PLATFORM=linux
 
@@ -38,10 +38,6 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
-# TODO: remove this and the patch files once upgrade to 3.0.3
-COPY --chown=airflow:root patch/utils.py /app/.venv/lib/python3.10/site-packages/airflow/migrations/utils.py
-COPY --chown=airflow:root patch/versions /app/.venv/lib/python3.10/site-packages/airflow/migrations/versions
-COPY --chown=airflow:root patch/serialized_objects.py /app/.venv/lib/python3.10/site-packages/airflow/serialization/serialized_objects.py
 
 ENV AIRFLOW_TEST_MODE=True
 

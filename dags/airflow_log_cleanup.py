@@ -81,7 +81,6 @@ def airflow_log_cleanup():
         max_log_age_in_days: int | None = None,
         enable_delete: bool = True,
     ) -> None:
-        # ) -> str:
         """
         :param max_log_age_in_days: Length to retain the log files if not already provided in the conf. If this
             is set to 30, the job will remove those files that are 30 days old or older
@@ -229,9 +228,7 @@ def airflow_log_cleanup():
         )
 
     directory_to_delete = find_directories_to_delete()
-    chain(
-        log_cleanup.expand(directory=directory_to_delete),
-    )
+    log_cleanup.expand(directory=directory_to_delete)
 
 
 airflow_log_cleanup()

@@ -492,8 +492,9 @@ def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame | None:
         }
     )
     if "payment_status" in df_dict.columns:
-        if df_dict.loc[0, "payment_status"]:
-            # df_dict['payment_status'] = df_dict['payment_status'].astype("string")
+        # Ensure the column is of string type to avoid dtype issues
+        df_dict["payment_status"] = df_dict["payment_status"].astype(str)
+        if df_dict.loc[0, "payment_status"] in ["True", "true", "1"]:
             df_dict.loc[0, "payment_status"] = "paid"
         else:
             df_dict.loc[0, "payment_status"] = "not"

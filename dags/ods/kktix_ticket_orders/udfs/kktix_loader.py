@@ -5,7 +5,6 @@ import os
 import pandas as pd
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs import kktix_bq_dwd_etl
-from ods.kktix_ticket_orders.udfs.bigquery_loader import TABLE
 
 SCHEMA = [
     bigquery.SchemaField("id", "INTEGER", mode="REQUIRED"),
@@ -13,7 +12,7 @@ SCHEMA = [
     bigquery.SchemaField("attendee_info", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("refunded", "BOOLEAN", mode="REQUIRED"),
 ]
-JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA)
+JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA, create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED)
 
 
 def load(event_raw_data_array: list):

@@ -174,9 +174,8 @@ def _validate_columns(
     missing_columns = required_csv_columns - set(df.columns)
 
     if missing_columns:
-        # TODO: new line separated
         raise ValueError(
-            f"合併後的 CSV 資料缺少以下必要欄位: {', '.join(missing_columns)}"
+            "合併後的 CSV 資料缺少以下必要欄位:\n" + "\n".join([f"- '{col}'" for col in missing_columns])
         )
     logging.info("All required columns are present.")
 
@@ -336,7 +335,7 @@ def main():
             logging.info("資料成功載入 BigQuery。")
 
     except Exception as e:
-        logging.error(f"執行過程中發生未預期的錯誤: {e}", exc_info=True)
+        logging.error(f"執行過程中發生未預期的錯誤: {e}")
 
 
 if __name__ == "__main__":

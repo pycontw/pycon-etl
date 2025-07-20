@@ -31,13 +31,15 @@ def load(event_raw_data_array: list):
 
     project_id = os.getenv("BIGQUERY_PROJECT")
     credential_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    load_to_bigquery(payload, project_id, credential_file)
+    load_to_bigquery_ods(payload, project_id, credential_file)
     load_to_bigquery_dwd(payload, project_id, credential_file)
 
 
-def load_to_bigquery(payload: list[dict], project_id: str, credential_file: str) -> None:
+def load_to_bigquery_ods(
+    payload: list[dict], project_id: str, credential_file: str
+) -> None:
     """
-    Load data to BigQuery's `TABLE`
+    Load data to BigQuery's ods table
 
     Args:
         payload: List of dictionaries containing the data to load
@@ -45,8 +47,7 @@ def load_to_bigquery(payload: list[dict], project_id: str, credential_file: str)
         credential_file: Path to GCP credential JSON file
     """
     client = bigquery.Client.from_service_account_json(
-        credential_file,
-        project=project_id
+        credential_file, project=project_id
     )
     df = pd.DataFrame(
         payload,
@@ -55,15 +56,12 @@ def load_to_bigquery(payload: list[dict], project_id: str, credential_file: str)
     # for now, these attendees haven't refunded our ticket, yet...
     # we don't know if they would refund down the road
     df["refunded"] = [False] * len(payload)
-    job = client.load_table_from_dataframe(df, TABLE, job_config=JOB_CONFIG)
+    job = client.load_table_from_dataframe(df, f"{project_id}.ods.ods_kktix_attendeeId_datetime", job_config=JOB_CONFIG)
     job.result()
 
 
 def load_to_bigquery_dwd(
-    payload: list[dict],
-    project_id: str,
-    credential_file: str,
-    ticket_group: str = None
+    payload: list[dict], project_id: str, credential_file: str, ticket_group: str = None
 ) -> None:
     """
     Load data to BigQuery's DWD tables
@@ -75,12 +73,6 @@ def load_to_bigquery_dwd(
         ticket_group: Type of ticket group (corporate, individual, reserved)
         year: Year of the event
     """
-    # Initialize client with credentials
-    client = bigquery.Client.from_service_account_json(
-        credential_file,
-        project=project_id
-    )
-
     # Split payload to dict lists by ticket group if not specified
     if ticket_group is None:
         ticket_groups = ["corporate", "individual", "reserved"]
@@ -103,10 +95,10 @@ def load_to_bigquery_dwd(
             )
 
 
-def _sanitize_payload(event_raw_data) -> dict:
+def _sanitize_payload(event_raw_data: dict) -> dict:
     """
     BigQuery has some constraints for nested data type
     So we put out sanitization/data cleansing logic here!
     """
-    event_raw_data["attendee_info"] = json.dumps(event_raw_data["attendee_info"])
+    event_raw_data["attendee_info"] = json.dumps(event_raw_data["attendee_info"], ensure_ascii=False)
     return event_raw_data

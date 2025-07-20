@@ -262,11 +262,14 @@ logging.basicConfig(level=logging.INFO)
 
 
 def upload_dataframe_to_bigquery(
-    df: pd.DataFrame, project_id: str, dataset_name: str, table_name: str, credential_file: str
+    df: pd.DataFrame,
+    project_id: str,
+    dataset_name: str,
+    table_name: str,
+    credential_file: str,
 ) -> None:
     client = bigquery.Client.from_service_account_json(
-        credential_file,
-        project=project_id
+        credential_file, project=project_id
     )
 
     dataset_ref = bigquery.dataset.DatasetReference(project_id, dataset_name)
@@ -669,7 +672,9 @@ def main():
     # Loop for the 3 tables by set the table ID and upload_dataframe_to_bigquery
     if args.upload:
         credential_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        upload_dataframe_to_bigquery(sanitized_df, project_id, dataset_id, table_id, credential_file)
+        upload_dataframe_to_bigquery(
+            sanitized_df, project_id, dataset_id, table_id, credential_file
+        )
     else:
         logging.info("Dry-run mode. Data will not be uploaded.")
         logging.info("Column names (as-is):")

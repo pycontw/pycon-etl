@@ -1,7 +1,6 @@
 import argparse
 import json
 import logging
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -9,8 +8,8 @@ from typing import Any
 import pandas as pd
 from ods.kktix_ticket_orders.udfs.kktix_loader import (
     _sanitize_payload,
-    load_to_bigquery_ods,
     load_to_bigquery_dwd,
+    load_to_bigquery_ods,
 )
 
 logging.basicConfig(
@@ -133,9 +132,7 @@ def _merge_dataframes(
     if "票券狀態" not in orders_df.columns:
         raise ValueError("orders.csv 必須包含 '票券狀態' 欄位。")
 
-    activated_orders_df = orders_df[
-        orders_df["票券狀態"] == "activated"
-    ].copy()
+    activated_orders_df = orders_df[orders_df["票券狀態"] == "activated"].copy()
     if activated_orders_df.empty:
         logging.warning(
             "沒有找到任何 '票券狀態' 為 'activated' 的參與者。請檢查 orders.csv 檔案。"
@@ -175,7 +172,8 @@ def _validate_columns(
 
     if missing_columns:
         raise ValueError(
-            "合併後的 CSV 資料缺少以下必要欄位:\n" + "\n".join([f"- '{col}'" for col in missing_columns])
+            "合併後的 CSV 資料缺少以下必要欄位:\n"
+            + "\n".join([f"- '{col}'" for col in missing_columns])
         )
     logging.info("All required columns are present.")
 
@@ -296,13 +294,14 @@ def main():
 
         _validate_columns(merged_df, meta_mapping, data_field_names)
 
-        event_raw_data_array = transform_to_raw_array(merged_df, meta_mapping, data_field_names, args)
+        event_raw_data_array = transform_to_raw_array(
+            merged_df, meta_mapping, data_field_names, args
+        )
 
         payload = []
         for event_raw_data in event_raw_data_array:
             sanitized_event_raw_data = _sanitize_payload(event_raw_data)
             payload.append(sanitized_event_raw_data)
-
 
         if not payload:
             logging.warning("沒有產生任何資料，流程即將結束。")

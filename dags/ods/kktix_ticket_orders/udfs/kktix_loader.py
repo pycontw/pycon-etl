@@ -12,7 +12,9 @@ SCHEMA = [
     bigquery.SchemaField("attendee_info", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("refunded", "BOOLEAN", mode="REQUIRED"),
 ]
-JOB_CONFIG = bigquery.LoadJobConfig(schema=SCHEMA, create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED)
+JOB_CONFIG = bigquery.LoadJobConfig(
+    schema=SCHEMA, create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED
+)
 
 
 def load(event_raw_data_array: list):
@@ -55,7 +57,9 @@ def load_to_bigquery_ods(
     # for now, these attendees haven't refunded our ticket, yet...
     # we don't know if they would refund down the road
     df["refunded"] = [False] * len(payload)
-    job = client.load_table_from_dataframe(df, f"{project_id}.ods.ods_kktix_attendeeId_datetime", job_config=JOB_CONFIG)
+    job = client.load_table_from_dataframe(
+        df, f"{project_id}.ods.ods_kktix_attendeeId_datetime", job_config=JOB_CONFIG
+    )
     job.result()
 
 
@@ -99,5 +103,7 @@ def _sanitize_payload(event_raw_data: dict) -> dict:
     BigQuery has some constraints for nested data type
     So we put out sanitization/data cleansing logic here!
     """
-    event_raw_data["attendee_info"] = json.dumps(event_raw_data["attendee_info"], ensure_ascii=False)
+    event_raw_data["attendee_info"] = json.dumps(
+        event_raw_data["attendee_info"], ensure_ascii=False
+    )
     return event_raw_data

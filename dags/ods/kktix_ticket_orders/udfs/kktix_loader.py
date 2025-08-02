@@ -36,8 +36,10 @@ def load(event_raw_data_array: list):
     load_to_bigquery_dwd(payload, project_id, credential_file)
 
 
+from typing import Optional
+
 def load_to_bigquery_ods(
-    payload: list[dict], project_id: str, credential_file: str
+    payload: list[dict], project_id: Optional[str], credential_file: Optional[str]
 ) -> None:
     """
     Load data to BigQuery's ods table
@@ -47,6 +49,8 @@ def load_to_bigquery_ods(
         project_id: GCP project ID
         credential_file: Path to GCP credential JSON file
     """
+    if project_id is None or credential_file is None:
+        raise ValueError("project_id and credential_file must not be None")
     client = bigquery.Client.from_service_account_json(
         credential_file, project=project_id
     )
@@ -64,7 +68,7 @@ def load_to_bigquery_ods(
 
 
 def load_to_bigquery_dwd(
-    payload: list[dict], project_id: str, credential_file: str, ticket_group: str = None
+    payload: list[dict], project_id: Optional[str], credential_file: Optional[str], ticket_group: Optional[str] = None
 ) -> None:
     """
     Load data to BigQuery's DWD tables
@@ -76,10 +80,12 @@ def load_to_bigquery_dwd(
         ticket_group: Type of ticket group (corporate, individual, reserved)
         year: Year of the event
     """
+    if project_id is None or credential_file is None:
+        raise ValueError("project_id and credential_file must not be None")
     # Split payload to dict lists by ticket group if not specified
     if ticket_group is None:
         ticket_groups = ["corporate", "individual", "reserved"]
-        dol = collections.defaultdict(list)
+        dol: dict[str, list[dict]] = {tg: [] for tg in ticket_groups}
         for d in payload:
             for tg in ticket_groups:
                 if tg in d["name"].lower():

@@ -215,7 +215,7 @@ def transform_to_raw_array(
     data_array = []
 
     for _, row in merged_df.iterrows():
-        attendee_info = {}
+        attendee_info: dict[str, Any] = {}
 
         # 根據 meta_mapping 填入欄位
         for key, csv_col in meta_mapping.items():

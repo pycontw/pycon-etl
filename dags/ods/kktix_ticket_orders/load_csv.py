@@ -313,8 +313,12 @@ def main():
             for record in payload[:5]:
                 print(json.dumps(record, indent=2, ensure_ascii=False))
 
-                # TODO: save to payload.json
-                ...
+                # save to payload.json
+            with open("payload.json", "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2, ensure_ascii=False)
+
+            logging.info("Dry run 結束。請檢查 payload.json 以確認轉換結果。")
+
         else:
             logging.info("開始載入資料到 BigQuery...")
             # 載入到 ODS 表

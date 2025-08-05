@@ -2,23 +2,30 @@
 
 ## Disk Space
 
+<!--TODO: we probably can make this check a dag-->
+
 Currently, the disk space is limited, so please check the disk space before running any ETL jobs.
 
 This section will be deprecated if we no longer encounter out-of-disk issues.
 
-1. Find the largest folders:
-    ```bash
-    du -a /var/lib/docker/overlay2 | sort -n -r | head -n 20
-    ```
-2. Show the folder size:
-    ```bash
-    du -hs xxxx
-    ```
-3. Delete the large folders identified.
-4. Check disk space:
-    ```bash
-    df -h
-    ```
+### 1. Find the largest folders:
+
+```bash
+du -a /var/lib/docker/overlay2 | sort -n -r | head -n 20
+```
+
+### 2. Show the folder size:
+
+```bash
+du -hs 
+```
+
+### 3. Delete the large folders identified.
+### 4. Check disk space:
+
+```bash
+df -h
+```
 
 ## Token Expiration
 

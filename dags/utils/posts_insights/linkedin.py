@@ -67,7 +67,7 @@ class LinkedinPostsInsightsParser(BasePostsInsightsParser):
             raise RuntimeError(f"Failed to fetch posts data: {response.text}")
 
         media_insight_list = []
-        media_res_list = response.json()["data"]
+        media_res_list = response.json()["data"] or []
         # format handling, the response may not include the required fields
         for media_res in media_res_list:
             media_insight = {}

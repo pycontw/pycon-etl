@@ -5,11 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
-    "apache-airflow==3.0.4rc1",
+    "apache-airflow==3.0.4rc2",
     # Editable install with no version specified.
     "apache-airflow-providers-fab",
     "apache-airflow-providers-http",
-    "apache-airflow-task-sdk==1.0.4rc1",
     "google-cloud-bigquery",
     "pandas",
     "pyarrow",

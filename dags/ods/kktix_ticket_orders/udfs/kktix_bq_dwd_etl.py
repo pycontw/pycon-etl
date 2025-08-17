@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import logging
+import os
 import re
 from datetime import datetime
 
@@ -261,9 +262,15 @@ logging.basicConfig(level=logging.INFO)
 
 
 def upload_dataframe_to_bigquery(
-    df: pd.DataFrame, project_id: str, dataset_name: str, table_name: str
+    df: pd.DataFrame,
+    project_id: str,
+    dataset_name: str,
+    table_name: str,
+    credential_file: str,
 ) -> None:
-    client = bigquery.Client(project=project_id)
+    client = bigquery.Client.from_service_account_json(
+        credential_file, project=project_id
+    )
 
     dataset_ref = bigquery.dataset.DatasetReference(project_id, dataset_name)
     table_ref = bigquery.table.TableReference(dataset_ref, table_name)
@@ -485,8 +492,9 @@ def _load_row_df_from_dict(json_dict, update_after_ts) -> DataFrame | None:
         }
     )
     if "payment_status" in df_dict.columns:
-        if df_dict.loc[0, "payment_status"]:
-            # df_dict['payment_status'] = df_dict['payment_status'].astype("string")
+        # Ensure the column is of string type to avoid dtype issues
+        df_dict["payment_status"] = df_dict["payment_status"].astype(str)
+        if df_dict.loc[0, "payment_status"] in ["True", "true", "1"]:
             df_dict.loc[0, "payment_status"] = "paid"
         else:
             df_dict.loc[0, "payment_status"] = "not"
@@ -664,7 +672,10 @@ def main():
     # TODO
     # Loop for the 3 tables by set the table ID and upload_dataframe_to_bigquery
     if args.upload:
-        upload_dataframe_to_bigquery(sanitized_df, project_id, dataset_id, table_id)
+        credential_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        upload_dataframe_to_bigquery(
+            sanitized_df, project_id, dataset_id, table_id, credential_file
+        )
     else:
         logging.info("Dry-run mode. Data will not be uploaded.")
         logging.info("Column names (as-is):")

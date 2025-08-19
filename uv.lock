@@ -926,20 +926,20 @@ wheels = [
 
 [[package]]
 name = "apache-airflow"
-version = "3.0.4"
+version = "3.0.5rc3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "apache-airflow-core" },
     { name = "apache-airflow-task-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e2/55/bf2b90f2994546f0b060808cb111b516c6f43cf6b3951029b2952dc27ae1/apache_airflow-3.0.4.tar.gz", hash = "sha256:2813ab73562cb8d7c797d2d5c95a9c0967fb0cef94917852ebcf0fe25806f3df", size = 27264, upload-time = "2025-08-08T15:03:56.708Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/f7/bfdd4256e8927bba2dcb0c1dee230a1aad72b7cecc63a9183f39a2ddb271/apache_airflow-3.0.5rc3.tar.gz", hash = "sha256:c68631f4901252f3e141c03d8f18e56e717695e76c91bf8c4cf3f727b56122bd", size = 27311, upload-time = "2025-08-18T17:00:16.18Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/83/98793908e259cbae8a379bd380612ccd8a4e75c3b3e4e476dadea5a26602/apache_airflow-3.0.4-py3-none-any.whl", hash = "sha256:84261b371d4fcdd5f7bc3979b05576d12da912b0d2da81ea9cac28d91bf56be3", size = 12154, upload-time = "2025-08-08T15:03:51.223Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/a3/45352ad7d14ce899a2c3c469178155320b50e0de76084775db3f9a32a801/apache_airflow-3.0.5rc3-py3-none-any.whl", hash = "sha256:b4f895169277730e865e33680d3465e752476a1ed98921de495e6cd4d6a131e3", size = 12207, upload-time = "2025-08-18T17:00:11.807Z" },
 ]
 
 [[package]]
 name = "apache-airflow-core"
-version = "3.0.4"
+version = "3.0.5rc3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "a2wsgi" },
@@ -1002,9 +1002,9 @@ dependencies = [
     { name = "universal-pathlib" },
     { name = "uuid6" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/4f/ab4b1681e8da32b498da3c02f995e56ca4789b457fd357bc04f02123e9e6/apache_airflow_core-3.0.4.tar.gz", hash = "sha256:60474b6a0226966ec9a7d7b5bfd58736c2efd49a4c4f39bb41d804dc17baea21", size = 2878967, upload-time = "2025-08-08T15:03:53.404Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8f/35/9d2ee81a582bcc4ce53c3f801eed1e6e70e0d2952a6f0e30070670efcb6e/apache_airflow_core-3.0.5rc3.tar.gz", hash = "sha256:2ccdb83fa79c46d94e10bab153feb2389a45f69e99eb9e3303a8811a2a6a4c85", size = 2882870, upload-time = "2025-08-18T17:00:13.989Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/75/3643901d42083a3ef7b86bed70f43aa97262d3d9a81047b95b1fe02a4d1a/apache_airflow_core-3.0.4-py3-none-any.whl", hash = "sha256:904258ee02fe91b13381ca3c682c0fe801ffd83ba65a740df93da2bf5c5ba7e1", size = 3801855, upload-time = "2025-08-08T15:03:47.455Z" },
+    { url = "https://files.pythonhosted.org/packages/65/f5/afd32a96989486051222cfa5bc0204b9ca944643ed99ee25457df70b07b5/apache_airflow_core-3.0.5rc3-py3-none-any.whl", hash = "sha256:9c70a313fe27b677105102d5a5d2e3c901b395538f45904fb18bc2175045101a", size = 3805705, upload-time = "2025-08-18T17:00:07.802Z" },
 ]
 
 [[package]]
@@ -1112,7 +1112,7 @@ wheels = [
 
 [[package]]
 name = "apache-airflow-task-sdk"
-version = "1.0.4"
+version = "1.0.5rc3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "apache-airflow-core" },
@@ -1128,9 +1128,9 @@ dependencies = [
     { name = "retryhttp" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/12/5396c777f1f4dead7d0886635c1c86b35ce61e96169543e742697bcd6d51/apache_airflow_task_sdk-1.0.4.tar.gz", hash = "sha256:6da8e4b8a24aaac46e2e81ea83f16e79b453c4d5d758bf4ede020b3614a46d11", size = 1206646, upload-time = "2025-08-08T15:03:55.445Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/ec/48cc6589967b2139d1d21469540f36d695b26cbe52a34f2b37458f93b268/apache_airflow_task_sdk-1.0.5rc3.tar.gz", hash = "sha256:6d2d94852c98024166c7616b112b6f50d09cb3eaf8870b7544ba5636c62e704d", size = 1210370, upload-time = "2025-08-18T17:00:15.192Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/da/96/9c7f02a1df2979caffc5b82bd66d43fb9487646d487242f57359a2ec04ac/apache_airflow_task_sdk-1.0.4-py3-none-any.whl", hash = "sha256:ad37dec089b1eccaf6ed8e68bb046f957b134d0fe04732878eeebb0f205e2348", size = 248708, upload-time = "2025-08-08T15:03:49.83Z" },
+    { url = "https://files.pythonhosted.org/packages/61/e0/5bdada65709ff75376d233635bae666049c3c1b1846d1a739509f9caa288/apache_airflow_task_sdk-1.0.5rc3-py3-none-any.whl", hash = "sha256:6dabeecb6a084494e7a75dd7830f6aded784034694188c146706d18d33e0acae", size = 250021, upload-time = "2025-08-18T17:00:10.538Z" },
 ]
 
 [[package]]
@@ -2925,7 +2925,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "apache-airflow", specifier = "==3.0.4" },
+    { name = "apache-airflow", specifier = "==3.0.5rc3" },
     { name = "apache-airflow-providers-fab" },
     { name = "apache-airflow-providers-http" },
     { name = "google-cloud-bigquery" },

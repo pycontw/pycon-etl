@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
-    "apache-airflow==3.0.4",
+    "apache-airflow==3.0.5rc3",
     # Editable install with no version specified.
     "apache-airflow-providers-fab",
     "apache-airflow-providers-http",
@@ -87,8 +87,8 @@ exclude_lines = [
 omit = ['env/*', 'venv/*', '*/virtualenv/*', '*/virtualenvs/*', '*/tests/*']
 
 [tool.uv]
-# airflow 3.0.4 constraint file for python 3.10
-# https://github.com/apache/airflow/blob/constraints-3.0.4/constraints-3.10.txt
+# airflow 3.0.5rc3 constraint file for python 3.10
+# https://github.com/apache/airflow/blob/constraints-3.0.5rc3/constraints-3.10.txt
 constraint-dependencies = [
     "APScheduler==3.11.0",
     "Authlib==1.6.1",

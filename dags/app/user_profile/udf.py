@@ -93,7 +93,7 @@ golang rd,1
 def create_user_profile_table():
     client = bigquery.Client()
     query = """
-        CREATE OR REPLACE TABLE `pycontw-225217.dwd.kktix_ticket_user_profile` AS
+        CREATE OR REPLACE TABLE `qchwan-api-test.dwd.kktix_ticket_user_profile` AS
         SELECT DISTINCT
             year,
             email,
@@ -111,7 +111,7 @@ def create_user_profile_table():
                 country_or_region,
                 age_range,
                 gender
-            FROM `pycontw-225217.dwd.kktix_ticket_individual_attendees`
+            FROM `qchwan-api-test.dwd.kktix_ticket_individual_attendees`
             UNION ALL
             SELECT DISTINCT
                 EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
@@ -121,7 +121,7 @@ def create_user_profile_table():
                 country_or_region,
                 age_range,
                 gender
-            FROM `pycontw-225217.dwd.kktix_ticket_reserved_attendees`
+            FROM `qchwan-api-test.dwd.kktix_ticket_reserved_attendees`
             UNION ALL
             SELECT DISTINCT
                 EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
@@ -131,7 +131,7 @@ def create_user_profile_table():
                 country_or_region,
                 age_range,
                 gender
-            FROM `pycontw-225217.dwd.kktix_ticket_corporate_attendees`
+            FROM `qchwan-api-test.dwd.kktix_ticket_corporate_attendees`
             )
         WHERE year IS NOT NULL
     """
@@ -168,9 +168,9 @@ def check_gemini_api_key():
 def read_kktix_ticket_user_profile(task_type: str):
     client = bigquery.Client()
     try:
-        query = """
+        query = f"""
             SELECT DISTINCT {task_type}
-            FROM `pycontw-225217.dwd.kktix_ticket_all_attendees`
+            FROM `qchwan-api-test.dwd.kktix_ticket_user_profile`
             WHERE {task_type} IS NOT NULL
         """
         rows = client.query(query).result()  # 等 query 完成
@@ -184,7 +184,7 @@ def read_kktix_ticket_user_profile(task_type: str):
 
 def write_result_to_bigquery(df: pd.DataFrame, task_type: str):
     client = bigquery.Client()
-    table_id = "pycontw-225217.dwd.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
+    table_id = "qchwan-api-test.dwd.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # 覆蓋舊表，如果表不存在則建立

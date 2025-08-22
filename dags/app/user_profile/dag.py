@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from airflow.sdk import Variable, dag, task
 
 from dags.app.user_profile.udf import (
-    process_table
+    process_table,
+    create_user_profile_table
 )
 
 DEFAULT_ARGS = {
@@ -29,6 +30,7 @@ def USER_PROFILE_CATAGORY_QUERY():
     @task
     def PROCESS_CATAGORY_BY_GEMINI():
         tasktypes = ["organization", "job_title"]
+        create_user_profile_table()
         for tasktype in tasktypes:
             process_table("gemini-2.0-flash", 8192, 100, tasktype)
 

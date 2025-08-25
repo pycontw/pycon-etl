@@ -248,7 +248,7 @@ def chunk_data(data, batch_size) -> Generator[list[str], None, None]:
         yield data[i : i + batch_size]
 
 
-def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str) -> str:
+def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str) -> str | None:
     client = genai.Client(api_key=check_gemini_api_key())
     response = client.models.generate_content(
         model=model,

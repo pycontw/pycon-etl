@@ -1,14 +1,15 @@
 """
 Query user profile catagory
 """
+
 from datetime import datetime, timedelta
 
-from airflow.sdk import Variable, dag, task
+from airflow.sdk import dag, task
 
 from dags.app.user_profile.udf import (
-    process_table,
+    check_gemini_api_key,
     create_user_profile_table,
-    check_gemini_api_key
+    process_table,
 )
 
 DEFAULT_ARGS = {

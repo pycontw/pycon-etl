@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 from airflow.sdk import dag, task
 
 from dags.app.user_profile.udf import (
-    get_gemini_api_key,
     create_user_profile_table,
+    get_gemini_api_key,
     process_table,
 )
 

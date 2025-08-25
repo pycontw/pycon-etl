@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+import requests
 from collections.abc import Generator
 
 import pandas as pd
@@ -8,6 +9,9 @@ from airflow.sdk import Variable
 from google import genai
 from google.cloud import bigquery
 from google.genai import types
+from google.api_core.exceptions import NotFound, BadRequest, Forbidden, GoogleAPICallError, DeadlineExceeded, ServiceUnavailable
+from itertools import islice
+
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -111,7 +115,7 @@ def create_user_profile_table() -> None:
     client = bigquery.Client()
     try:
         client.get_table(USER_PROFILE_TABLE)  # 檢查 table 是否存在
-    except Exception:
+    except NotFound:
         # table 不存在 → 建立空表
         schema = [
             bigquery.SchemaField("year", "INTEGER"),
@@ -125,7 +129,7 @@ def create_user_profile_table() -> None:
         ]
         table = bigquery.Table(USER_PROFILE_TABLE, schema=schema)
         client.create_table(table)
-        print(f"已建立 table: {USER_PROFILE_TABLE}")
+        logging.info(f"已建立 table: {USER_PROFILE_TABLE}")
 
     union_all_sql = " UNION ALL ".join(
         [
@@ -180,30 +184,16 @@ def create_user_profile_table() -> None:
 
 
 def get_task_config(task_type: str) -> str:
-    """
-    根據任務類型獲取對應的標頭和要求。
-
-    Args:
-        task_type: 任務類型 ('organization' 或 'job_title')。
-
-    Returns:
-        包含標頭和要求的元組 (header, requirement)。
-
-    Raises:
-        click.BadParameter: 如果任務類型不支援。
-    """
     if task_type == "organization":
         return ORG_REQUIREMENT
     elif task_type == "job_title":
         return JOB_REQUIREMENT
-    else:
-        raise ValueError("不支援的工作類型。請選擇 'organization' 或 'job_title'。")
+    raise ValueError("不支援的工作類型。請選擇 'organization' 或 'job_title'。")
 
 
-def check_gemini_api_key() -> str:
+def get_gemini_api_key() -> str:
     GEMINI_API_KEY = Variable.get("GOOGLE_GEMINI_KEY")
     if not GEMINI_API_KEY:
-        logging.error("錯誤：請設置環境變數 GEMINI_API_KEY")
         raise ValueError("GEMINI_API_KEY 未設定")
     return GEMINI_API_KEY
 
@@ -220,11 +210,21 @@ def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
         rows = client.query(query).result()  # 等 query 完成
         # 將每一 row 的 task_type 放到 list
         data_list = [row[task_type] for row in rows]
-
+    except NotFound as e:
+        logging.error(f"找不到資料表: {e}")
+        raise 
+    except BadRequest as e:
+        logging.error(f"SQL 語法錯誤或欄位不存在: {e}")
+        raise
+    except Forbidden as e:
+        logging.error(f"BigQuery 權限不足: {e}")
+        raise
+    except GoogleAPICallError as e:
+        logging.error(f"BigQuery API 呼叫錯誤: {e}")
+        raise
     except Exception as e:
-        logging.error(f"讀取 BigQuery 時發生錯誤: {e}")
-        raise ValueError(f"讀取 BigQuery 時發生錯誤: {e}")
-
+        logging.exception("未知錯誤")
+        raise
     return data_list
 
 
@@ -233,7 +233,7 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str) -> None:
     table_id = f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
 
     job_config = bigquery.LoadJobConfig(
-        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # 覆蓋舊表，如果表不存在則建立
+        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,  # 將資料寫入舊表，如果表不存在則建立
         schema=[
             bigquery.SchemaField(task_type, "STRING"),
             bigquery.SchemaField("category", "INT64"),
@@ -243,13 +243,14 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str) -> None:
     job.result()
 
 
-def chunk_data(data, batch_size) -> Generator[list[str], None, None]:
-    for i in range(0, len(data), batch_size):
-        yield data[i : i + batch_size]
+def chunk_data(data: list[str], batch_size: int) -> Generator[list[str], None, None]:
+    it = iter(data)
+    while batch := list(islice(it, batch_size)):
+        yield batch
 
 
-def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str) -> str | None:
-    client = genai.Client(api_key=check_gemini_api_key())
+def get_gemini_response(model: str, max_output_tokens_on_model: int, prompt: str) -> str | None:
+    client = genai.Client(api_key=get_gemini_api_key())
     response = client.models.generate_content(
         model=model,
         contents=[prompt],
@@ -263,16 +264,6 @@ def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str) -> str
 def process_table(
     model: str, max_output_tokens_on_model: int, batch_size: int, task_type: str
 ) -> None:
-    """
-    讀取檔案，根據任務類型處理內容，並將結果寫入 CSV 檔案。
-
-    Args:
-        output_filename: 輸出 CSV 檔案的名稱。
-        model: 要使用的 Gemini 模型名稱。
-        max_output_tokens_on_model: 模型允許的最大輸出 token 數。
-        batch_size: 每次處理的記錄數。
-        task_type: 任務類型 ('organization' 或 'job_title')。
-    """
     # Read the input file
     data_list = read_kktix_ticket_user_profile(task_type)
     results_to_update = []
@@ -284,7 +275,7 @@ def process_table(
     # Process in batches
     for index, chunk in enumerate(chunk_data(data_list, batch_size), start=1):
         batch_text = json.dumps(chunk, ensure_ascii=False)
-        batch_prompt = get_task_config(task_type) + "\n資料列表:\n" + batch_text
+        batch_prompt = f"{get_task_config(task_type)}\n資料列表:\n{batch_text}"
 
         logging.info(f"正在處理批次 {index}...")
 
@@ -296,7 +287,7 @@ def process_table(
             )
 
         try:
-            response = call_gemini(model, max_output_tokens_on_model, batch_prompt)
+            response = get_gemini_response(model, max_output_tokens_on_model, batch_prompt)
             if response:
                 try:
                     clean_text = response.strip()
@@ -305,10 +296,18 @@ def process_table(
                     result_json = json.loads(clean_text)
                 except json.JSONDecodeError:
                     raise ValueError(f"批次 {index} JSON解析錯誤：{clean_text}")
+            else:
+                result_json = []
             results_to_update.extend(result_json)
-        except Exception as e:
-            logging.error(f"處理批次 {index} 時發生錯誤: {e}")
 
+        except (GoogleAPICallError, DeadlineExceeded, ServiceUnavailable) as e:
+            logging.error(f"批次 {index} API 呼叫錯誤: {e}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"批次 {index} 網路請求錯誤: {e}")
+        except ValueError as e:
+            logging.error(f"批次 {index} 資料格式錯誤: {e}")
+        except Exception as e:
+            logging.exception(f"批次 {index} 未知錯誤") 
         # Add a small delay between batches to avoid hitting rate limits
         time.sleep(1)
 

@@ -1,17 +1,23 @@
 import json
 import logging
 import time
-import requests
 from collections.abc import Generator
-
-import pandas as pd
-from airflow.sdk import Variable
-from google import genai
-from google.cloud import bigquery
-from google.genai import types
-from google.api_core.exceptions import NotFound, BadRequest, Forbidden, GoogleAPICallError, DeadlineExceeded, ServiceUnavailable
 from itertools import islice
 
+import pandas as pd
+import requests
+from airflow.sdk import Variable
+from google import genai
+from google.api_core.exceptions import (
+    BadRequest,
+    DeadlineExceeded,
+    Forbidden,
+    GoogleAPICallError,
+    NotFound,
+    ServiceUnavailable,
+)
+from google.cloud import bigquery
+from google.genai import types
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -212,7 +218,7 @@ def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
         data_list = [row[task_type] for row in rows]
     except NotFound as e:
         logging.error(f"找不到資料表: {e}")
-        raise 
+        raise
     except BadRequest as e:
         logging.error(f"SQL 語法錯誤或欄位不存在: {e}")
         raise
@@ -222,7 +228,7 @@ def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
     except GoogleAPICallError as e:
         logging.error(f"BigQuery API 呼叫錯誤: {e}")
         raise
-    except Exception as e:
+    except Exception:
         logging.exception("未知錯誤")
         raise
     return data_list
@@ -249,7 +255,9 @@ def chunk_data(data: list[str], batch_size: int) -> Generator[list[str], None, N
         yield batch
 
 
-def get_gemini_response(model: str, max_output_tokens_on_model: int, prompt: str) -> str | None:
+def get_gemini_response(
+    model: str, max_output_tokens_on_model: int, prompt: str
+) -> str | None:
     client = genai.Client(api_key=get_gemini_api_key())
     response = client.models.generate_content(
         model=model,
@@ -287,7 +295,9 @@ def process_table(
             )
 
         try:
-            response = get_gemini_response(model, max_output_tokens_on_model, batch_prompt)
+            response = get_gemini_response(
+                model, max_output_tokens_on_model, batch_prompt
+            )
             if response:
                 try:
                     clean_text = response.strip()
@@ -306,8 +316,8 @@ def process_table(
             logging.error(f"批次 {index} 網路請求錯誤: {e}")
         except ValueError as e:
             logging.error(f"批次 {index} 資料格式錯誤: {e}")
-        except Exception as e:
-            logging.exception(f"批次 {index} 未知錯誤") 
+        except Exception:
+            logging.exception(f"批次 {index} 未知錯誤")
         # Add a small delay between batches to avoid hitting rate limits
         time.sleep(1)
 

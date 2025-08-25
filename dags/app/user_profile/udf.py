@@ -3,20 +3,18 @@ from google import genai
 from google.genai import types
 from airflow.sdk import Variable
 import time
-import os
 import logging
 import pandas as pd
+import json
+
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 # Define headers and requirements outside the main function
-ORG_HEADER = "organization,category"
 ORG_REQUIREMENT = """
-資料中的每筆記錄都是一個公司/組織名稱, 幫我對每筆記錄進行標記產業類別, 如果還是無法判斷請給 0 表示未知, 最終以 csv 的格式輸出
-
-輸出的 csv 中**只包含資料列，不包含標頭**
+資料中的每筆記錄都是一個公司/組織名稱, 幫我對每筆記錄進行標記產業類別, 如果還是無法判斷請給 0 表示未知, 最終以 json 的格式輸出
 
 產業類別對照表:
 ```
@@ -39,19 +37,22 @@ ORG_REQUIREMENT = """
 16,住宿／餐飲服務業
 ```
 
-請根據提供的公司/組織名稱列表，為每一項產生對應的 CSV 格式輸出 (公司名稱,類別編號)。例如，如果輸入是 "台積電\n台灣高鐵"，輸出應該類似這樣：
+請根據提供的公司/組織名稱列表，為每一項產生對應的 json 格式輸出 (公司名稱,類別編號)。例如，如果輸入是 
+[
+    {"organization":"台積電", "organization":"台灣高鐵"}
+]，輸出應該類似這樣：
 ```
-台積電,6
-台灣高鐵,9
+[
+    {"organization":"台積電", "category":"6"},
+    {"organization":"台灣高鐵", "category":"9"}
+
+]
 ```
-請確保輸出的**每一行**都嚴格遵循 "公司名稱,類別編號" 的格式，且只輸出這些資料行。
+請確保輸出的**每個項目**都嚴格遵循 "公司名稱,類別編號" 的格式，且只輸出這些資料行。
 """
 
-JOB_HEADER = "job_title,category"
 JOB_REQUIREMENT = """
-檔案中的每筆記錄都是一個職位名稱, 幫我對每筆記錄進行標記職位類別, 如果還是無法判斷請給 0 表示未知, 最終以 csv 的方式輸出
-
-輸出的 csv 中**只包含資料列，不包含標頭**
+檔案中的每筆記錄都是一個職位名稱, 幫我對每筆記錄進行標記職位類別, 如果還是無法判斷請給 0 表示未知, 最終以 json 的方式輸出
 
 職位類別對照表:
 ```
@@ -79,62 +80,98 @@ JOB_REQUIREMENT = """
 21. 學生 (Intern): 實習生或學生職位
 ```
 
-請根據提供的職位名稱列表，為每一項產生對應的 CSV 格式輸出 (職位名稱,類別編號)。例如，如果輸入是 "ai工程師\ngolang rd"，輸出應該類似這樣：
+請根據提供的職位名稱列表，為每一項產生對應的 json 格式輸出 (職位名稱,類別編號)。例如，如果輸入是 
+[
+    {"job_title":"ai工程師", "job_title":"golang rd"}
+]
+，輸出應該類似這樣：
+[
+    {"job_title":"ai工程師", "category":"7"},
+    {"job_title":"golang rd", "category":"1"}
 
-```
-ai工程師,7
-golang rd,1
-```
+]
 
-請確保輸出的**每一行**都嚴格遵循 "職位名稱,類別編號" 的格式，且只輸出這些資料行。
+請確保輸出的**每個項目**都嚴格遵循 "職位名稱,類別編號" 的格式，且只輸出這些資料行。
 """
+
+
+
+BIGQUERY_PROJECT = "qchwan-api-test"
+BIGQUERY_DATASET = "dwd"
+USER_PROFILE_TABLE = f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_user_profile"
+SOURCE_TABLES = [
+    f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_individual_attendees",
+    f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_reserved_attendees",
+    f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_corporate_attendees",
+]
 
 
 def create_user_profile_table():
     client = bigquery.Client()
-    query = """
-        CREATE OR REPLACE TABLE `qchwan-api-test.dwd.kktix_ticket_user_profile` AS
-        SELECT DISTINCT
-            year,
+    try:
+        client.get_table(USER_PROFILE_TABLE)  # 檢查 table 是否存在
+    except Exception:
+        # table 不存在 → 建立空表
+        schema = [
+            bigquery.SchemaField("year", "INTEGER"),
+            bigquery.SchemaField("email", "STRING"),
+            bigquery.SchemaField("organization", "STRING"),
+            bigquery.SchemaField("job_title", "STRING"),
+            bigquery.SchemaField("country_or_region", "STRING"),
+            bigquery.SchemaField("age_range", "STRING"),
+            bigquery.SchemaField("gender", "STRING"),
+            bigquery.SchemaField("update_time", "TIMESTAMP"),
+        ]
+        table = bigquery.Table(USER_PROFILE_TABLE, schema=schema)
+        client.create_table(table)
+        print(f"已建立 table: {USER_PROFILE_TABLE}")
+    
+    union_all_sql = " UNION ALL ".join([
+        f"""
+        SELECT
+            EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
             email,
             organization,
             job_title,
             country_or_region,
             age_range,
             gender
-        FROM (
-            SELECT DISTINCT
-                EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
-                email,
-                organization,
-                job_title,
-                country_or_region,
-                age_range,
-                gender
-            FROM `qchwan-api-test.dwd.kktix_ticket_individual_attendees`
-            UNION ALL
-            SELECT DISTINCT
-                EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
-                email,
-                organization,
-                job_title,
-                country_or_region,
-                age_range,
-                gender
-            FROM `qchwan-api-test.dwd.kktix_ticket_reserved_attendees`
-            UNION ALL
-            SELECT DISTINCT
-                EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
-                email,
-                organization,
-                job_title,
-                country_or_region,
-                age_range,
-                gender
-            FROM `qchwan-api-test.dwd.kktix_ticket_corporate_attendees`
-            )
-        WHERE year IS NOT NULL
-    """
+        FROM `{table}`
+        """
+        for table in SOURCE_TABLES
+    ])
+
+    query = f"""
+            MERGE {USER_PROFILE_TABLE} AS tgt
+            USING (
+                SELECT *
+                FROM (
+                    {union_all_sql}
+                ) 
+                WHERE EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) IS NOT NULL
+            ) AS src
+            ON tgt.email = src.email AND tgt.year = EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date))
+            WHEN MATCHED THEN
+                UPDATE SET
+                    tgt.organization = src.organization,
+                    tgt.job_title = src.job_title,
+                    tgt.country_or_region = src.country_or_region,
+                    tgt.age_range = src.age_range,
+                    tgt.gender = src.gender,
+                    tgt.update_time = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN
+                INSERT (year, email, organization, job_title, country_or_region, age_range, gender, update_time)
+                VALUES (
+                    EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)),
+                    src.email,
+                    src.organization,
+                    src.job_title,
+                    src.country_or_region,
+                    src.age_range,
+                    src.gender,
+                    CURRENT_TIMESTAMP()
+                )
+            """
     job = client.query(query)
     job.result()
 
@@ -152,9 +189,9 @@ def get_task_config(task_type: str):
         click.BadParameter: 如果任務類型不支援。
     """
     if task_type == "organization":
-        return ORG_HEADER, ORG_REQUIREMENT
+        return ORG_REQUIREMENT
     elif task_type == "job_title":
-        return JOB_HEADER, JOB_REQUIREMENT
+        return JOB_REQUIREMENT
     else:
         raise "不支援的工作類型。請選擇 'organization' 或 'job_title'。"
 
@@ -170,21 +207,23 @@ def read_kktix_ticket_user_profile(task_type: str):
     try:
         query = f"""
             SELECT DISTINCT {task_type}
-            FROM `qchwan-api-test.dwd.kktix_ticket_user_profile`
+            FROM `{USER_PROFILE_TABLE}`
             WHERE {task_type} IS NOT NULL
+            AND update_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
         """
         rows = client.query(query).result()  # 等 query 完成
-        # 將每一 row 的 email 放到 list
-        lines = [row[task_type] for row in rows]
+        # 將每一 row 的 task_type 放到 list
+        data_list = [row[task_type] for row in rows]
+
     except Exception as e:
         logging.error(f"讀取 BigQuery 時發生錯誤: {e}")
         raise ValueError(f"讀取 BigQuery 時發生錯誤: {e}")
 
-    return lines
+    return data_list
 
 def write_result_to_bigquery(df: pd.DataFrame, task_type: str):
     client = bigquery.Client()
-    table_id = "qchwan-api-test.dwd.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
+    table_id = f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # 覆蓋舊表，如果表不存在則建立
@@ -195,6 +234,19 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str):
     )
     job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
     job.result()
+
+def chunk_data(data, batch_size):
+    for i in range(0, len(data), batch_size):
+        yield data[i:i + batch_size]
+
+def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str):
+    client = genai.Client(api_key=check_gemini_api_key())
+    response = client.models.generate_content(
+        model= model,
+        contents=[prompt],
+        config=types.GenerateContentConfig(max_output_tokens=max_output_tokens_on_model)
+    )
+    return response.text
 
 def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, task_type: str):
     """
@@ -207,68 +259,42 @@ def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, 
         batch_size: 每次處理的記錄數。
         task_type: 任務類型 ('organization' 或 'job_title')。
     """
-    client = genai.Client(api_key=check_gemini_api_key())
-    # Get task configuration
-    header, requirement = get_task_config(task_type)
-
     # Read the input file
-    lines = read_kktix_ticket_user_profile(task_type)
+    data_list = read_kktix_ticket_user_profile(task_type)
     results_to_update = []
 
-    logging.info(f"共讀取到 {len(lines)} 筆記錄，將分成約 {len(lines) // batch_size + (1 if len(lines) % batch_size > 0 else 0)} 個批次處理...")
+    logging.info(f"共讀取到 {len(data_list)} 筆記錄，將分成約 {len(data_list) // batch_size + (1 if len(data_list) % batch_size > 0 else 0)} 個批次處理...")
 
     # Process in batches
-    for index, i in enumerate(range(0, len(lines), batch_size)):
-        batch = lines[i:i + batch_size]
-        batch_text = "\n".join(batch)
-        batch_prompt = f"{requirement}\n---\n\n```\n{batch_text}\n```"
+    for index, chunk in enumerate(chunk_data(data_list, batch_size), start=1):
+        batch_text = json.dumps(chunk, ensure_ascii=False)
+        batch_prompt = get_task_config(task_type) + "\n資料列表:\n" + batch_text
 
-        logging.info(f"正在處理批次 {index + 1}...")
+        logging.info(f"正在處理批次 {index}...")
 
         # Check batch size against model limit (optional, but good practice)
         # Note: Token count is not a simple character count, this is a rough check
         if len(batch_text) > max_output_tokens_on_model * 0.8: # Use a buffer
-             logging.warning(f"警告：批次 {index + 1} 的大小可能接近或超過模型的最大輸入限制 ({max_output_tokens_on_model} tokens)。")
+             logging.warning(f"警告：批次 {index} 的大小可能接近或超過模型的最大輸入限制 ({max_output_tokens_on_model} tokens)。")
 
         try:
-            response = client.models.generate_content(
-                model=model,
-                contents=batch_prompt,
-                config=types.GenerateContentConfig(
-                    max_output_tokens=max_output_tokens_on_model,
-                )
-            )
-
-            if response and response.text:
-                response_text = response.text.strip()
-                # Split response into lines, handling potential markdown code blocks
-                lines_from_response = response_text.split('\n')
-                # Filter lines to only include valid CSV format (e.g., "name,category")
-                for line in lines_from_response:
-                    line = line.strip()
-                    # Basic validation: check for comma and exactly two parts
-                    if ',' in line and len(line.split(',', 1)) == 2: # Use split(',', 1) to handle commas within names
-                        name, category = line.split(',', 1)
-                        results_to_update.append({
-                            "name": name.strip(),
-                            "category": int(category.strip())
-                        })
-                    elif line.startswith("```"):  # Ignore markdown block lines
-                        pass
-                    else:
-                        logging.warning(f"警告：批次 {index + 1} 中發現格式不正確的行，已跳過: '{line}'")
-
-                logging.info(f"批次 {index + 1} 處理完成，新增 {len(results_to_update)} 筆結果.")
-            else:
-                logging.warning(f"警告：本次批次 {index + 1} 呼叫 API 未收到有效回應。")
-
+            response = call_gemini(model, max_output_tokens_on_model, batch_prompt)
+            if response:
+                try:
+                    clean_text = response.strip()
+                    clean_text = clean_text[len("```json"):].strip()
+                    clean_text = clean_text[:-3].strip()
+                    result_json = json.loads(clean_text)
+                except json.JSONDecodeError:
+                    raise ValueError(f"批次 {index} JSON解析錯誤：{clean_text}")
+            results_to_update.extend(result_json)
         except Exception as e:
-            logging.error(f"處理批次 {index + 1} 時發生錯誤: {e}")
+            logging.error(f"處理批次 {index} 時發生錯誤: {e}")
 
         # Add a small delay between batches to avoid hitting rate limits
         time.sleep(1)
-
-    logging.info("--- 所有批次處理完成 ---")
-
+    
     df = pd.DataFrame(results_to_update)
+    df['category'] = df['category'].astype(int)
+    logging.info("--- 所有批次處理完成 ---")
     write_result_to_bigquery(df, task_type)

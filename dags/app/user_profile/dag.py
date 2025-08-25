@@ -7,7 +7,8 @@ from airflow.sdk import Variable, dag, task
 
 from dags.app.user_profile.udf import (
     process_table,
-    create_user_profile_table
+    create_user_profile_table,
+    check_gemini_api_key
 )
 
 DEFAULT_ARGS = {
@@ -29,6 +30,7 @@ DEFAULT_ARGS = {
 def USER_PROFILE_CATAGORY_QUERY():
     @task
     def PROCESS_CATAGORY_BY_GEMINI():
+        check_gemini_api_key()
         tasktypes = ["organization", "job_title"]
         create_user_profile_table()
         for tasktype in tasktypes:

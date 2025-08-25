@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from airflow.sdk import dag, task
 
 from dags.app.user_profile.udf import (
-    check_gemini_api_key,
+    get_gemini_api_key,
     create_user_profile_table,
     process_table,
 )
@@ -28,19 +28,19 @@ DEFAULT_ARGS = {
     max_active_runs=1,
     catchup=False,
 )
-def USER_PROFILE_CATAGORY_QUERY():
+def user_profile_catagory_query():
     @task
-    def PROCESS_CATAGORY_BY_GEMINI():
-        check_gemini_api_key()
+    def process_catagory_by_gemini():
+        get_gemini_api_key()
         tasktypes = ["organization", "job_title"]
         create_user_profile_table()
         for tasktype in tasktypes:
             process_table("gemini-2.0-flash", 8192, 100, tasktype)
 
-    PROCESS_CATAGORY_BY_GEMINI()
+    process_catagory_by_gemini()
 
 
-dag_obj = USER_PROFILE_CATAGORY_QUERY()
+dag_obj = user_profile_catagory_query()
 
 if __name__ == "__main__":
     dag_obj.test()

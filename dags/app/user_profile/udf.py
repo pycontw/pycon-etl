@@ -1,15 +1,17 @@
-from google.cloud import bigquery
-from google import genai
-from google.genai import types
-from airflow.sdk import Variable
-import time
-import logging
-import pandas as pd
 import json
+import logging
+import time
+from collections.abc import Generator
 
+import pandas as pd
+from airflow.sdk import Variable
+from google import genai
+from google.cloud import bigquery
+from google.genai import types
 
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 # Define headers and requirements outside the main function
@@ -95,8 +97,7 @@ JOB_REQUIREMENT = """
 """
 
 
-
-BIGQUERY_PROJECT = "qchwan-api-test"
+BIGQUERY_PROJECT = "pycontw-225217"
 BIGQUERY_DATASET = "dwd"
 USER_PROFILE_TABLE = f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_user_profile"
 SOURCE_TABLES = [
@@ -106,7 +107,7 @@ SOURCE_TABLES = [
 ]
 
 
-def create_user_profile_table():
+def create_user_profile_table() -> None:
     client = bigquery.Client()
     try:
         client.get_table(USER_PROFILE_TABLE)  # 檢查 table 是否存在
@@ -125,9 +126,10 @@ def create_user_profile_table():
         table = bigquery.Table(USER_PROFILE_TABLE, schema=schema)
         client.create_table(table)
         print(f"已建立 table: {USER_PROFILE_TABLE}")
-    
-    union_all_sql = " UNION ALL ".join([
-        f"""
+
+    union_all_sql = " UNION ALL ".join(
+        [
+            f"""
         SELECT
             EXTRACT(YEAR FROM PARSE_DATE('%F', paid_date)) AS year,
             email,
@@ -138,8 +140,9 @@ def create_user_profile_table():
             gender
         FROM `{table}`
         """
-        for table in SOURCE_TABLES
-    ])
+            for table in SOURCE_TABLES
+        ]
+    )
 
     query = f"""
             MERGE {USER_PROFILE_TABLE} AS tgt
@@ -175,7 +178,8 @@ def create_user_profile_table():
     job = client.query(query)
     job.result()
 
-def get_task_config(task_type: str):
+
+def get_task_config(task_type: str) -> str:
     """
     根據任務類型獲取對應的標頭和要求。
 
@@ -193,16 +197,18 @@ def get_task_config(task_type: str):
     elif task_type == "job_title":
         return JOB_REQUIREMENT
     else:
-        raise "不支援的工作類型。請選擇 'organization' 或 'job_title'。"
+        raise ValueError("不支援的工作類型。請選擇 'organization' 或 'job_title'。")
 
-def check_gemini_api_key():
+
+def check_gemini_api_key() -> str:
     GEMINI_API_KEY = Variable.get("GOOGLE_GEMINI_KEY")
     if not GEMINI_API_KEY:
         logging.error("錯誤：請設置環境變數 GEMINI_API_KEY")
         raise ValueError("GEMINI_API_KEY 未設定")
     return GEMINI_API_KEY
 
-def read_kktix_ticket_user_profile(task_type: str):
+
+def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
     client = bigquery.Client()
     try:
         query = f"""
@@ -221,7 +227,8 @@ def read_kktix_ticket_user_profile(task_type: str):
 
     return data_list
 
-def write_result_to_bigquery(df: pd.DataFrame, task_type: str):
+
+def write_result_to_bigquery(df: pd.DataFrame, task_type: str) -> None:
     client = bigquery.Client()
     table_id = f"{BIGQUERY_PROJECT}.{BIGQUERY_DATASET}.kktix_ticket_{task_type}_updates"  # 要建立的暫存表
 
@@ -229,26 +236,33 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str):
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  # 覆蓋舊表，如果表不存在則建立
         schema=[
             bigquery.SchemaField(task_type, "STRING"),
-            bigquery.SchemaField("category", "INT64")
-        ]
+            bigquery.SchemaField("category", "INT64"),
+        ],
     )
     job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
     job.result()
 
-def chunk_data(data, batch_size):
-    for i in range(0, len(data), batch_size):
-        yield data[i:i + batch_size]
 
-def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str):
+def chunk_data(data, batch_size) -> Generator[list[str], None, None]:
+    for i in range(0, len(data), batch_size):
+        yield data[i : i + batch_size]
+
+
+def call_gemini(model: str, max_output_tokens_on_model: int, prompt: str) -> str:
     client = genai.Client(api_key=check_gemini_api_key())
     response = client.models.generate_content(
-        model= model,
+        model=model,
         contents=[prompt],
-        config=types.GenerateContentConfig(max_output_tokens=max_output_tokens_on_model)
+        config=types.GenerateContentConfig(
+            max_output_tokens=max_output_tokens_on_model
+        ),
     )
     return response.text
 
-def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, task_type: str):
+
+def process_table(
+    model: str, max_output_tokens_on_model: int, batch_size: int, task_type: str
+) -> None:
     """
     讀取檔案，根據任務類型處理內容，並將結果寫入 CSV 檔案。
 
@@ -263,7 +277,9 @@ def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, 
     data_list = read_kktix_ticket_user_profile(task_type)
     results_to_update = []
 
-    logging.info(f"共讀取到 {len(data_list)} 筆記錄，將分成約 {len(data_list) // batch_size + (1 if len(data_list) % batch_size > 0 else 0)} 個批次處理...")
+    logging.info(
+        f"共讀取到 {len(data_list)} 筆記錄，將分成約 {len(data_list) // batch_size + (1 if len(data_list) % batch_size > 0 else 0)} 個批次處理..."
+    )
 
     # Process in batches
     for index, chunk in enumerate(chunk_data(data_list, batch_size), start=1):
@@ -274,15 +290,17 @@ def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, 
 
         # Check batch size against model limit (optional, but good practice)
         # Note: Token count is not a simple character count, this is a rough check
-        if len(batch_text) > max_output_tokens_on_model * 0.8: # Use a buffer
-             logging.warning(f"警告：批次 {index} 的大小可能接近或超過模型的最大輸入限制 ({max_output_tokens_on_model} tokens)。")
+        if len(batch_text) > max_output_tokens_on_model * 0.8:  # Use a buffer
+            logging.warning(
+                f"警告：批次 {index} 的大小可能接近或超過模型的最大輸入限制 ({max_output_tokens_on_model} tokens)。"
+            )
 
         try:
             response = call_gemini(model, max_output_tokens_on_model, batch_prompt)
             if response:
                 try:
                     clean_text = response.strip()
-                    clean_text = clean_text[len("```json"):].strip()
+                    clean_text = clean_text[len("```json") :].strip()
                     clean_text = clean_text[:-3].strip()
                     result_json = json.loads(clean_text)
                 except json.JSONDecodeError:
@@ -293,8 +311,8 @@ def process_table(model: str, max_output_tokens_on_model: int, batch_size: int, 
 
         # Add a small delay between batches to avoid hitting rate limits
         time.sleep(1)
-    
+
     df = pd.DataFrame(results_to_update)
-    df['category'] = df['category'].astype(int)
+    df["category"] = df["category"].astype(int)
     logging.info("--- 所有批次處理完成 ---")
     write_result_to_bigquery(df, task_type)

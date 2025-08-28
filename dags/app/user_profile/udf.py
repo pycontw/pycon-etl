@@ -216,20 +216,16 @@ def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
         rows = client.query(query).result()  # 等 query 完成
         # 將每一 row 的 task_type 放到 list
         data_list = [row[task_type] for row in rows]
-    except NotFound as e:
-        logging.error(f"找不到資料表: {e}")
-        raise
-    except BadRequest as e:
-        logging.error(f"SQL 語法錯誤或欄位不存在: {e}")
-        raise
-    except Forbidden as e:
-        logging.error(f"BigQuery 權限不足: {e}")
-        raise
-    except GoogleAPICallError as e:
-        logging.error(f"BigQuery API 呼叫錯誤: {e}")
-        raise
-    except Exception:
-        logging.exception("未知錯誤")
+    except (NotFound, BadRequest, Forbidden, GoogleAPICallError) as err:
+        if isinstance(err, NotFound):
+            err_msg = "找不到資料表: "
+        elif isinstance(err, BadRequest):
+            err_msg = "SQL 語法錯誤或欄位不存在: "
+        elif isinstance(err, BadRequest):
+            err_msg = "BigQuery 權限不足: "
+        elif isinstance(err, GoogleAPICallError):
+            err_msg = "BigQuery API 呼叫錯誤: "  
+        logging.exception(err_msg)
         raise
     return data_list
 
@@ -310,12 +306,12 @@ def process_table(
                 result_json = []
             results_to_update.extend(result_json)
 
-        except (GoogleAPICallError, DeadlineExceeded, ServiceUnavailable) as e:
-            logging.error(f"批次 {index} API 呼叫錯誤: {e}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"批次 {index} 網路請求錯誤: {e}")
-        except ValueError as e:
-            logging.error(f"批次 {index} 資料格式錯誤: {e}")
+        except (GoogleAPICallError, DeadlineExceeded, ServiceUnavailable):
+            logging.exception(f"批次 {index} API 呼叫錯誤: ")
+        except requests.exceptions.RequestException:
+            logging.exception(f"批次 {index} 網路請求錯誤: ")
+        except ValueError:
+            logging.exception(f"批次 {index} 資料格式錯誤: ")
         except Exception:
             logging.exception(f"批次 {index} 未知錯誤")
         # Add a small delay between batches to avoid hitting rate limits

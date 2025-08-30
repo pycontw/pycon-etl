@@ -1,4 +1,3 @@
-import collections
 import json
 import os
 
@@ -36,8 +35,6 @@ def load(event_raw_data_array: list):
     load_to_bigquery_dwd(payload, project_id, credential_file)
 
 
-from typing import Optional
-
 def load_to_bigquery_ods(
     payload: list[dict], project_id: str | None, credential_file: str | None
 ) -> None:
@@ -68,7 +65,10 @@ def load_to_bigquery_ods(
 
 
 def load_to_bigquery_dwd(
-    payload: list[dict], project_id: str | None, credential_file: str | None, ticket_group: str | None = None
+    payload: list[dict],
+    project_id: str | None,
+    credential_file: str | None,
+    ticket_group: str | None = None,
 ) -> None:
     """
     Load data to BigQuery's DWD tables

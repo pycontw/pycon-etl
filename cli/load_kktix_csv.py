@@ -299,8 +299,7 @@ def main():
         )
 
         payload = [
-            _sanitize_payload(event_raw_data)
-            for event_raw_data in event_raw_data_array
+            _sanitize_payload(event_raw_data) for event_raw_data in event_raw_data_array
         ]
 
         if not payload:
@@ -337,7 +336,7 @@ def main():
             )
             logging.info("資料成功載入 BigQuery。")
 
-    except Exception as e:
+    except Exception:
         logging.exception("執行過程中發生未預期的錯誤: ")
 
 

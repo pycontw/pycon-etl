@@ -111,7 +111,7 @@ def load_data_field_names(file_path: Path) -> list[str]:
     """從文字檔載入 data 欄位名稱列表"""
     logging.info(f"Loading data field names from {file_path}")
     with file_path.open("r", encoding="utf-8") as f:
-        names = [line.strip() for line in f if line.strip()]
+        names = [name for line in f if (name := line.strip())]
     return names
 
 
@@ -298,10 +298,10 @@ def main():
             merged_df, meta_mapping, data_field_names, args
         )
 
-        payload = []
-        for event_raw_data in event_raw_data_array:
-            sanitized_event_raw_data = _sanitize_payload(event_raw_data)
-            payload.append(sanitized_event_raw_data)
+        payload = [
+            _sanitize_payload(event_raw_data)
+            for event_raw_data in event_raw_data_array
+        ]
 
         if not payload:
             logging.warning("沒有產生任何資料，流程即將結束。")
@@ -312,7 +312,7 @@ def main():
             for record in payload[:5]:
                 print(json.dumps(record, indent=2, ensure_ascii=False))
 
-                # save to payload.json
+            # save to payload.json
             with open("payload.json", "w", encoding="utf-8") as f:
                 json.dump(payload, f, indent=2, ensure_ascii=False)
 
@@ -338,7 +338,7 @@ def main():
             logging.info("資料成功載入 BigQuery。")
 
     except Exception as e:
-        logging.error(f"執行過程中發生未預期的錯誤: {e}")
+        logging.exception("執行過程中發生未預期的錯誤: ")
 
 
 if __name__ == "__main__":

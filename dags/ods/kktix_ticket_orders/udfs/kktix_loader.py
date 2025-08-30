@@ -39,7 +39,7 @@ def load(event_raw_data_array: list):
 from typing import Optional
 
 def load_to_bigquery_ods(
-    payload: list[dict], project_id: Optional[str], credential_file: Optional[str]
+    payload: list[dict], project_id: str | None, credential_file: str | None
 ) -> None:
     """
     Load data to BigQuery's ods table
@@ -68,7 +68,7 @@ def load_to_bigquery_ods(
 
 
 def load_to_bigquery_dwd(
-    payload: list[dict], project_id: Optional[str], credential_file: Optional[str], ticket_group: Optional[str] = None
+    payload: list[dict], project_id: str | None, credential_file: str | None, ticket_group: str | None = None
 ) -> None:
     """
     Load data to BigQuery's DWD tables

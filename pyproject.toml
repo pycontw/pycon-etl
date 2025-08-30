@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
-  "apache-airflow==3.0.6rc2",
+  "apache-airflow==3.0.6",
   # Editable install with no version specified.
   "apache-airflow-providers-fab",
   "apache-airflow-providers-http",

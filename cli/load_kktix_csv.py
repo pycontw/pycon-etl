@@ -1,4 +1,5 @@
 import argparse
+import copy
 import json
 import logging
 from datetime import datetime
@@ -6,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from ods.kktix_ticket_orders.udfs import kktix_transformer
 from ods.kktix_ticket_orders.udfs.kktix_loader import (
     _sanitize_payload,
     load_to_bigquery_dwd,
@@ -298,10 +300,14 @@ def main():
             merged_df, meta_mapping, data_field_names, args
         )
 
-        payload = [
-            _sanitize_payload(event_raw_data) for event_raw_data in event_raw_data_array
-        ]
+        transformed_event_raw_data_array = kktix_transformer.transform(
+            copy.deepcopy(event_raw_data_array)
+        )
 
+        payload = [
+            _sanitize_payload(transformed_event_raw_data)
+            for transformed_event_raw_data in transformed_event_raw_data_array
+        ]
         if not payload:
             logging.warning("沒有產生任何資料，流程即將結束。")
             return

@@ -1,10 +1,6 @@
 import hashlib
 
 SENSITIVE_KEY_NAME_SET = {
-    "姓名",
-    "Email",
-    "手機",
-    "地址",
     "聯絡人 姓名",
     "聯絡人 Email",
     "聯絡人 手機",

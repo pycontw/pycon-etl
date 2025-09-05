@@ -1,0 +1,21 @@
+Nickname / 暱稱
+Gender / 生理性別
+Size of T-shirt / 衣服尺寸 (For tickets with t-shirt should fill in this field / 票種有含紀念衣服需填寫)
+Dietary Preference / 飲食偏好
+Come From / 國家或地區
+Age Range / 年齡區間
+Job Title / 職稱 (If you are a student, fill in "student" / 如果您是「學生」，請填寫「student」)
+Company  / 服務單位 (For students or teachers, fill in the School + Department Name / 學校單位請填寫學校及系所名稱)
+Years of Using Python / 使用 Python 多久
+Area of Interest / 興趣領域
+(Attend first time) How did you know PyCon TW 2023? / (初次參與) 如何得知 PyCon TW 2023？
+Have you ever attended PyCon TW? / 您是否曾參加 PyCon TW？
+Have you ever been a PyCon TW volunteer? / 是否曾擔任過 PyCon TW 志工？
+(For Submitter) How did you know the CfP information of PyCon Taiwan? / (投稿者) 你是怎麼得知 PyCon Taiwan 徵稿資訊？(If you are NOT submitter, fill in "non-submitter" / 如果您沒有投稿，請填寫「非投稿者」)
+Would you like to receive an email from sponsors? / 是否願意收到贊助商轉發的電子郵件？
+I would like to donate invoice to Open Culture Foundation / 我願意捐贈發票給開放文化基金會 (Ref: https://reurl.cc/ZQ6VY6)
+I’ve already read and I accept the Privacy Policy of PyCon TW 2023 / 我已閱讀並同意 PyCon TW 2023 個人資料保護聲明
+I'm willing to comply with the PyCon TW 2023 CoC / 我願意遵守 PyCon TW 2023 行為準則
+聯絡人 姓名
+聯絡人 Email
+聯絡人 手機

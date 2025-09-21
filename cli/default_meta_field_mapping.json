@@ -1,0 +1,14 @@
+{
+    "id": "Id",
+    "ticket_name": "票種",
+    "reg_no": "報名序號",
+    "state": "票券狀態",
+    "checkin_code": "檢查碼",
+    "qrcode": "QR Code 序號",
+    "is_paid": "付款狀態",
+    "price": "票面價格",
+    "payment_method": "付款方式",
+    "updated_at": "付款時間",
+    "ticket_type": "選用的取票方式",
+    "order_no": "訂單編號"
+}

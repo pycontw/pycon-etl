@@ -90,7 +90,7 @@ services:
         fi
     restart: "no"
     environment:
-      _AIRFLOW_DB_MIGRATE: 'false'
+      _AIRFLOW_DB_MIGRATE: 'true'
 
 volumes:
   shared-logs:

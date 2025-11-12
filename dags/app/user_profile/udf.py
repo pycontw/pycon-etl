@@ -224,7 +224,7 @@ def read_kktix_ticket_user_profile(task_type: str) -> list[str]:
         elif isinstance(err, BadRequest):
             err_msg = "BigQuery 權限不足: "
         elif isinstance(err, GoogleAPICallError):
-            err_msg = "BigQuery API 呼叫錯誤: "  
+            err_msg = "BigQuery API 呼叫錯誤: "
         logging.exception(err_msg)
         raise
     return data_list

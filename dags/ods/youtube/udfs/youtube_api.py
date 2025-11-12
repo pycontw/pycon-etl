@@ -3,9 +3,9 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-from airflow import macros
 from airflow.providers.http.hooks.http import HttpHook
 from airflow.sdk import Variable
+from airflow.sdk.execution_time import macros
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
 

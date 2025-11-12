@@ -17,9 +17,8 @@ from airflow.exceptions import TaskDeferred
 from airflow.providers.standard.triggers.temporal import (
     DateTimeTrigger,
 )
-from airflow.sdk import Param, Variable, chain, dag, task, task_group
+from airflow.sdk import Param, Variable, chain, dag, task, task_group, timezone
 from airflow.sdk.types import RuntimeTaskInstanceProtocol
-from airflow.utils import timezone
 
 if TYPE_CHECKING:
     pass

@@ -1,4 +1,4 @@
-ARG AIRFLOW_VERSION=3.0.3
+ARG AIRFLOW_VERSION=3.1.2
 ARG PYTHON_VERSION=3.10
 ARG PLATFORM=linux
 
@@ -38,5 +38,7 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+COPY --chown=airflow:root patch/0082_3_1_0_make_bundle_name_not_nullable.py /app/.venv/lib/python3.10/site-packages/airflow/migrations/versions/0082_3_1_0_make_bundle_name_not_nullable.py
+COPY --chown=airflow:root patch/dag.py /app/.venv/lib/python3.10/site-packages/airflow/models/dag.py
 
 ENTRYPOINT ["/entrypoint.sh"]

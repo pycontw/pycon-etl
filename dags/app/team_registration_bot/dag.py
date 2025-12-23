@@ -18,7 +18,10 @@ from app.team_registration_bot.udf import (
 # }
 
 
-@asset(schedule="@daily")
+@asset(
+    schedule="@daily",
+    tags=["discord"],
+)
 def registration_statistics(self):
     # KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION
     statistics = get_statistics_from_bigquery()

@@ -1,9 +1,5 @@
-"""
-Send Proposal Summary to Discord
-"""
-
-from airflow.sdk import Metadata, asset
-from app.proposal_reminder.udf import get_proposal_summary
+import requests
+from airflow.sdk import Metadata, Variable, asset
 
 # DEFAULT_ARGS = {
 #     "owner": "Henry Lee",
@@ -15,8 +11,20 @@ from app.proposal_reminder.udf import get_proposal_summary
 # }
 
 
+def get_proposal_summary() -> dict:
+    response = requests.get(
+        "https://tw.pycon.org/prs/api/proposals/summary/",
+        headers={
+            "Content-Type": "application/json",
+            "authorization": Variable.get("PYCON_API_TOKEN"),
+        },
+    )
+    return response.json()
+
+
 @asset(
     schedule="0 16 * * *",  # At 16:00 (00:00 +8)
+    tags=["discord"],
 )
 def proposal_count(self):
     summary = get_proposal_summary()

@@ -4,67 +4,47 @@ from datetime import datetime
 import requests
 import tenacity
 from airflow.providers.http.hooks.http import HttpHook
-from airflow.sdk import Asset, AssetWatcher, Context, Variable, dag, task
-
-from triggers.finance_report import FinanceReportTrigger
+from airflow.sdk import Asset, Context, Variable, dag, task
 
 # get the airflow.task logger
-task_logger = logging.getLogger("airflow.task")
 
-
-finance_report_asset = Asset(
-    name="finance_report",
-    watchers=[
-        AssetWatcher(
-            name="finance_report_watcher",
-            trigger=FinanceReportTrigger(
-                poke_interval=86400,  # 60*60*24
-            ),
-        )
-    ],
-)
+logger = logging.getLogger(__name__)
 
 
 @dag(
     schedule=(
-        finance_report_asset
+        Asset(name="finance_report_diff")
         | Asset(name="proposal_count")
         | Asset(name="registration_statistics")
     ),
-    start_date=datetime(2025, 6, 28),
+    start_date=datetime(2025, 12, 23),
     catchup=False,
     max_active_runs=1,
     default_args={
         "owner": "Wei Lee",
         "depends_on_past": False,
     },
+    tags=["discord"],
 )
 def discord_message_notification():
     """Send Discord Message."""
 
     @task
     def send_discord_message(**context: Context) -> None:
-        triggering_asset_events = context["triggering_asset_events"]
-        for asset_uri, asset_events in triggering_asset_events.items():
-            task_logger.info(f"Receive asset event from Asset uri={asset_uri}")
+        for asset_like_obj, asset_events in context["triggering_asset_events"].items():
+            logger.info(f"Receive asset event from {asset_like_obj}")
 
             http_hook = HttpHook(method="POST", http_conn_id="discord_webhook")
             for asset_event in asset_events:  # type: ignore[attr-defined]
-                if asset_event.extra.get("from_trigger", False):
-                    details = asset_event.extra["payload"]
-                else:
-                    details = asset_event.extra
-
-                if not details:
-                    task_logger.error(
+                if not (details := asset_event.extra):
+                    logger.error(
                         f"Detail {details} cannot be empty. It's required to send discord message."
                     )
                     continue
 
-                task_logger.info("Start sending discord message")
-                endpoint = Variable.get(details.get("webhook_endpoint_key"))
+                logger.info("Start sending Discord message")
                 http_hook.run_with_advanced_retry(
-                    endpoint=endpoint,
+                    endpoint=Variable.get(details.get("webhook_endpoint_key")),
                     data={
                         "username": details.get("username"),
                         "content": details.get("content"),
@@ -77,7 +57,7 @@ def discord_message_notification():
                         ),
                     ),
                 )
-                task_logger.info("Discord message sent")
+                logger.info("Discord message sent")
 
     send_discord_message()
 

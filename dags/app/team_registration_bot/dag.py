@@ -2,48 +2,34 @@
 Send daily ordering metrics to discord channel
 """
 
-from datetime import datetime, timedelta
-
-from airflow.sdk import Variable, dag, task
-
-from dags.app import discord
-from dags.app.team_registration_bot.udf import (
-    _compose_discord_msg,
-    _get_statistics_from_bigquery,
+from airflow.sdk import Metadata, asset
+from app.team_registration_bot.udf import (
+    compose_discord_msg,
+    get_statistics_from_bigquery,
 )
 
-DEFAULT_ARGS = {
-    "owner": "David Jr.",
-    "depends_on_past": False,
-    "start_date": datetime(2022, 7, 4),
-    "retries": 2,
-    "retry_delay": timedelta(minutes=5),
-    "on_failure_callback": lambda x: "Need to send notification to Discord!",
-}
+# DEFAULT_ARGS = {
+#     "owner": "David Jr.",
+#     "depends_on_past": False,
+#     "start_date": datetime(2022, 7, 4),
+#     "retries": 2,
+#     "retry_delay": timedelta(minutes=5),
+#     "on_failure_callback": lambda x: "Need to send notification to Discord!",
+# }
 
 
-@dag(
-    default_args=DEFAULT_ARGS,
+@asset(
     schedule="@daily",
-    max_active_runs=1,
-    catchup=False,
+    tags=["discord"],
 )
-def KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION():
-    @task
-    def LOAD_TO_DISCORD():
-        webhook_url = Variable.get("discord_webhook_registration_endpoint")
-        statistics = _get_statistics_from_bigquery()
-        discord.send_webhook_message(
-            webhook_url=webhook_url,
-            usernmae="KKTIX order report",
-            msg=_compose_discord_msg(statistics),
-        )
-
-    LOAD_TO_DISCORD()
-
-
-dag_obj = KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION()
-
-
-if __name__ == "__main__":
-    dag_obj.test()
+def registration_statistics(self):
+    # KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION
+    statistics = get_statistics_from_bigquery()
+    yield Metadata(
+        self,
+        extra={
+            "webhook_endpoint_key": "discord_webhook_registration_endpoint",
+            "username": "KKTIX order report",
+            "content": compose_discord_msg(statistics),
+        },
+    )

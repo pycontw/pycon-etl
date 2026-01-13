@@ -78,7 +78,7 @@ git pull origin prod
 
 git merge origin/master
 
-git pull origin prod
+git push origin prod
 ```
 
 This triggers the [Docker Image CI] again to update the `cache`, `test`, and `staging` images, as well as to create a `latest` image that we will later use for deploying to our production instance. See the [Deployment Guide](./DEPLOYMENT.md) for the following steps.

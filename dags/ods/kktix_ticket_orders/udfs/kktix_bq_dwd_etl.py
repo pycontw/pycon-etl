@@ -375,13 +375,8 @@ def apply_heuristic_name(columns: dict) -> dict:
     return updated_columns
 
 
-def init_rename_column_dict(columns_array: pd.core.indexes.base.Index) -> dict:
-    columns_dict = {}
-
-    for item in columns_array:
-        columns_dict[item] = item
-
-    return columns_dict
+def init_rename_column_dict(columns_array) -> dict:
+    return {item: item for item in columns_array}
 
 
 def strip_unwanted_columns(df: pd.DataFrame) -> pd.DataFrame:

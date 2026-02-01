@@ -16,7 +16,7 @@
 ## Checklist
 
 - [ ] Add test cases to all the changes you introduce
-- [ ] Run `make lint` and `make test` locally to ensure all linter checks and testing pass
+- [ ] Run `poe lint` and `poe test` locally to ensure all linter checks and testing pass
 - [ ] Update the documentation if necessary
 
 ## Steps to Test This Pull Request

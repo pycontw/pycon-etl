@@ -89,13 +89,13 @@ uv run airflow standalone
 
 ```bash
 # Build the local dev/test image
-make build-dev
+poe build-dev
 
 # Start dev/test services
-make deploy-dev
+poe deploy-dev
 
 # Stop dev/test services
-make down-dev
+poe down-dev
 ```
 
 > The difference between production and dev/test compose files is that the dev/test compose file uses a locally built image, while the production compose file uses the image from Docker Hub.

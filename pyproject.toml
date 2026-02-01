@@ -24,6 +24,7 @@ dev = [
   "pytest>=9.0.1",
   "pytest-cov",
   "coverage[toml]",
+  "poethepoet",
   "types-requests>=2.31.0.1",
   "types-python-dateutil>=2.8.19.13",
   "pandas-stubs>=2.2.3.250527",
@@ -84,6 +85,81 @@ exclude_lines = [
   'if __name__ == .__main__.:',
 ]
 omit = ['env/*', 'venv/*', '*/virtualenv/*', '*/virtualenvs/*', '*/tests/*']
+
+[tool.poe]
+executor.type = "uv"
+
+[tool.poe.env]
+DOCKER_TEST_IMAGE.default = "pycon-etl:test"
+
+[tool.poe.tasks.format]
+help = "Format the code"
+sequence = [
+  { cmd = "ruff check . --fix" },
+  { cmd = "ruff format ." },
+]
+
+[tool.poe.tasks.lint]
+help = "Lint and type-check the code"
+sequence = [
+  { cmd = "mypy dags/ tests/" },
+  { cmd = "ruff check ." },
+  { cmd = "ruff format --check ." },
+]
+
+[tool.poe.tasks.test]
+help = "Run the test suite"
+cmd = "pytest"
+
+[tool.poe.tasks."test:coverage"]
+help = "Run the test suite with coverage"
+cmd = "pytest --cov=dags tests"
+
+[tool.poe.tasks."test:docker"]
+help = "Build the test image and run tests in Docker"
+sequence = [
+  { cmd = "docker build -t $DOCKER_TEST_IMAGE -f Dockerfile.test ." },
+  { cmd = "docker run --rm -w /opt/airflow --entrypoint pytest $DOCKER_TEST_IMAGE" },
+]
+
+[tool.poe.tasks.upgrade]
+help = "Upgrade Python dependencies and pre-commit hooks"
+sequence = [
+  { cmd = "uv lock --upgrade" },
+  { cmd = "prek auto-update" },
+]
+
+[tool.poe.tasks."dev:build"]
+help = "Build the development Docker image"
+cmd = "docker compose -f ./docker-compose-dev.yml build"
+
+[tool.poe.tasks."dev:up"]
+help = "Start the development environment"
+cmd = "docker compose -f ./docker-compose-dev.yml up -d"
+
+[tool.poe.tasks."dev:down"]
+help = "Stop the development environment"
+cmd = "docker compose -f ./docker-compose-dev.yml down"
+
+[tool.poe.tasks."prod:up"]
+help = "Start the production environment"
+cmd = "docker compose -f ./docker-compose.yml up -d"
+
+[tool.poe.tasks."prod:down"]
+help = "Stop the production environment"
+cmd = "docker compose -f ./docker-compose.yml down"
+
+[tool.poe.tasks."prod:promote"]
+help = "Promote master to the production branch"
+cmd = "python scripts/promote_prod.py"
+
+[tool.poe.tasks."docs:build"]
+help = "Build the documentation"
+cmd = "uv run --group docs mkdocs build"
+
+[tool.poe.tasks."docs:serve"]
+help = "Serve the documentation locally"
+cmd = "uv run --group docs mkdocs serve"
 
 [tool.uv]
 required-version = ">=0.9.17"

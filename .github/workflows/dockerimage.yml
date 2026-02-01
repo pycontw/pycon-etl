@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+    - name: Install development tools
+      run: uv sync --only-group dev
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
@@ -25,8 +29,9 @@ jobs:
       run: |
         docker build -t ${RC_NAME}:cache --cache-from ${RC_NAME}:cache .
     - name: Run tests inside the built image
-      run: |
-        make test-docker DOCKER_TEST_IMAGE=${RC_NAME}:test
+      run: uv run --no-sync poe test:docker
+      env:
+        DOCKER_TEST_IMAGE: ${{ env.RC_NAME }}:test
     - name: Push cache to Google Container Registry
       if: success()
       run: |

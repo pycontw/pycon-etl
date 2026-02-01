@@ -12,10 +12,10 @@ Apache Airflow ETL system for PyCon Taiwan's data infrastructure. Manages event 
 ## Common commands
 
 ```bash
-make lint      # ruff check + format + mypy
-make format    # ruff autofix + format
-make test      # pytest (PYTHONPATH=./dags set automatically)
-make coverage  # pytest --cov=dags tests
+uv run poe lint      # ruff check + format check + mypy
+uv run poe format    # ruff autofix + format
+uv run poe test      # pytest
+uv run poe test:coverage  # pytest --cov=dags tests
 ```
 
 ## Dag structure
@@ -33,7 +33,7 @@ dags/
 - **Dag ID**: the `@dag`-decorated function name becomes the Dag ID when no explicit `dag_id=` is passed. Renaming the function renames the Dag in Airflow's metadata DB.
 - **Airflow Variables**: runtime secrets (API keys, webhook URLs) are stored as Airflow Variables, not env vars. See `.env.template` for the static env config.
 - **Dependency updates**: after changing `pyproject.toml`, run `uv lock` to update `uv.lock`. The pre-commit hook verifies that the Airflow version in `pyproject.toml` matches the `Dockerfile`.
-- **Typing**: mypy strict mode is enforced on `dags/` and `tests/`. Run `make lint` before pushing.
+- **Typing**: mypy strict mode is enforced on `dags/` and `tests/`. Run `uv run poe lint` before pushing.
 
 ## Local dev setup
 
@@ -46,12 +46,12 @@ uv run airflow standalone   # spins up all Airflow services locally
 Or with Docker:
 
 ```bash
-make deploy-dev   # docker-compose-dev.yml
+uv run poe dev:up   # docker-compose-dev.yml
 ```
 
 ## Testing
 
-`pyproject.toml` adds `.` and `dags/` to `pythonpath` so both `from dags.x import y` and `from ods.x import y` (the in-Airflow style) resolve. `tests/conftest.py` sets `AIRFLOW_TEST_MODE=True` before any airflow import. Just run `make test`.
+`pyproject.toml` adds `.` and `dags/` to `pythonpath` so both `from dags.x import y` and `from ods.x import y` (the in-Airflow style) resolve. `tests/conftest.py` sets `AIRFLOW_TEST_MODE=True` before any airflow import. Just run `uv run poe test`.
 
 ## Deployment
 

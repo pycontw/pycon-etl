@@ -56,7 +56,7 @@ If additional steps are required after merging and deploying (e.g., add new conn
   ![img](https://miro.medium.com/max/1400/1*bppuEKMnL9gFnvoRHUO8CQ.png)
 
 ### Code Formatting
-Please run `make format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
+Please run `poe format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
 
 ### Commit Message
 It is recommended to use [Commitizen](https://commitizen-tools.github.io/commitizen/).

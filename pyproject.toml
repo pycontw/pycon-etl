@@ -26,6 +26,7 @@ dev = [
   "pytest-cov",
   "coverage[toml]",
   "safety",
+  "poethepoet",
   "types-requests>=2.31.0.1",
   "types-python-dateutil>=2.8.19.13",
   "pandas-stubs>=2.2.3.250527",
@@ -83,6 +84,29 @@ exclude_lines = [
   'if __name__ == .__main__.:',
 ]
 omit = ['env/*', 'venv/*', '*/virtualenv/*', '*/virtualenvs/*', '*/tests/*']
+
+[tool.poe]
+executor = "uv"
+
+[tool.poe.tasks]
+lint = { sequence = [
+  { cmd = "ruff check ." },
+  { cmd = "ruff format ." },
+  { cmd = "mypy dags/ tests/" },
+] }
+format = { sequence = [
+  { cmd = "ruff check . --fix" },
+  { cmd = "ruff format ." },
+] }
+test = { cmd = "pytest", env = { PYTHONPATH = "./dags" } }
+coverage = { cmd = "pytest --cov=dags tests", env = { PYTHONPATH = "./dags" } }
+build-dev = "docker compose -f ./docker-compose-dev.yml build"
+deploy-dev = "docker compose -f ./docker-compose-dev.yml up -d"
+down-dev = "docker compose -f ./docker-compose-dev.yml down"
+deploy-prod = "docker compose -f ./docker-compose.yml up -d"
+down-prod = "docker compose -f ./docker-compose.yml down"
+build-docs = "uv run --group docs mkdocs build"
+serve-docs = "uv run --group docs mkdocs serve"
 
 [tool.uv]
 # airflow 3.1.7 constraint file for python 3.10

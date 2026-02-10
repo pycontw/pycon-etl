@@ -1,12 +1,7 @@
-"""
-Send Google Search Report to Discord
-"""
-
 from datetime import datetime, timedelta
 
-from airflow.sdk import Variable, dag, task
+from airflow.sdk import Asset, AssetAlias, Metadata, dag, task
 
-from dags.app import discord
 from dags.app.finance_bot.udf import (
     df_difference,
     read_bigquery_to_df,
@@ -30,9 +25,10 @@ DEFAULT_ARGS = {
     schedule="@daily",
     max_active_runs=1,
     catchup=False,
+    tags=["discord"],
 )
 def DISCORD_FINANCE_REMINDER():
-    @task
+    @task(outlets=[AssetAlias("finance_report_diff_notification")])
     def REMINDER_OF_THIS_TEAM():
         # read xls from google doc to df.
         df_xls = read_google_xls_to_df()
@@ -42,16 +38,19 @@ def DISCORD_FINANCE_REMINDER():
 
         # check difference between 2 df
         df_diff = df_difference(df_xls, df_bigquery)
+        if not df_diff.empty:
+            # link to bigquery and write xls file
+            write_to_bigquery(df_diff)
 
-        # link to bigquery and write xls file
-        write_to_bigquery(df_diff)
-
-        # push to discord
-        webhook_url = Variable.get("discord_data_stratagy_webhook")
-        msg = refine_diff_df_to_string(df_diff)
-        if msg != "no data":
-            discord.send_webhook_message(
-                webhook_url=webhook_url, username="財務機器人", msg=msg
+            # push to discord
+            yield Metadata(
+                Asset(name="finance_report_diff"),
+                extra={
+                    "webhook_endpoint_key": "discord_data_stratagy_webhook",
+                    "username": "財務機器人",
+                    "content": refine_diff_df_to_string(df_diff),
+                },
+                alias=AssetAlias("finance_report_diff_notification"),
             )
 
     REMINDER_OF_THIS_TEAM()

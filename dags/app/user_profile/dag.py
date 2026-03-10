@@ -1,5 +1,5 @@
 """
-Query user profile catagory
+Query user profile category
 """
 
 from datetime import datetime, timedelta

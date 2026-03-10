@@ -14,9 +14,9 @@ repos:
       language: python
       types: [ text ]
       args:
-
         - --ignore-words=spelling_wordlist.txt
         - --write-changes
+        - --exclude-file=pyproject.toml,cli/example-attendees.csv
       exclude: >
           (?x)
           uv.lock$|

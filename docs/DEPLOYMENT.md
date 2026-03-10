@@ -9,8 +9,8 @@ gcloud compute ssh --zone "asia-east1-b" "data-team" --project "pycontw-225217"
 ```
 
 * Location of the Services:
-    * ETL (airflow): `/srv/pycon-etl`
-    * Metabase: `/mnt/disks/data-team-additional-disk/pycontw-infra-scripts/data_team/metabase_server`
+  * ETL (airflow): `/srv/pycon-etl`
+  * Metabase: `/mnt/disks/data-team-additional-disk/pycontw-infra-scripts/data_team/metabase_server`
 
 ### 2. Pull the latest codebase and image to this server
 
@@ -21,9 +21,9 @@ git pull origin prod
 docker pull asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
 ```
 
-### 3. Add credentials to the `.env.production` file (only needs to be done once).
+### 3. Add credentials to the `.env.production` file (only needs to be done once)
 
-### 4. Restart the services:
+### 4. Restart the services
 
 ```bash
 # Start production services
@@ -48,4 +48,6 @@ docker stats
 ```
 
 ### 6. Login to the service
+
 For security reasons, our Airflow instance is not publicly accessible. You will need an authorized GCP account to perform port forwarding for the webserver and an authorized Airflow account to access it.
+

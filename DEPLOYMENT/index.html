@@ -423,7 +423,7 @@
   <a href="#3-add-credentials-to-the-envproduction-file-only-needs-to-be-done-once" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Add credentials to the .env.production file (only needs to be done once).
+        3. Add credentials to the .env.production file (only needs to be done once)
       
     </span>
   </a>
@@ -434,7 +434,7 @@
   <a href="#4-restart-the-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Restart the services:
+        4. Restart the services
       
     </span>
   </a>
@@ -548,7 +548,7 @@
   <a href="#3-add-credentials-to-the-envproduction-file-only-needs-to-be-done-once" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Add credentials to the .env.production file (only needs to be done once).
+        3. Add credentials to the .env.production file (only needs to be done once)
       
     </span>
   </a>
@@ -559,7 +559,7 @@
   <a href="#4-restart-the-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Restart the services:
+        4. Restart the services
       
     </span>
   </a>
@@ -616,11 +616,9 @@
 <div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>ssh<span class="w"> </span>--zone<span class="w"> </span><span class="s2">&quot;asia-east1-b&quot;</span><span class="w"> </span><span class="s2">&quot;data-team&quot;</span><span class="w"> </span>--project<span class="w"> </span><span class="s2">&quot;pycontw-225217&quot;</span>
 </code></pre></div>
 <ul>
-<li>Location of the Services:<ul>
+<li>Location of the Services:</li>
 <li>ETL (airflow): <code>/srv/pycon-etl</code></li>
 <li>Metabase: <code>/mnt/disks/data-team-additional-disk/pycontw-infra-scripts/data_team/metabase_server</code></li>
-</ul>
-</li>
 </ul>
 <h3 id="2-pull-the-latest-codebase-and-image-to-this-server">2. Pull the latest codebase and image to this server</h3>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>prod
@@ -628,8 +626,8 @@ git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </
 
 docker<span class="w"> </span>pull<span class="w"> </span>asia-east1-docker.pkg.dev/pycontw-225217/data-team/pycon-etl:latest
 </code></pre></div>
-<h3 id="3-add-credentials-to-the-envproduction-file-only-needs-to-be-done-once">3. Add credentials to the <code>.env.production</code> file (only needs to be done once).</h3>
-<h3 id="4-restart-the-services">4. Restart the services:</h3>
+<h3 id="3-add-credentials-to-the-envproduction-file-only-needs-to-be-done-once">3. Add credentials to the <code>.env.production</code> file (only needs to be done once)</h3>
+<h3 id="4-restart-the-services">4. Restart the services</h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Start production services</span>
 docker-compose<span class="w"> </span>-f<span class="w"> </span>./docker-compose.yml<span class="w"> </span>up
 

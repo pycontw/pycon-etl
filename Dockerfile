@@ -1,4 +1,4 @@
-ARG AIRFLOW_VERSION=3.1.8
+ARG AIRFLOW_VERSION=3.2.0
 ARG PYTHON_VERSION=3.10
 ARG PLATFORM=linux
 
@@ -38,5 +38,6 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+COPY --chown=airflow:root patch/0097_3_2_0_enforce_log_event_and_dag_is_stale_not_null.py /app/.venv/lib/python3.10/site-packages/airflow/migrations/versions/0097_3_2_0_enforce_log_event_and_dag_is_stale_not_null.py
 
 ENTRYPOINT ["/entrypoint.sh"]

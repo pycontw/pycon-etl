@@ -5,6 +5,15 @@ default_stages:
   - pre-commit
 
 repos:
+- repo: local
+  hooks:
+    - id: check-airflow-version-consistency
+      name: Check Airflow version consistency (pyproject.toml vs Dockerfile)
+      language: python
+      entry: python scripts/ci/prek/check_airflow_version_consistency.py
+      pass_filenames: false
+      always_run: true
+
 - repo: https://github.com/codespell-project/codespell
   rev: v2.4.1
   hooks:

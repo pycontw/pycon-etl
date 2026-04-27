@@ -7,7 +7,7 @@ requires-python = ">=3.10,<3.11"
 dependencies = [
   "apache-airflow==3.2.1",
   # Editable install with no version specified.
-  "apache-airflow-providers-fab>=3.6.2rc1",
+  "apache-airflow-providers-fab>=3.6.2",
   "apache-airflow-providers-http",
   "google-cloud-bigquery",
   "pandas",

@@ -35,7 +35,7 @@ def KKTIX_DISCORD_BOT_FOR_TEAM_REGISTRATION():
         statistics = _get_statistics_from_bigquery()
         discord.send_webhook_message(
             webhook_url=webhook_url,
-            usernmae="KKTIX order report",
+            username="KKTIX order report",
             msg=_compose_discord_msg(statistics),
         )
 

@@ -28,19 +28,19 @@ DEFAULT_ARGS = {
     max_active_runs=1,
     catchup=False,
 )
-def user_profile_catagory_query():
+def user_profile_category_query():
     @task
-    def process_catagory_by_gemini():
+    def process_category_by_gemini():
         get_gemini_api_key()
         tasktypes = ["organization", "job_title"]
         create_user_profile_table()
         for tasktype in tasktypes:
             process_table("gemini-2.0-flash", 8192, 100, tasktype)
 
-    process_catagory_by_gemini()
+    process_category_by_gemini()
 
 
-dag_obj = user_profile_catagory_query()
+dag_obj = user_profile_category_query()
 
 if __name__ == "__main__":
     dag_obj.test()

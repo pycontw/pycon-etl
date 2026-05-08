@@ -1,8 +1,9 @@
 import json
 import logging
 import time
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from itertools import islice
+from typing import TypeVar
 
 import pandas as pd
 import requests
@@ -245,7 +246,10 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str) -> None:
     job.result()
 
 
-def chunk_data(data: list[str], batch_size: int) -> Generator[list[str], None, None]:
+_T = TypeVar("_T")
+
+
+def chunk_data(data: Iterable[_T], batch_size: int) -> Generator[list[_T], None, None]:
     it = iter(data)
     while batch := list(islice(it, batch_size)):
         yield batch

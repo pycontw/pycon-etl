@@ -21,15 +21,11 @@ def test_cakeresume_uploader() -> None:
     ) as data_questionnaire_dimension:
         rows = csv.reader(data_questionnaire_dimension)
         header = next(iter(rows))
-        if __debug__:
-            if header != ["question_id", "question", "year"]:
-                raise AssertionError("wrong header!")
+        assert header == ["question_id", "question", "year"]
 
     with open(
         Path("tests/data_questionnaire_facttable.csv")
     ) as data_questionnaire_facttable:
         rows = csv.reader(data_questionnaire_facttable)
         header = next(iter(rows))
-        if __debug__:
-            if header != ["ip", "question_id", "answer", "year"]:
-                raise AssertionError("wrong header!")
+        assert header == ["ip", "question_id", "answer", "year"]

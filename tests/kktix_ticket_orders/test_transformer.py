@@ -103,8 +103,6 @@ def test_transform(kktix_api_data) -> None:
             },
         }
     ]
-    if __debug__:
-        if transform(kktix_api_data) != ground_truth:
-            raise AssertionError(
-                "Transform() might forget to de-identify some columns! e.g. name, email or phone number"
-            )
+    assert transform(kktix_api_data) == ground_truth, (
+        "Transform() might forget to de-identify some columns! e.g. name, email or phone number"
+    )

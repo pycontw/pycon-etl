@@ -9,7 +9,12 @@ import pytest
 
 os.environ.setdefault("AIRFLOW_TEST_MODE", "True")
 
-from dags.app.user_profile.udf import ORG_REQUIREMENT, JOB_REQUIREMENT, chunk_data, get_task_config  # noqa: E402
+from dags.app.user_profile.udf import (  # noqa: E402
+    JOB_REQUIREMENT,
+    ORG_REQUIREMENT,
+    chunk_data,
+    get_task_config,
+)
 
 
 class TestChunkData:
@@ -26,7 +31,7 @@ class TestChunkData:
         assert result == [[1, 2]]
 
     def test_empty_input(self) -> None:
-        result = list(chunk_data([], 5))
+        result: list[list[int]] = list(chunk_data([], 5))
         assert result == []
 
     def test_batch_size_one(self) -> None:
@@ -42,7 +47,7 @@ class TestGetTaskConfig:
         assert get_task_config("job_title") == JOB_REQUIREMENT
 
     def test_invalid_type_raises(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="不支援的工作類型"):
             get_task_config("unknown_type")
 
     def test_org_requirement_contains_category_table(self) -> None:

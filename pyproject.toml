@@ -19,13 +19,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "bandit",
   "ruff",
   "mypy",
-  "pytest",
+  "pytest>=9.0.1",
   "pytest-cov",
   "coverage[toml]",
-  "safety",
   "types-requests>=2.31.0.1",
   "types-python-dateutil>=2.8.19.13",
   "pandas-stubs>=2.2.3.250527",
@@ -54,6 +52,9 @@ known-first-party = ["tests"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+
+[tool.pytest]
+pythonpath = [".", "dags"]
 
 [tool.mypy]
 files = ["dags", "tests"]

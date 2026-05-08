@@ -51,7 +51,7 @@ make deploy-dev   # docker-compose-dev.yml
 
 ## Testing
 
-Tests run with `PYTHONPATH=./dags` so `from dags.x import y` resolves correctly. Set `AIRFLOW_TEST_MODE=True` to suppress Airflow DB initialization in unit tests.
+`pyproject.toml` adds `.` and `dags/` to `pythonpath` so both `from dags.x import y` and `from ods.x import y` (the in-Airflow style) resolve. `tests/conftest.py` sets `AIRFLOW_TEST_MODE=True` before any airflow import. Just run `make test`.
 
 ## Deployment
 

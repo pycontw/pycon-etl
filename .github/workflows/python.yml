@@ -5,8 +5,6 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-env:
-  AIRFLOW_TEST_MODE: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,10 +28,7 @@ jobs:
       - name: Run linters
         run: make lint
 
-      - name: Run test
-        run: make test
-
-      - name: Coverage
+      - name: Run tests with coverage
         run: make coverage
 
     # CD part

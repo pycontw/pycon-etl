@@ -1,17 +1,17 @@
 lint:
-	uv run ruff check .
-	uv run ruff format .
 	uv run mypy dags/ tests/
+	uv run ruff check .
+	uv run ruff format --check .
 
 format:
 	uv run ruff check . --fix
 	uv run ruff format .
 
 test:
-	PYTHONPATH=./dags uv run pytest
+	uv run pytest
 
 coverage:
-	PYTHONPATH=./dags uv run pytest --cov=dags tests
+	uv run pytest --cov=dags tests
 
 build-dev:
 	docker compose -f ./docker-compose-dev.yml build

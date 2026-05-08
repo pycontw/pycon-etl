@@ -1,4 +1,9 @@
-import pytest
+import os
+
+# Must be set before any airflow import so DB initialization is suppressed.
+os.environ.setdefault("AIRFLOW_TEST_MODE", "True")
+
+import pytest  # noqa: E402
 
 
 @pytest.fixture

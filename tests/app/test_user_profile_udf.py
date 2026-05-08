@@ -3,13 +3,9 @@ Unit tests for user_profile UDF pure functions.
 BigQuery / Airflow Variable / Gemini calls are NOT exercised here.
 """
 
-import os
-
 import pytest
 
-os.environ.setdefault("AIRFLOW_TEST_MODE", "True")
-
-from dags.app.user_profile.udf import (  # noqa: E402
+from dags.app.user_profile.udf import (
     JOB_REQUIREMENT,
     ORG_REQUIREMENT,
     chunk_data,

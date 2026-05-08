@@ -24,8 +24,6 @@ make coverage  # pytest --cov=dags tests
 dags/
   app/    — notification bots (Discord), AI profiling (Gemini)
   ods/    — raw data ingestion from external APIs (KKTIX, social media, YouTube)
-  dwd/    — Data Warehouse Detail layer (empty, reserved for transforms)
-  dws/    — Data Warehouse Summary layer (empty, reserved for aggregations)
   utils/  — shared helpers: retry logic (tenacity), social media base classes
 ```
 

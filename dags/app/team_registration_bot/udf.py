@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from functools import cache
 
 from google.cloud import bigquery
 from google.cloud.bigquery.table import RowIterator
@@ -8,11 +9,14 @@ YEAR = datetime.now().year
 
 TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attendeeId_datetime"
 
-CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+
+@cache
+def _client() -> bigquery.Client:
+    return bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
 def _get_statistics_from_bigquery() -> RowIterator:
-    query_job = CLIENT.query(
+    query_job = _client().query(
         f"""
         WITH UNIQUE_RECORDS AS (
           SELECT DISTINCT

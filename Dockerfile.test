@@ -38,6 +38,9 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:$PYTHONPATH"
 
 COPY airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY --chown=airflow:root dags ${AIRFLOW_HOME}/dags
+COPY --chown=airflow:root tests ${AIRFLOW_HOME}/tests
+COPY --chown=airflow:root contrib ${AIRFLOW_HOME}/contrib
+COPY --chown=airflow:root pyproject.toml ${AIRFLOW_HOME}/pyproject.toml
 
 ENV AIRFLOW_TEST_MODE=True
 

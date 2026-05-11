@@ -13,6 +13,12 @@ test:
 coverage:
 	uv run pytest --cov=dags tests
 
+DOCKER_TEST_IMAGE ?= pycon-etl:test
+
+test-docker:
+	docker build -t $(DOCKER_TEST_IMAGE) -f Dockerfile.test .
+	docker run --rm -w /opt/airflow --entrypoint pytest $(DOCKER_TEST_IMAGE)
+
 build-dev:
 	docker compose -f ./docker-compose-dev.yml build
 

@@ -37,33 +37,32 @@ def TWITTER_POST_NOTIFICATION_BOT_V2():
         response = requests.get(url, headers=headers, params=querystring)
         response_json = response.json()
         try:
-            variable_key = "TWITTER_LATEST_REST_ID"
-            rest_id = response_json["data"]["user"]["result"]["timeline_v2"][
+            timeline = response_json["data"]["user"]["result"]["timeline_v2"][
                 "timeline"
-            ]["instructions"][1]["entries"][0]["content"]["itemContent"][
-                "tweet_results"
-            ]["result"]["rest_id"]
-            full_text = response_json["data"]["user"]["result"]["timeline_v2"][
-                "timeline"
-            ]["instructions"][1]["entries"][0]["content"]["itemContent"][
-                "tweet_results"
-            ]["result"]["legacy"]["full_text"]
-            rest_id_in_DB = Variable.get(variable_key)
-            if rest_id_in_DB < rest_id:
-                Variable.set(variable_key, rest_id)
-
-                msg = f"new twitter post: https://twitter.com/PyConTW/status/{rest_id}\n\n{full_text}"
-                requests.post(
-                    url=webhook_url,
-                    json={"username": "Twitter Post Notification", "content": msg},
-                )
-        except Exception:
+            ]
+            latest_entry = timeline["instructions"][1]["entries"][0]
+            tweet = latest_entry["content"]["itemContent"]["tweet_results"]["result"]
+            rest_id = tweet["rest_id"]
+            full_text = tweet["legacy"]["full_text"]
+        except (KeyError, IndexError, TypeError):
             requests.post(
                 url=webhook_url,
                 json={
                     "username": "Twitter Post Notification",
                     "content": str(response_json),
                 },
+            )
+            return
+
+        variable_key = "TWITTER_LATEST_REST_ID"
+        rest_id_in_DB = Variable.get(variable_key)
+        if rest_id_in_DB < rest_id:
+            Variable.set(variable_key, rest_id)
+
+            msg = f"new twitter post: https://twitter.com/PyConTW/status/{rest_id}\n\n{full_text}"
+            requests.post(
+                url=webhook_url,
+                json={"username": "Twitter Post Notification", "content": msg},
             )
 
     SEND_TWITTER_POST_NOTIFICATION()

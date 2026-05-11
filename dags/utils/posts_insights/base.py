@@ -145,5 +145,5 @@ class BasePostsInsightsParser(ABC):
             )
             job.result()
         except Exception:
-            logger.exception(f"Failed to dump {dump_type} to BigQuery: ")
-            raise RuntimeError(f"Failed to dump {dump_type} to BigQuery")
+            logger.exception("Failed to dump %s to BigQuery", dump_type)
+            raise

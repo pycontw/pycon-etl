@@ -668,7 +668,7 @@ def main():
     # res_clone = copy.copy(results)
     # print(res_clone)
 
-    print(f"Extracted from {TABLE}  successful.")
+    logging.info("Extracted from %s successful.", TABLE)
 
     # load to DataFrame for later bigquery upload from the extracted results
     df, sanitized_df = load_to_df_from_list(results, "bigquery", update_after_ts)
@@ -692,7 +692,7 @@ def main():
         logging.info("")
         logging.info("Column names (to-be):")
         logging.info(sanitized_df.columns)
-        print(sanitized_df.iloc[:, :5])
+        logging.info(sanitized_df.iloc[:, :5])
         # print(sanitized_df[['paid_date', 'payment_status', 'email']])
 
     return sanitized_df.columns

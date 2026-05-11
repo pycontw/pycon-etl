@@ -88,7 +88,6 @@ def save_video_data_2_bq(**context):
                     "Cache-Control": "no-cache",
                 },
             ).json()
-            print(response_json["items"][0]["statistics"].keys())
             result.append(
                 (
                     execution_date,

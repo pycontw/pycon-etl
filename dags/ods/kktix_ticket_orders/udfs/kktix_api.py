@@ -1,4 +1,5 @@
 import copy
+import logging
 from collections.abc import Callable
 
 import requests
@@ -7,6 +8,8 @@ from airflow.providers.http.hooks.http import HttpHook
 from airflow.sdk import Variable
 from dateutil.parser import parse
 from ods.kktix_ticket_orders.udfs import kktix_loader, kktix_transformer
+
+logger = logging.getLogger(__name__)
 
 SCHEDULE_INTERVAL_SECONDS: int = 3600
 HTTP_HOOK = HttpHook(http_conn_id="kktix_api", method="GET")
@@ -35,7 +38,7 @@ def main(**context):
         copy.deepcopy(event_raw_data_array)
     )
     kktix_loader.load(transformed_event_raw_data_array)
-    print(f"Loaded {len(transformed_event_raw_data_array)} rows to BigQuery!")
+    logger.info("Loaded %d rows to BigQuery!", len(transformed_event_raw_data_array))
 
     # pass these unhashed data through xcom to next airflow task
     return kktix_transformer._extract_sensitive_unhashed_raw_data(
@@ -124,8 +127,10 @@ def _get_attendee_infos(
     """
     get attendee infos, e.g. email, phonenumber, name and etc
     """
-    print(
-        f"Fetching attendee infos between {timestamp} and {timestamp + SCHEDULE_INTERVAL_SECONDS}"
+    logger.info(
+        "Fetching attendee infos between %s and %s",
+        timestamp,
+        timestamp + SCHEDULE_INTERVAL_SECONDS,
     )
     attendee_infos = []
     for attendee_id in attendee_ids:

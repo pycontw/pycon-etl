@@ -1,3 +1,4 @@
+import logging
 import os
 from collections import defaultdict
 from functools import cache
@@ -8,6 +9,8 @@ from ods.kktix_ticket_orders.udfs.kktix_api import (
     _get_attendance_book_id,
     _get_attendee_ids,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @cache
@@ -75,4 +78,4 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: list[int]) -> None:
     """
     )
     result = query_job.result()
-    print(f"Result of _mark_tickets_as_refunded: {result}")
+    logger.info("Result of _mark_tickets_as_refunded: %s", result)

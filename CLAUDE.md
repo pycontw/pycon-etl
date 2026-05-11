@@ -5,7 +5,7 @@ Apache Airflow ETL system for PyCon Taiwan's data infrastructure. Manages event 
 ## Stack
 
 - **Airflow 3.x** — Python 3.10 (locked to <3.11), uv for dependency management
-- **BigQuery** — `pycontw-225217`; ODS layer for raw ingestion, DWD/DWS for future transforms
+- **BigQuery** — `pycontw-225217`; `ods.*` for raw ingestion, `dwd.*` for cleansed transforms (kktix attendees, user profiles). Transform code lives in-place under `dags/ods/.../udfs/`, not a separate package.
 - **SQLite** — intentional; this project is also used to test Airflow + SQLite compatibility
 - **Docker** — multi-service compose (API Server, DAG Processor, Scheduler, Triggerer)
 

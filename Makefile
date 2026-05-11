@@ -19,6 +19,11 @@ test-docker:
 	docker build -t $(DOCKER_TEST_IMAGE) -f Dockerfile.test .
 	docker run --rm -w /opt/airflow --entrypoint pytest $(DOCKER_TEST_IMAGE)
 
+# Cooldown is configured in pyproject.toml (uv) and .pre-commit-config.yaml (prek >=0.3.12).
+upgrade:
+	uv lock --upgrade
+	uvx --from "prek>=0.3.12" prek auto-update
+
 build-dev:
 	docker compose -f ./docker-compose-dev.yml build
 

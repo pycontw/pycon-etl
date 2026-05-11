@@ -4,6 +4,9 @@ default_install_hook_types:
 default_stages:
   - pre-commit
 
+auto_update:
+  cooldown_days: 4
+
 repos:
 - repo: local
   hooks:
@@ -32,3 +35,20 @@ repos:
           ^dags/fixtures/data_questionnaire.csv$
       additional_dependencies:
         - tomli
+
+- repo: local
+  hooks:
+    - id: make-format
+      name: make format (ruff check --fix + ruff format)
+      language: system
+      entry: make format
+      pass_filenames: false
+      always_run: true
+      types: [python]
+    - id: make-test
+      name: make test (pytest)
+      language: system
+      entry: make test
+      pass_filenames: false
+      always_run: true
+      types: [python]

@@ -13,7 +13,6 @@ DEFAULT_ARGS = {
     "start_date": datetime(2024, 6, 18, 0),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
-    "on_failure_callback": lambda x: "Need to send notification to Discord!",
 }
 
 

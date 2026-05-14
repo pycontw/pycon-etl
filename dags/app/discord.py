@@ -69,7 +69,4 @@ def discord_message_notification():
     send_discord_message()
 
 
-dag_obj = discord_message_notification()
-
-if __name__ == "__main__":
-    dag_obj.test()
+discord_message_notification()

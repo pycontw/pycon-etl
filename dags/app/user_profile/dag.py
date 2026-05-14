@@ -18,7 +18,6 @@ DEFAULT_ARGS = {
     "start_date": datetime(2025, 8, 20),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
-    "on_failure_callback": lambda x: "need to query updates ",
 }
 
 

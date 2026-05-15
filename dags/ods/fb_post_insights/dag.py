@@ -4,7 +4,7 @@ Scrape Facebook posts and insights data, save to BigQuery
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import AssetAlias, Metadata, dag, task
 from utils.posts_insights.facebook import FacebookPostsInsightsParser
 
 DEFAULT_ARGS = {
@@ -29,7 +29,8 @@ def FB_POST_INSIGHTS_V1():
 
     @task
     def SAVE_FB_POSTS_AND_INSIGHTS():
-        FacebookPostsInsightsParser().save_posts_and_insights()
+        if FacebookPostsInsightsParser().save_posts_and_insights():
+            yield Metadata(AssetAlias("new_social_media_post"))
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_FB_POSTS_AND_INSIGHTS()
 

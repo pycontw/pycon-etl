@@ -50,7 +50,7 @@ class BasePostsInsightsParser(ABC):
         for sql in [self.CREATE_POSTS_TABLE_SQL, self.CREATE_INSIGHTS_TABLE_SQL]:
             self.bq_client.query(sql)
 
-    def save_posts_and_insights(self) -> None:
+    def save_posts_and_insights(self) -> int:
         posts = self._request_posts_data()
         last_post = self._query_last_post()
         new_posts = (
@@ -62,6 +62,8 @@ class BasePostsInsightsParser(ABC):
 
         posts_insights_data = self._process_posts_insights(posts)
         self._dump_posts_insights_to_bigquery(posts_insights_data)
+
+        return len(new_posts)
 
     @abstractmethod
     def _request_posts_data(self) -> list[dict]: ...

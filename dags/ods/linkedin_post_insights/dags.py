@@ -4,7 +4,7 @@ Scrape LinkedIn posts and insights data, save to BigQuery
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import AssetAlias, Metadata, dag, task
 from utils.posts_insights.linkedin import LinkedinPostsInsightsParser
 
 DEFAULT_ARGS = {
@@ -29,7 +29,8 @@ def LINKEDIN_POST_INSIGHTS_V2():
 
     @task
     def SAVE_LINKEDIN_POSTS_AND_INSIGHTS():
-        LinkedinPostsInsightsParser().save_posts_and_insights()
+        if LinkedinPostsInsightsParser().save_posts_and_insights():
+            yield Metadata(AssetAlias("new_social_media_post"))
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_LINKEDIN_POSTS_AND_INSIGHTS()
 

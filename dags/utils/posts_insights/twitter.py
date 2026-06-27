@@ -43,13 +43,13 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterPostsInsightsParser(BasePostsInsightsParser):
-    POST_TABLE_NAME: str = "ods_pycontw_linkedin_posts"
-    INSIGHT_TABLE_NAME: str = "ods_pycontw_linkedin_posts_insights"
+    POST_TABLE_NAME: str = "ods_pycontw_twitter_posts"
+    INSIGHT_TABLE_NAME: str = "ods_pycontw_twitter_posts_insights"
     CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts"
+        "ods_pycontw_twitter_posts"
     )
     CREATE_INSIGHTS_TABLE_SQL = CREATE_INSIGHT_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts_insights"
+        "ods_pycontw_twitter_posts_insights"
     )
 
     def _request_posts_data(self) -> list[dict]:

@@ -1,6 +1,7 @@
 import logging
 import os
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from functools import cached_property
 from typing import Literal
 
@@ -50,9 +51,21 @@ class BasePostsInsightsParser(ABC):
         for sql in [self.CREATE_POSTS_TABLE_SQL, self.CREATE_INSIGHTS_TABLE_SQL]:
             self.bq_client.query(sql)
 
-    def save_posts_and_insights(self) -> None:
+    def save_posts_and_insights(self, last_post: dict | None = None) -> str | None:
+        """Fetch, filter, and store new posts; return the advanced watermark.
+
+        ``last_post`` is the watermark carried in from the AIP-103 asset state
+        store (shape: ``{"created_at": datetime}``). When omitted, fall back to
+        the legacy behaviour of re-reading the BigQuery sink for the latest
+        stored post.
+
+        Returns the new watermark (newest ``created_at``, ISO 8601 UTC) so the
+        caller can persist it on the asset, or ``None`` when there were no new
+        posts to advance past.
+        """
         posts = self._request_posts_data()
-        last_post = self._query_last_post()
+        if last_post is None:
+            last_post = self._query_last_post()
         new_posts = (
             self._filter_new_posts(posts, last_post) if last_post is not None else posts
         )
@@ -62,6 +75,25 @@ class BasePostsInsightsParser(ABC):
 
         posts_insights_data = self._process_posts_insights(posts)
         self._dump_posts_insights_to_bigquery(posts_insights_data)
+
+        return self._latest_watermark(posts_data)
+
+    @staticmethod
+    def _latest_watermark(posts_data: list[dict]) -> str | None:
+        """Newest ``created_at`` among freshly stored posts, as ISO 8601 UTC.
+
+        Defensive: only epoch-second ``created_at`` values are considered, so
+        platforms whose ``created_at`` is non-numeric simply yield ``None``
+        (their Dags don't consume the return value yet).
+        """
+        epochs = [
+            post["created_at"]
+            for post in posts_data
+            if isinstance(post["created_at"], (int, float))
+        ]
+        if not epochs:
+            return None
+        return datetime.fromtimestamp(max(epochs), tz=timezone.utc).isoformat()
 
     @abstractmethod
     def _request_posts_data(self) -> list[dict]: ...

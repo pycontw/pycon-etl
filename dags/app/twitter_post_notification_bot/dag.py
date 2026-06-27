@@ -5,9 +5,7 @@ Send Proposal Summary to Discord
 from datetime import datetime, timedelta
 
 import requests
-from airflow import settings
 from airflow.sdk import Variable, dag, task
-from sqlalchemy.orm import sessionmaker
 
 DEFAULT_ARGS = {
     "owner": "David Jr.",
@@ -16,8 +14,6 @@ DEFAULT_ARGS = {
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
-
-# TODO: remove db access for airflow 3 upgrade
 
 
 @dag(
@@ -41,48 +37,32 @@ def TWITTER_POST_NOTIFICATION_BOT_V2():
         response = requests.get(url, headers=headers, params=querystring)
         response_json = response.json()
         try:
-            Session = sessionmaker(bind=settings.engine)
-            # Update the variable using a context manager
-            variable_key = "TWITTER_LATEST_REST_ID"
-            rest_id = response_json["data"]["user"]["result"]["timeline_v2"][
+            timeline = response_json["data"]["user"]["result"]["timeline_v2"][
                 "timeline"
-            ]["instructions"][1]["entries"][0]["content"]["itemContent"][
-                "tweet_results"
-            ]["result"]["rest_id"]
-            full_text = response_json["data"]["user"]["result"]["timeline_v2"][
-                "timeline"
-            ]["instructions"][1]["entries"][0]["content"]["itemContent"][
-                "tweet_results"
-            ]["result"]["legacy"]["full_text"]
-            rest_id_in_DB = Variable.get(variable_key)
-            if rest_id_in_DB < rest_id:
-                # Create a session
-                session = Session()
-
-                # Query the variable by key
-                variable = session.query(Variable).filter_by(key=variable_key).first()
-
-                # Update the variable value
-                variable.set_val(rest_id)
-
-                msg = f"new twitter post: https://twitter.com/PyConTW/status/{rest_id}\n\n{full_text}"
-                requests.post(
-                    url=webhook_url,
-                    json={"username": "Twitter Post Notification", "content": msg},
-                )
-
-                # Commit the changes to the database
-                session.commit()
-
-                # Close the session
-                session.close()
-        except Exception:
+            ]
+            latest_entry = timeline["instructions"][1]["entries"][0]
+            tweet = latest_entry["content"]["itemContent"]["tweet_results"]["result"]
+            rest_id = tweet["rest_id"]
+            full_text = tweet["legacy"]["full_text"]
+        except (KeyError, IndexError, TypeError):
             requests.post(
                 url=webhook_url,
                 json={
                     "username": "Twitter Post Notification",
                     "content": str(response_json),
                 },
+            )
+            return
+
+        variable_key = "TWITTER_LATEST_REST_ID"
+        rest_id_in_DB = Variable.get(variable_key)
+        if rest_id_in_DB < rest_id:
+            Variable.set(variable_key, rest_id)
+
+            msg = f"new twitter post: https://twitter.com/PyConTW/status/{rest_id}\n\n{full_text}"
+            requests.post(
+                url=webhook_url,
+                json={"username": "Twitter Post Notification", "content": msg},
             )
 
     SEND_TWITTER_POST_NOTIFICATION()

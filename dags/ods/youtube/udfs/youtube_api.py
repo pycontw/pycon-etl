@@ -1,11 +1,10 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
 from airflow.providers.http.hooks.http import HttpHook
 from airflow.sdk import Variable
-from airflow.sdk.execution_time import macros
 from google.cloud import bigquery
 from utils.hook_related import RETRY_ARGS
 
@@ -25,8 +24,8 @@ def create_table_if_needed():
 
 def get_video_ids(**context) -> None:
     video_metadatas = []
-    execution_date = context["execution_date"].replace(tzinfo=None)
-    last_year = execution_date - macros.timedelta(days=365)
+    execution_date = context["data_interval_start"].replace(tzinfo=None)
+    last_year = execution_date - timedelta(days=365)
     last_year_RFC_3339_format = f"{last_year.date()}T00:00:00Z"
     http_conn = HttpHook(method="GET", http_conn_id="youtube")
     base_url = f"/youtube/v3/search?key={Variable.get('YOUTUBE_KEY')}&channelId={CHANNEL_ID}&part=snippet,id&order=date&maxResults={MAX_RESULTS}&publishedAfter={last_year_RFC_3339_format}"
@@ -61,7 +60,7 @@ def save_video_data_2_bq(**context):
     def _init():
         client = bigquery.Client(project=PROJECT)
         http_conn = HttpHook(method="GET", http_conn_id="youtube")
-        execution_date = context["execution_date"].replace(tzinfo=None)
+        execution_date = context["data_interval_start"].replace(tzinfo=None)
         task_instance = context["task_instance"]
         datatype = context["datatype"]
         video_metadatas = task_instance.xcom_pull("GET_VIDEO_IDS", key="GET_VIDEO_IDS")
@@ -88,7 +87,6 @@ def save_video_data_2_bq(**context):
                     "Cache-Control": "no-cache",
                 },
             ).json()
-            print(response_json["items"][0]["statistics"].keys())
             result.append(
                 (
                     execution_date,

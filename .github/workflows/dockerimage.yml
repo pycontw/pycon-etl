@@ -24,11 +24,9 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build -t ${RC_NAME}:cache --cache-from ${RC_NAME}:cache .
-        docker build -t ${RC_NAME}:test --cache-from ${RC_NAME}:cache -f Dockerfile.test .
-    - name: Run test
+    - name: Run tests inside the built image
       run: |
-        docker run -d --rm -p 8080:8080 --name airflow -v $(pwd)/dags:/opt/airflow/dags -v $(pwd)/fixtures:/opt/airflow/fixtures ${RC_NAME}:test webserver
-        sleep 10
+        make test-docker DOCKER_TEST_IMAGE=${RC_NAME}:test
     - name: Push cache to Google Container Registry
       if: success()
       run: |

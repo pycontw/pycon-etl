@@ -85,7 +85,7 @@ services:
     command:
       - -c
       - |
-        if [[ -n "$${_AIRFLOW_DB_MIGRATE=}" ]]; then
+        if [[ "$${_AIRFLOW_DB_MIGRATE}" == "true" ]]; then
             airflow db migrate || true
         fi
     restart: "no"

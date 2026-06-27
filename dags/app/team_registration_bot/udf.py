@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from functools import cache
 
 from google.cloud import bigquery
 from google.cloud.bigquery.table import RowIterator
@@ -8,11 +9,14 @@ YEAR = datetime.now().year
 
 TABLE = f"{os.getenv('BIGQUERY_PROJECT', 'pycontw-225217')}.ods.ods_kktix_attendeeId_datetime"
 
-CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+
+@cache
+def _client() -> bigquery.Client:
+    return bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
-def _get_statistics_from_bigquery() -> RowIterator:
-    query_job = CLIENT.query(
+def get_statistics_from_bigquery() -> RowIterator:
+    query_job = _client().query(
         f"""
         WITH UNIQUE_RECORDS AS (
           SELECT DISTINCT
@@ -55,10 +59,10 @@ ticket_price: dict[str, int] = {
 }
 
 
-def _compose_discord_msg(payload) -> str:
+def compose_discord_msg(payload) -> str:
     msg = (
         f"Hi 這是今天 {datetime.now().date()} 的票種統計資料，"
-        "售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow DAG 關掉\n\n"
+        "售票期結束後，請 follow README 的 `gcloud` 指令進去把 Airflow Dag 關掉\n\n"
     )
     total = 0
     total_income = 0

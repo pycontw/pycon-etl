@@ -1,9 +1,12 @@
 import json
+import logging
 import os
 
 import pandas as pd
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs import kktix_bq_dwd_etl
+
+logger = logging.getLogger(__name__)
 
 SCHEMA = [
     bigquery.SchemaField("id", "INTEGER", mode="REQUIRED"),
@@ -22,7 +25,7 @@ def load(event_raw_data_array: list):
     """
     # data quality check
     if len(event_raw_data_array) == 0:
-        print("Nothing to load, skip!")
+        logger.info("Nothing to load, skip!")
         return
     payload = []
     for event_raw_data in event_raw_data_array:

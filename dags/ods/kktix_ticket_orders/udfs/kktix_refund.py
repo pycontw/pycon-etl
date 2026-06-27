@@ -1,5 +1,7 @@
+import logging
 import os
 from collections import defaultdict
+from functools import cache
 
 from google.cloud import bigquery
 from ods.kktix_ticket_orders.udfs.bigquery_loader import TABLE
@@ -8,7 +10,12 @@ from ods.kktix_ticket_orders.udfs.kktix_api import (
     _get_attendee_ids,
 )
 
-CLIENT = bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
+logger = logging.getLogger(__name__)
+
+
+@cache
+def _client() -> bigquery.Client:
+    return bigquery.Client(project=os.getenv("BIGQUERY_PROJECT"))
 
 
 def main() -> None:
@@ -25,7 +32,7 @@ def _check_if_refunded_ticket_exists() -> list[int]:
     4. compare the difference, the diff would be refunded attendee ids
     """
     refunded_attendee_ids: list[int] = []
-    query_job = CLIENT.query(
+    query_job = _client().query(
         f"""
             SELECT
               ID,
@@ -59,7 +66,7 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: list[int]) -> None:
     """
     set these attendee info to refunded=true, if we cannot find its attendee_info right now by using KKTIX's API!
     """
-    query_job = CLIENT.query(
+    query_job = _client().query(
         f"""
     UPDATE
       `{TABLE}`
@@ -71,4 +78,4 @@ def _mark_tickets_as_refunded(refunded_attendee_ids: list[int]) -> None:
     """
     )
     result = query_job.result()
-    print(f"Result of _mark_tickets_as_refunded: {result}")
+    logger.info("Result of _mark_tickets_as_refunded: %s", result)

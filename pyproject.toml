@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
-  "apache-airflow==3.3.0b2",
+  "apache-airflow==3.3.0rc1",
   # Editable install with no version specified.
   "apache-airflow-providers-fab>=3.6.2",
   "apache-airflow-providers-http",
@@ -89,8 +89,8 @@ omit = ['env/*', 'venv/*', '*/virtualenv/*', '*/virtualenvs/*', '*/tests/*']
 required-version = ">=0.9.17"
 exclude-newer = "4 days"
 # Synchroonize with scripts/ci/prek/upgrade_important_versions.py
-# airflow 3.3.0 constraint file for python 3.10
-# https://raw.githubusercontent.com/apache/airflow/refs/tags/constraints-3.2.2/constraints-3.10.txt
+# airflow 3.3.0rc1 constraint file for python 3.10
+# https://raw.githubusercontent.com/apache/airflow/refs/tags/constraints-3.3.0rc1/constraints-3.10.txt
 constraint-dependencies = [
     "APScheduler==3.11.2",
     "Authlib==1.7.2",
@@ -137,7 +137,7 @@ constraint-dependencies = [
     "aioitertools==0.13.0",
     "aiomysql==0.3.2",
     "aiosignal==1.4.0",
-    "aiosmtplib==5.1.1",
+    "aiosmtplib==5.1.2",
     "aiosqlite==0.21.0",
     "airbyte-api==0.53.0",
     "akeyless==5.0.28",
@@ -530,12 +530,12 @@ constraint-dependencies = [
     "memray==1.19.3",
     "mergedeep==1.3.4",
     "methodtools==0.4.7",
-    "microsoft-kiota-abstractions==1.10.3",
-    "microsoft-kiota-authentication-azure==1.10.3",
-    "microsoft-kiota-http==1.10.3",
-    "microsoft-kiota-serialization-json==1.10.3",
-    "microsoft-kiota-serialization-text==1.10.3",
-    "mistune==3.2.1",
+    "microsoft-kiota-abstractions==1.11.5",
+    "microsoft-kiota-authentication-azure==1.11.5",
+    "microsoft-kiota-http==1.11.5",
+    "microsoft-kiota-serialization-json==1.11.5",
+    "microsoft-kiota-serialization-text==1.11.5",
+    "mistune==3.3.0",
     "mmh3==5.2.1",
     "more-itertools==11.1.0",
     "msal-extensions==1.3.1",
@@ -770,7 +770,7 @@ constraint-dependencies = [
     "websocket-client==1.8.0",
     "websockets==16.0",
     "wirerope==1.0.0",
-    "wrapt==2.2.1",
+    "wrapt==2.2.2",
     "xmlsec==1.3.17",
     "xmltodict==1.0.4",
     "yandex-query-client==0.1.4",
@@ -787,7 +787,7 @@ constraint-dependencies = [
 ]
 
 # Temporarily exempt the airflow packages from the 4-day exclude-newer cooldown
-# so we can pull pre-release betas (e.g. 3.3.0b2) while evaluating Airflow 3.3.
+# so we can pull pre-release betas (e.g. 3.3.0rc1) while evaluating Airflow 3.3.
 # Revert once we pin a stable 3.3.x that is older than the cooldown window.
 [tool.uv.exclude-newer-package]
 apache-airflow = "2026-12-31T00:00:00Z"

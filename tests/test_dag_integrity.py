@@ -5,14 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from airflow.models import DagBag
+from airflow.dag_processing.dagbag import DagBag
 
 DAGS_DIR = Path(__file__).resolve().parents[1] / "dags"
 
 
 @pytest.fixture(scope="module")
 def dag_bag() -> DagBag:
-    return DagBag(dag_folder=str(DAGS_DIR), include_examples=False)
+    return DagBag(dag_folder=str(DAGS_DIR))
 
 
 def test_no_import_errors(dag_bag: DagBag) -> None:

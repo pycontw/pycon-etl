@@ -21,6 +21,7 @@ DEFAULT_ARGS = {
     schedule="5 8 */2 * *",
     max_active_runs=1,
     catchup=False,
+    tags=["ods", "social-media", "linkedin"],
 )
 def LINKEDIN_POST_INSIGHTS_V2():
     @task

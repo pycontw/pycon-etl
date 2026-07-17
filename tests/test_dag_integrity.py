@@ -27,3 +27,10 @@ def test_dag_ids_unique(dag_bag: DagBag) -> None:
     dag_ids = list(dag_bag.dag_ids)
     duplicates = {dag_id for dag_id in dag_ids if dag_ids.count(dag_id) > 1}
     assert not duplicates, f"Duplicate Dag IDs: {duplicates}"
+
+
+def test_all_dags_have_tags(dag_bag: DagBag) -> None:
+    untagged_dag_ids = sorted(
+        dag_id for dag_id, dag in dag_bag.dags.items() if not dag.tags
+    )
+    assert not untagged_dag_ids, f"Dags without tags: {untagged_dag_ids}"

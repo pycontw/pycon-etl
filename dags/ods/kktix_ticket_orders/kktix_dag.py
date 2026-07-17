@@ -21,6 +21,7 @@ DEFAULT_ARGS = {
     schedule="50 * * * *",
     max_active_runs=1,
     catchup=True,
+    tags=["ods", "ticketing", "kktix"],
 )
 def KKTIX_TICKET_ORDERS_V10():
     @task

@@ -21,6 +21,7 @@ DEFAULT_ARGS = {
     schedule="5 8 * * *",
     max_active_runs=1,
     catchup=False,
+    tags=["ods", "social-media", "twitter"],
 )
 def TWITTER_POST_INSIGHTS_V1():
     @task

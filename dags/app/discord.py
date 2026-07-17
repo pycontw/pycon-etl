@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
         "owner": "Wei Lee",
         "depends_on_past": False,
     },
-    tags=["discord"],
+    tags=["app", "notification", "discord"],
 )
 def discord_message_notification():
     """Send Discord Message."""

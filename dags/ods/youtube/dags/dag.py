@@ -21,6 +21,7 @@ DEFAULT_ARGS = {
     schedule="@daily",
     max_active_runs=1,
     catchup=False,
+    tags=["ods", "social-media", "youtube"],
 )
 def ODS_YOUTUBE_2_BIGQUERY():
     @task

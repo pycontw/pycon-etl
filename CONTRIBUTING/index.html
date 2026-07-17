@@ -804,16 +804,11 @@ git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </
 <p>We use <a href="https://github.com/pycontw/pycon-etl/actions/workflows/python.yml">Python CI</a> and <a href="https://github.com/pycontw/pycon-etl/actions/workflows/dockerimage.yml">Docker Image CI</a> to ensure our code quality meets specific standards and that Docker images can be published automatically.</p>
 <p>When a pull request is created, <a href="https://github.com/pycontw/pycon-etl/actions/workflows/python.yml">Python CI</a> checks whether the code quality is satisfactory. At the same time, we build a <code>cache</code> image using <code>Dockerfile</code> and a <code>test</code> image with <code>Dockerfile.test</code>, which are then pushed to the <a href="https://cloud.google.com/artifact-registry/">GCP Artifact Registry</a>.</p>
 <p>After a pull request is merged into the <code>master</code> branch, the two image tags mentioned above are created, along with a new <code>staging</code> tag for the image generated from <code>Dockerfile</code>.</p>
-<p>Once we verify that the <code>staging</code> image functions correctly, we merge the <code>master</code> branch into the <code>prod</code> branch through the following commands.</p>
-<!--TODO: This is not ideal. The "master" and "prod" branches should be protected and should not allow human pushes. We should create a GitHub action for this..-->
-
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>prod
-git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>prod
-
-git<span class="w"> </span>merge<span class="w"> </span>origin/master
-
-git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>prod
+<p>Once we verify that the <code>staging</code> image functions correctly, we promote <code>master</code> into <code>prod</code> by running:</p>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>promote-prod
 </code></pre></div>
+<p>This wraps the release branch sync into one command while keeping the promotion step manual.</p>
+<p>The command checks for a clean working tree, fetches the latest <code>master</code> and <code>prod</code>, and asks for confirmation before pushing to <code>origin/prod</code>.</p>
 <p>This triggers the <a href="https://github.com/pycontw/pycon-etl/actions/workflows/dockerimage.yml">Docker Image CI</a> again to update the <code>cache</code>, <code>test</code>, and <code>staging</code> images, as well as to create a <code>latest</code> image that we will later use for deploying to our production instance. See the <a href="../DEPLOYMENT/">Deployment Guide</a> for the following steps.</p>
 <pre class="mermaid"><code>---
 config:

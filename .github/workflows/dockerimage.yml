@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ master, prod ]
 env:
-  RC_NAME: asia-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/data-team/pycon-etl
+  RC_NAME: ${{ secrets.GCP_PROJECT_ID != '' && format('asia-east1-docker.pkg.dev/{0}/data-team/pycon-etl', secrets.GCP_PROJECT_ID) || 'pycon-etl' }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,13 +16,16 @@ jobs:
     - name: Install development tools
       run: uv sync --only-group dev
     - name: Authenticate to Google Cloud
+      if: github.event_name == 'push'
       uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
     - name: Configure docker to use gcloud command-line tool as a credential helper
+      if: github.event_name == 'push'
       run: |
         gcloud auth configure-docker asia-east1-docker.pkg.dev
     - name: Pull cache
+      if: github.event_name == 'push'
       run: |
         docker pull ${RC_NAME}:cache || true
     - name: Build the Docker image
@@ -33,7 +36,7 @@ jobs:
       env:
         DOCKER_TEST_IMAGE: ${{ env.RC_NAME }}:test
     - name: Push cache to Google Container Registry
-      if: success()
+      if: github.event_name == 'push' && success()
       run: |
         docker push ${RC_NAME}:cache
     - name: Push staging to Google Container Registry

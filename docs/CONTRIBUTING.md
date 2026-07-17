@@ -72,18 +72,15 @@ When a pull request is created, [Python CI] checks whether the code quality is s
 
 After a pull request is merged into the `master` branch, the two image tags mentioned above are created, along with a new `staging` tag for the image generated from `Dockerfile`.
 
-Once we verify that the `staging` image functions correctly, we merge the `master` branch into the `prod` branch through the following commands.
-
-<!--TODO: This is not ideal. The "master" and "prod" branches should be protected and should not allow human pushes. We should create a GitHub action for this..-->
+Once we verify that the `staging` image functions correctly, we promote `master` into `prod` by running:
 
 ```bash
-git checkout prod
-git pull origin prod
-
-git merge origin/master
-
-git push origin prod
+make promote-prod
 ```
+
+This wraps the release branch sync into one command while keeping the promotion step manual.
+
+The command checks for a clean working tree, fetches the latest `master` and `prod`, and asks for confirmation before pushing to `origin/prod`.
 
 This triggers the [Docker Image CI] again to update the `cache`, `test`, and `staging` images, as well as to create a `latest` image that we will later use for deploying to our production instance. See the [Deployment Guide](./DEPLOYMENT.md) for the following steps.
 

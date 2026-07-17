@@ -39,6 +39,9 @@ deploy-prod:
 down-prod:
 	docker compose -f ./docker-compose.yml down
 
+promote-prod:
+	python3 ./scripts/promote_prod.py
+
 build-docs:
 	uv run --group docs  mkdocs build
 

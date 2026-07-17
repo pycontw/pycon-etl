@@ -7,7 +7,7 @@ from app.team_registration_bot.udf import (
 
 @asset(
     schedule="@daily",
-    tags=["discord"],
+    tags=["app", "registration", "discord"],
 )
 def registration_statistics(self):
     statistics = get_statistics_from_bigquery()

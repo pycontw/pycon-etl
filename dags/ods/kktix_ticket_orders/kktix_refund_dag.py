@@ -21,6 +21,7 @@ DEFAULT_ARGS = {
     schedule="50 23 * * *",  # At 23:50 (everyday)
     max_active_runs=1,
     catchup=True,
+    tags=["ods", "ticketing", "kktix"],
 )
 def KKTIX_TICKET_REFUND_V3():
     @task

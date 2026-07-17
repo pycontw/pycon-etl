@@ -22,6 +22,7 @@ DEFAULT_ARGS = {
     schedule="@daily",
     max_active_runs=1,
     catchup=False,
+    tags=["app", "notification", "twitter", "discord"],
 )
 def TWITTER_POST_NOTIFICATION_BOT_V2():
     @task

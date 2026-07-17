@@ -44,7 +44,7 @@ default_args = {
     default_args=default_args,
     schedule="@daily",
     catchup=False,
-    tags=["airflow-maintenance-dags"],
+    tags=["maintenance", "airflow"],
     params={
         "enable_delete_child_log": Param(True, type="boolean"),
     },

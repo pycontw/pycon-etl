@@ -23,7 +23,7 @@ DEFAULT_ARGS = {
     schedule="@daily",
     max_active_runs=1,
     catchup=False,
-    tags=["app", "finance", "discord"],
+    tags=["app", "finance", "notification", "discord"],
 )
 def DISCORD_FINANCE_REMINDER():
     @task(outlets=[AssetAlias("finance_report_diff_notification")])

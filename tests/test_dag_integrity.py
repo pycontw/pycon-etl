@@ -1,4 +1,7 @@
-"""Smoke test: every Dag module under ``dags/`` must import and parse cleanly."""
+"""Dag integrity checks: every Dag module under ``dags/`` must import and
+parse cleanly, and every discovered Dag must satisfy the repo's Dag
+conventions (unique Dag ID, non-empty tags).
+"""
 
 from __future__ import annotations
 

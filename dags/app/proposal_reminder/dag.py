@@ -19,7 +19,7 @@ def get_proposal_summary() -> dict[str, Any]:
 @asset(
     schedule="0 16 * * *",  # At 16:00 (00:00 +8)
     is_paused_upon_creation=True,
-    tags=["app", "proposal", "discord"],
+    tags=["app", "proposal", "notification", "discord"],
 )
 def proposal_count(self):
     summary = get_proposal_summary()

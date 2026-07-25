@@ -31,6 +31,7 @@ dags/
 
 - **Terminology**: write "Dag" in prose; `DAG` is only the Python class name.
 - **Dag ID**: the `@dag`-decorated function name becomes the Dag ID when no explicit `dag_id=` is passed. Renaming the function renames the Dag in Airflow's metadata DB.
+- **Dag tags**: exactly one layer tag per Dag, closed set `app` / `ods` / `maintenance`. Domain/integration axes (`ticketing`, `kktix`, ...) are open — convention + review, not whitelisted. Don't tag `bigquery`: nearly every Dag touches it.
 - **Airflow Variables**: runtime secrets (API keys, webhook URLs) are stored as Airflow Variables, not env vars. See `.env.template` for the static env config.
 - **Dependency updates**: after changing `pyproject.toml`, run `uv lock` to update `uv.lock`. The pre-commit hook verifies that the Airflow version in `pyproject.toml` matches the `Dockerfile`.
 - **Typing**: mypy strict mode is enforced on `dags/` and `tests/`. Run `make lint` before pushing.

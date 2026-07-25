@@ -26,7 +26,7 @@ DEFAULT_ARGS = {
     schedule=None,
     max_active_runs=1,
     catchup=False,
-    tags=["app", "user-profile"],
+    tags=["app", "user-profile", "gemini"],
 )
 def user_profile_category_query():
     @task

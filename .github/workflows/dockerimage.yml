@@ -5,30 +5,38 @@ on:
   pull_request:
     branches: [ master, prod ]
 env:
-  RC_NAME: asia-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/data-team/pycon-etl
+  RC_NAME: ${{ secrets.GCP_PROJECT_ID != '' && format('asia-east1-docker.pkg.dev/{0}/data-team/pycon-etl', secrets.GCP_PROJECT_ID) || 'pycon-etl' }}
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.0
+    - name: Install uv
+      uses: astral-sh/setup-uv@v8.3.0
+    - name: Install development tools
+      run: uv sync --only-group dev
     - name: Authenticate to Google Cloud
+      if: github.event_name == 'push'
       uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
     - name: Configure docker to use gcloud command-line tool as a credential helper
+      if: github.event_name == 'push'
       run: |
         gcloud auth configure-docker asia-east1-docker.pkg.dev
     - name: Pull cache
+      if: github.event_name == 'push'
       run: |
         docker pull ${RC_NAME}:cache || true
     - name: Build the Docker image
       run: |
         docker build -t ${RC_NAME}:cache --cache-from ${RC_NAME}:cache .
     - name: Run tests inside the built image
-      run: |
-        make test-docker DOCKER_TEST_IMAGE=${RC_NAME}:test
+      run: uv run --no-sync poe test:docker
+      env:
+        DOCKER_TEST_IMAGE: ${{ env.RC_NAME }}:test
     - name: Push cache to Google Container Registry
-      if: success()
+      if: github.event_name == 'push' && success()
       run: |
         docker push ${RC_NAME}:cache
     - name: Push staging to Google Container Registry

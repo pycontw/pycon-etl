@@ -58,7 +58,7 @@ If additional steps are required after merging and deploying (e.g., add new conn
 
 ### Code Formatting
 
-Please run `make format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
+Please run `uv run poe format` to ensure your code is properly formatted before committing; otherwise, the CI will fail.
 
 ### Commit Message
 
@@ -75,7 +75,7 @@ After a pull request is merged into the `master` branch, the two image tags ment
 Once we verify that the `staging` image functions correctly, we promote `master` into `prod` by running:
 
 ```bash
-make promote-prod
+uv run poe prod:promote
 ```
 
 This wraps the release branch sync into one command while keeping the promotion step manual.

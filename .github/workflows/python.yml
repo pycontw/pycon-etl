@@ -26,10 +26,10 @@ jobs:
           uv sync --group dev
 
       - name: Run linters
-        run: make lint
+        run: uv run poe lint
 
       - name: Run tests with coverage
-        run: make coverage
+        run: uv run poe test:coverage
 
     # CD part
     # - name: Push dags to GCS

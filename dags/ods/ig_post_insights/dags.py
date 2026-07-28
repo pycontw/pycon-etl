@@ -4,7 +4,7 @@ Scrape Instagram posts and insights data, save to BigQuery
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import AssetAlias, Metadata, dag, task
 from utils.posts_insights.instagram import InstagramPostsInsightsParser
 
 DEFAULT_ARGS = {
@@ -30,7 +30,8 @@ def IG_POST_INSIGHTS_V1():
 
     @task
     def SAVE_IG_POSTS_AND_INSIGHTS():
-        InstagramPostsInsightsParser().save_posts_and_insights()
+        if InstagramPostsInsightsParser().save_posts_and_insights():
+            yield Metadata(AssetAlias("new_social_media_post"))
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_IG_POSTS_AND_INSIGHTS()
 

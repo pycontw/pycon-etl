@@ -36,6 +36,7 @@ line-length = 88
 exclude = ["patch"]
 
 [tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
 extend-select = [
   "I",     # Missing required import (auto-fixable)
   "UP",    # Pyupgrade

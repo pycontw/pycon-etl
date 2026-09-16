@@ -13,10 +13,17 @@ Using Airflow to implement our ETL pipelines.
 - [Docker](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/book/zh-tw/v2/%E9%96%8B%E5%A7%8B-Git-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8)
 - [uv]
+- [prek]
 
 ## Installation
 
 We use [uv] to manage dependencies and virtual environment.
+
+Install [prek] as a command-line tool before running the maintenance tasks:
+
+```bash
+uv tool install prek
+```
 
 Below are the steps to create a virtual environment using [uv]:
 
@@ -89,13 +96,13 @@ uv run airflow standalone
 
 ```bash
 # Build the local dev/test image
-make build-dev
+uv run poe dev:build
 
 # Start dev/test services
-make deploy-dev
+uv run poe dev:up
 
 # Stop dev/test services
-make down-dev
+uv run poe dev:down
 ```
 
 > The difference between production and dev/test compose files is that the dev/test compose file uses a locally built image, while the production compose file uses the image from Docker Hub.
@@ -128,3 +135,4 @@ Available tags:
 [PyCon TW Volunteer Data Team - Discord](https://discord.com/channels/752904426057892052/900721883383758879)
 
 [uv]: https://docs.astral.sh/uv/
+[prek]: https://prek.j178.dev/

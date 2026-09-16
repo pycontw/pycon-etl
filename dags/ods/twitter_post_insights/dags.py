@@ -4,7 +4,7 @@ Scrape X (Twitter) posts and insights data, save to BigQuery
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import AssetAlias, Metadata, dag, task
 from utils.posts_insights.twitter import TwitterPostsInsightsParser
 
 DEFAULT_ARGS = {
@@ -30,7 +30,8 @@ def TWITTER_POST_INSIGHTS_V1():
 
     @task
     def SAVE_TWITTER_POSTS_AND_INSIGHTS():
-        TwitterPostsInsightsParser().save_posts_and_insights()
+        if TwitterPostsInsightsParser().save_posts_and_insights():
+            yield Metadata(AssetAlias("new_social_media_post"))
 
     CREATE_TABLE_IF_NEEDED() >> SAVE_TWITTER_POSTS_AND_INSIGHTS()
 

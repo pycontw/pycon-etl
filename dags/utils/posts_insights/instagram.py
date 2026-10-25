@@ -12,6 +12,11 @@ from utils.posts_insights.base import (
 logger = logging.getLogger(__name__)
 
 
+# Instagram media references (Facebook Login):
+# https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media
+# https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-media
+
+
 class InstagramPostsInsightsParser(BasePostsInsightsParser):
     POST_TABLE_NAME: str = "ods_pycontw_ig_posts"
     INSIGHT_TABLE_NAME: str = "ods_pycontw_ig_posts_insights"
@@ -78,6 +83,7 @@ class InstagramPostsInsightsParser(BasePostsInsightsParser):
                     {
                         "id": media_res["id"],
                         "timestamp": timestamp,
+                        # Media without captions are valid; keep them for insights.
                         "caption": media_res.get("caption", "No Content"),
                         "comments_count": media_res.get("comments_count"),
                         "like_count": media_res.get("like_count"),

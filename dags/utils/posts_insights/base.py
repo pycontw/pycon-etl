@@ -51,6 +51,7 @@ class BasePostsInsightsParser(ABC):
 
     def save_posts_and_insights(self) -> None:
         posts = self._request_posts_data()
+        # The watermark must come from this platform's own posts table.
         last_post = self._query_last_post()
         new_posts = (
             self._filter_new_posts(posts, last_post) if last_post is not None else posts
@@ -132,6 +133,7 @@ class BasePostsInsightsParser(ABC):
     ) -> None:
         id_field = "id" if dump_type == "posts" else "post_id"
         valid_posts = []
+        # Only posts are deduplicated within this batch; insights remain snapshots.
         seen_ids: set[str] = set()
         for post in posts:
             post_id = post.get(id_field)

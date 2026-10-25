@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterPostsInsightsParser(BasePostsInsightsParser):
+    # Sharing LinkedIn tables also shares its incremental watermark, skipping posts.
     POST_TABLE_NAME: str = "ods_pycontw_twitter_posts"
     INSIGHT_TABLE_NAME: str = "ods_pycontw_twitter_posts_insights"
     CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(POST_TABLE_NAME)

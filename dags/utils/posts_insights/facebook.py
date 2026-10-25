@@ -15,11 +15,9 @@ logger = logging.getLogger(__name__)
 class FacebookPostsInsightsParser(BasePostsInsightsParser):
     POST_TABLE_NAME: str = "ods_pycontw_fb_posts"
     INSIGHT_TABLE_NAME: str = "ods_pycontw_fb_posts_insights"
-    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_fb_posts"
-    )
-    CREATE_INSIGHTS_TABLE_SQL = """
-    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.ods_pycontw_fb_posts_insights` (
+    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(POST_TABLE_NAME)
+    CREATE_INSIGHTS_TABLE_SQL = f"""
+    CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.{INSIGHT_TABLE_NAME}` (
         post_id STRING,
         query_time TIMESTAMP,
         comments INTEGER,

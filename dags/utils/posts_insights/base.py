@@ -2,7 +2,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Literal
+from typing import Literal, TypeGuard
 
 from google.cloud import bigquery
 
@@ -31,7 +31,6 @@ CREATE TABLE IF NOT EXISTS `pycontw-225217.ods.{}` (
 
 
 class BasePostsInsightsParser(ABC):
-    # TODO: combine table name with table creation sql
     POST_TABLE_NAME: str = ""
     INSIGHT_TABLE_NAME: str = ""
     CREATE_POSTS_TABLE_SQL: str = ""
@@ -42,13 +41,13 @@ class BasePostsInsightsParser(ABC):
         return bigquery.Client(project=os.getenv("BIGQUERY_PROJECT", ""))
 
     def create_tables_if_not_exists(self) -> None:
-        if not self.CREATE_POSTS_TABLE_SQL and not self.CREATE_INSIGHTS_TABLE_SQL:
+        if not self.CREATE_POSTS_TABLE_SQL or not self.CREATE_INSIGHTS_TABLE_SQL:
             raise ValueError(
                 "Both the SQLs to create table for posts and insights must be set"
             )
 
         for sql in [self.CREATE_POSTS_TABLE_SQL, self.CREATE_INSIGHTS_TABLE_SQL]:
-            self.bq_client.query(sql)
+            self.bq_client.query(sql).result()
 
     def save_posts_and_insights(self) -> None:
         posts = self._request_posts_data()
@@ -115,6 +114,15 @@ class BasePostsInsightsParser(ABC):
             ],
         )
 
+    @staticmethod
+    def _is_valid_id(value: object) -> TypeGuard[str]:
+        return (
+            isinstance(value, str)
+            and bool(value.strip())
+            and value == value.strip()
+            and value != "0"
+        )
+
     def _dump_to_bigquery(
         self,
         *,
@@ -122,6 +130,21 @@ class BasePostsInsightsParser(ABC):
         dump_type: Literal["posts insights", "posts"],
         bq_schema_fields: list[bigquery.SchemaField],
     ) -> None:
+        id_field = "id" if dump_type == "posts" else "post_id"
+        valid_posts = []
+        seen_ids: set[str] = set()
+        for post in posts:
+            post_id = post.get(id_field)
+            if not self._is_valid_id(post_id):
+                logger.warning("Skipping %s with invalid %s", dump_type, id_field)
+                continue
+            if dump_type == "posts":
+                if post_id in seen_ids:
+                    continue
+                seen_ids.add(post_id)
+            valid_posts.append(post)
+        posts = valid_posts
+
         if not posts:
             logger.info(f"No {dump_type} to dump!")
             return

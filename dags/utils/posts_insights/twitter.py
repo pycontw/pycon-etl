@@ -12,44 +12,12 @@ from utils.posts_insights.base import (
 logger = logging.getLogger(__name__)
 
 
-# Example output from the Rapid API, not all fields will exists for a specific post
-#
-# {
-#   "text": "For your kids in senior high.",
-#   "totalReactionCount": 6,
-#   "likeCount": 6,
-#   "repostsCount": 1,
-#   "empathyCount": 1,
-#   "commentsCount": 20,
-#   repostsCount:1,
-#   "postUrl": "https://www.linkedin.com/feed/update/urn:li:activity:6940542340960763905/",
-#   "postedAt": "1yr",
-#   "postedDate": "2022-06-09 05:57:23.126 +0000 UTC",
-#   "postedDateTimestamp": 1654754243126,
-#   "urn": "6940542340960763905",
-#   "author": {
-#     "firstName": "Angus",
-#     "lastName": "Yang",
-#     "username": "angus-yang-8885279a",
-#     "url": "https://www.linkedin.com/in/angus-yang-8885279a"
-#   },
-#   "company": {},
-#   "article": {
-#     "title": "2022 AWS STEM Summer Camp On The Cloud",
-#     "subtitle": "pages.awscloud.com • 2 min read",
-#     "link": "https://pages.awscloud.com/tw-2022-aws-stem-summer-camp-on-the-cloud_registration.html"
-#   }
-# },
-
-
 class TwitterPostsInsightsParser(BasePostsInsightsParser):
-    POST_TABLE_NAME: str = "ods_pycontw_linkedin_posts"
-    INSIGHT_TABLE_NAME: str = "ods_pycontw_linkedin_posts_insights"
-    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts"
-    )
+    POST_TABLE_NAME: str = "ods_pycontw_twitter_posts"
+    INSIGHT_TABLE_NAME: str = "ods_pycontw_twitter_posts_insights"
+    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(POST_TABLE_NAME)
     CREATE_INSIGHTS_TABLE_SQL = CREATE_INSIGHT_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts_insights"
+        INSIGHT_TABLE_NAME
     )
 
     def _request_posts_data(self) -> list[dict]:

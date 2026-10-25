@@ -45,11 +45,9 @@ logger = logging.getLogger(__name__)
 class LinkedinPostsInsightsParser(BasePostsInsightsParser):
     POST_TABLE_NAME: str = "ods_pycontw_linkedin_posts"
     INSIGHT_TABLE_NAME: str = "ods_pycontw_linkedin_posts_insights"
-    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts"
-    )
+    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(POST_TABLE_NAME)
     CREATE_INSIGHTS_TABLE_SQL = CREATE_INSIGHT_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_linkedin_posts_insights"
+        INSIGHT_TABLE_NAME
     )
 
     def _request_posts_data(self) -> list[dict]:

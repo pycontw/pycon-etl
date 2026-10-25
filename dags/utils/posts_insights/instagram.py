@@ -12,72 +12,88 @@ from utils.posts_insights.base import (
 logger = logging.getLogger(__name__)
 
 
-# IG API docs
-# https://developers.facebook.com/docs/instagram-api/reference/ig-user/media?locale=zh_TW
-# https://developers.facebook.com/docs/instagram-api/reference/ig-media
-
-# // get list of media-id
-# GET /v20.0/{page-id}/media/?access_token={access_token}
-
-# // get media detail
-# GET /v20.0/{media-id}?access_token={access_token}&fields=id,media_type,caption,timestamp,comments_count,like_count
-
-# PyConTW IG page-id: 17841405043609765
-# ps. IG api 目前不提供分享數, 所以只有點讚數和留言數
-
-# Access Token
-# Check Henry
+# Instagram media references (Facebook Login):
+# https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media
+# https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-media
 
 
 class InstagramPostsInsightsParser(BasePostsInsightsParser):
     POST_TABLE_NAME: str = "ods_pycontw_ig_posts"
     INSIGHT_TABLE_NAME: str = "ods_pycontw_ig_posts_insights"
-    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_ig_posts"
-    )
+    CREATE_POSTS_TABLE_SQL = CREATE_POST_TABLE_SQL_TEMPLATE.format(POST_TABLE_NAME)
     CREATE_INSIGHTS_TABLE_SQL = CREATE_INSIGHT_TABLE_SQL_TEMPLATE.format(
-        "ods_pycontw_ig_posts_insights"
+        INSIGHT_TABLE_NAME
     )
+
+    API_BASE_URL = "https://graph.facebook.com/v24.0"
+
+    @staticmethod
+    def _request_json(url: str, params: dict | None = None) -> dict:
+        response = requests.get(url, params=params, timeout=180)
+        if not response.ok:
+            raise RuntimeError(
+                f"Instagram API request failed (HTTP {response.status_code})"
+            )
+        payload: dict = response.json()
+        if "error" in payload:
+            raise RuntimeError("Instagram API returned an error")
+        return payload
 
     def _request_posts_data(self) -> list[dict]:
-        media_list_url = "https://graph.facebook.com/v20.0/17841405043609765/media"
-        querystring = {"access_token": Variable.get("IG_ACCESS_TOKEN"), "limit": "0"}
-        headers = {"Content-Type": "application/json"}
-
-        response = requests.get(
-            media_list_url, headers=headers, params=querystring, timeout=180
-        )
-        if not response.ok:
-            raise RuntimeError(f"Failed to fetch posts data: {response.text}")
-        media_list = response.json()["data"]
-
+        access_token = Variable.get("IG_ACCESS_TOKEN")
+        next_url = f"{self.API_BASE_URL}/17841405043609765/media"
+        params: dict | None = {"access_token": access_token, "limit": "100"}
         media_insight_list = []
-        for media in media_list:
-            media_insight_url = f"https://graph.facebook.com/v20.0/{media['id']}"
-            querystring = {
-                "access_token": Variable.get("IG_ACCESS_TOKEN"),
-                "fields": "id,media_type,caption,timestamp,comments_count,like_count",
-            }
-            response = requests.get(
-                media_insight_url, headers=headers, params=querystring, timeout=180
-            )
-            if not response.ok:
-                raise RuntimeError(f"Failed to fetch posts data: {response.text}")
-
-            media_insight = {}
-            media_res: dict = response.json()
-            # Error handling, the response may not include the required fields, media id: 17889558458829258, no "caption"
-            media_insight["id"] = media_res.get("id", "0")
-            media_insight["timestamp"] = datetime.strptime(
-                media_res.get("timestamp", "0"), "%Y-%m-%dT%H:%M:%S%z"
-            ).timestamp()
-            media_insight["caption"] = media_res.get("caption", "No Content")
-            media_insight["comments_count"] = media_res.get("comments_count", "0")
-            media_insight["like_count"] = media_res.get("like_count", "0")
-            media_insight["media_type"] = media_res.get("media_type", "No Content")
-
-            media_insight_list.append(media_insight)
-
+        seen_pages: set[str] = set()
+        seen_media: set[str] = set()
+        while next_url:
+            if next_url in seen_pages:
+                raise RuntimeError("Instagram API returned a pagination cycle")
+            seen_pages.add(next_url)
+            payload = self._request_json(next_url, params)
+            media_list = payload["data"]
+            if not media_list:
+                logger.info("Instagram media page returned no posts")
+            for media in media_list:
+                media_id = media.get("id")
+                if not self._is_valid_id(media_id):
+                    logger.warning("Skipping Instagram media with invalid id")
+                    continue
+                if media_id in seen_media:
+                    continue
+                seen_media.add(media_id)
+                media_res = self._request_json(
+                    f"{self.API_BASE_URL}/{media_id}",
+                    {
+                        "access_token": access_token,
+                        "fields": "id,media_type,caption,timestamp,comments_count,like_count",
+                    },
+                )
+                if not self._is_valid_id(media_res.get("id")):
+                    logger.warning("Skipping Instagram media detail with invalid id")
+                    continue
+                try:
+                    timestamp = datetime.strptime(
+                        media_res["timestamp"], "%Y-%m-%dT%H:%M:%S%z"
+                    ).timestamp()
+                except (KeyError, TypeError, ValueError):
+                    logger.warning("Skipping Instagram media with invalid timestamp")
+                    continue
+                media_insight_list.append(
+                    {
+                        "id": media_res["id"],
+                        "timestamp": timestamp,
+                        # Media without captions are valid; keep them for insights.
+                        "caption": media_res.get("caption", "No Content"),
+                        "comments_count": media_res.get("comments_count"),
+                        "like_count": media_res.get("like_count"),
+                        "media_type": media_res.get("media_type", "No Content"),
+                    }
+                )
+            next_url = payload.get("paging", {}).get("next", "")
+            params = None
+        if not media_insight_list:
+            logger.info("Instagram returned no usable posts")
         return media_insight_list
 
     def _filter_new_posts(self, posts: list[dict], last_post: dict) -> list[dict]:

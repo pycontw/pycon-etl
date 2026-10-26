@@ -11,6 +11,16 @@ resolution-markers = [
 exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P4D"
 
+[options.exclude-newer-package]
+apache-airflow = "2026-12-31T00:00:00Z"
+apache-airflow-core = "2026-12-31T00:00:00Z"
+apache-airflow-providers-common-compat = "2026-12-31T00:00:00Z"
+apache-airflow-providers-common-sql = "2026-12-31T00:00:00Z"
+apache-airflow-providers-fab = "2026-12-31T00:00:00Z"
+apache-airflow-providers-smtp = "2026-12-31T00:00:00Z"
+apache-airflow-providers-standard = "2026-12-31T00:00:00Z"
+apache-airflow-task-sdk = "2026-12-31T00:00:00Z"
+
 [manifest]
 constraints = [
     { name = "a2wsgi", specifier = "==1.10.10" },

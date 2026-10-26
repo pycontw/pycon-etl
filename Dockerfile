@@ -1,5 +1,5 @@
-ARG AIRFLOW_VERSION=3.3.1
-ARG PYTHON_VERSION=3.10
+ARG AIRFLOW_VERSION=3.4.0b2
+ARG PYTHON_VERSION=3.14
 ARG PLATFORM=linux
 
 FROM --platform=${PLATFORM} ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder

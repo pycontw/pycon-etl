@@ -209,17 +209,17 @@ def airflow_log_cleanup():
                     {
                         # Find the files whose modification time was 3 days aao
                         "find_stmt_tpl": f"find %s/*/* -type f -mtime +{max_log_age_in_days}",
-                        "delete_stmt_tpl": "%s -exec rm -f {} \;",
+                        "delete_stmt_tpl": r"%s -exec rm -f {} \;",
                     },
                     {
                         # Find the directory under base_log_folder/*/* that is empty
                         "find_stmt_tpl": "find %s/*/* -type d -empty",
-                        "delete_stmt_tpl": "%s -prune -exec rm -rf {} \;",
+                        "delete_stmt_tpl": r"%s -prune -exec rm -rf {} \;",
                     },
                     {
                         # Find the directory under base_log_folder/* that is empty
                         "find_stmt_tpl": "find %s/* -type d -empty",
-                        "delete_stmt_tpl": "%s -prune -exec rm -rf {} \;",
+                        "delete_stmt_tpl": r"%s -prune -exec rm -rf {} \;",
                     },
                 ]
             ),

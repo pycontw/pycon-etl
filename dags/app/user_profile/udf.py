@@ -3,7 +3,6 @@ import logging
 import time
 from collections.abc import Generator, Iterable
 from itertools import islice
-from typing import TypeVar
 
 import pandas as pd
 import requests
@@ -246,10 +245,7 @@ def write_result_to_bigquery(df: pd.DataFrame, task_type: str) -> None:
     job.result()
 
 
-_T = TypeVar("_T")
-
-
-def chunk_data(data: Iterable[_T], batch_size: int) -> Generator[list[_T], None, None]:
+def chunk_data[T](data: Iterable[T], batch_size: int) -> Generator[list[T]]:
     it = iter(data)
     while batch := list(islice(it, batch_size)):
         yield batch
@@ -310,7 +306,7 @@ def process_table(
                 result_json = []
             results_to_update.extend(result_json)
 
-        except (GoogleAPICallError, DeadlineExceeded, ServiceUnavailable):
+        except GoogleAPICallError, DeadlineExceeded, ServiceUnavailable:
             logging.exception(f"批次 {index} API 呼叫錯誤: ")
         except requests.exceptions.RequestException:
             logging.exception(f"批次 {index} 網路請求錯誤: ")

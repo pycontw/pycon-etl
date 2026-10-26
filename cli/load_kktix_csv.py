@@ -199,7 +199,7 @@ def _to_unix_timestamp(time_str: str | None) -> float | None:
         # KKTIX CSV 的時間格式
         dt_object = datetime.strptime(str(time_str), "%Y/%m/%d %H:%M:%S")
         return dt_object.timestamp()
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         logging.warning(f"無法解析時間格式: '{time_str}'. 將其設為 None.")
         return None
 

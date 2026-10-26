@@ -776,16 +776,3 @@ constraint-dependencies = [
     "zope.interface==8.6",
     "zstandard==0.25.0",
 ]
-
-# Temporarily exempt the airflow packages from the 4-day exclude-newer cooldown
-# so we can pull pre-release betas (e.g. 3.3.1) while evaluating Airflow 3.3.
-# Revert once we pin a stable 3.3.x that is older than the cooldown window.
-[tool.uv.exclude-newer-package]
-apache-airflow = "2026-12-31T00:00:00Z"
-apache-airflow-core = "2026-12-31T00:00:00Z"
-apache-airflow-task-sdk = "2026-12-31T00:00:00Z"
-apache-airflow-providers-fab = "2026-12-31T00:00:00Z"
-apache-airflow-providers-common-compat = "2026-12-31T00:00:00Z"
-apache-airflow-providers-common-sql = "2026-12-31T00:00:00Z"
-apache-airflow-providers-smtp = "2026-12-31T00:00:00Z"
-apache-airflow-providers-standard = "2026-12-31T00:00:00Z"

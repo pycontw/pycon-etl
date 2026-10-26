@@ -45,7 +45,7 @@ def TWITTER_POST_NOTIFICATION_BOT_V2():
             tweet = latest_entry["content"]["itemContent"]["tweet_results"]["result"]
             rest_id = tweet["rest_id"]
             full_text = tweet["legacy"]["full_text"]
-        except (KeyError, IndexError, TypeError):
+        except KeyError, IndexError, TypeError:
             requests.post(
                 url=webhook_url,
                 json={

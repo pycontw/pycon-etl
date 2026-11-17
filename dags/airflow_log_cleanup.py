@@ -13,11 +13,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from airflow.configuration import conf
-from airflow.exceptions import TaskDeferred
 from airflow.providers.standard.triggers.temporal import (
     DateTimeTrigger,
 )
 from airflow.sdk import Param, Variable, chain, dag, task, task_group, timezone
+from airflow.sdk.exceptions import TaskDeferred
 from airflow.sdk.types import RuntimeTaskInstanceProtocol
 
 if TYPE_CHECKING:
